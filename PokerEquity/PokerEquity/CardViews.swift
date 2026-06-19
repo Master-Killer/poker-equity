@@ -110,6 +110,8 @@ struct CardPickerView: View {
                 }
                 .padding(.horizontal, 8)
                 .padding(.bottom, 8)
+                .frame(maxWidth: 900)          // keep cards a sane size on iPad/Mac
+                .frame(maxWidth: .infinity)    // centred within the full-width bar
             }
         }
         .background(Theme.background.shadow(.drop(color: .black.opacity(0.5), radius: 6, y: -2)))

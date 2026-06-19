@@ -29,6 +29,10 @@ public struct PlayerEquity: Sendable {
 public struct EquityResult: Sendable {
     public let players: [PlayerEquity]
     public let totalRunouts: Int
+    /// `coWinMatrix[i][j]` = fraction of runouts where players i and j are both
+    /// among the winners. The diagonal is each player's win-or-tie probability;
+    /// off-diagonal entries reveal who splits with whom (pairwise).
+    public let coWinMatrix: [[Double]]
 }
 
 public enum EquityCalculator {
@@ -55,11 +59,14 @@ public enum EquityCalculator {
         var tieCat = Array(repeating: [Double](repeating: 0, count: categoryCount), count: playerCount)
         var loseCat = Array(repeating: [Double](repeating: 0, count: categoryCount), count: playerCount)
         var equityPoints = [Double](repeating: 0, count: playerCount)
+        var coWin = Array(repeating: [Double](repeating: 0, count: playerCount), count: playerCount)
         var totalRunouts = 0
 
         var ranks = [HandRank](repeating: evaluate5([Card](repeating: remaining[0], count: 5)),
                                count: playerCount)
         var sevenCards = [Card](repeating: remaining[0], count: 7)
+        var winners = [Int]()
+        winners.reserveCapacity(playerCount)
 
         // Tally one runout: `fill` is the cards completing the board.
         func tally(_ fill: [Card]) {
@@ -75,10 +82,13 @@ public enum EquityCalculator {
                 if r.score > bestScore { bestScore = r.score }
             }
 
-            var winnerCount = 0
-            for p in 0..<playerCount where ranks[p].score == bestScore { winnerCount += 1 }
+            winners.removeAll(keepingCapacity: true)
+            for p in 0..<playerCount where ranks[p].score == bestScore { winners.append(p) }
+            let winnerCount = winners.count
 
             totalRunouts += 1
+            for a in winners { for b in winners { coWin[a][b] += 1 } }
+
             if winnerCount == 1 {
                 for p in 0..<playerCount {
                     let cat = ranks[p].category.rawValue
@@ -150,7 +160,8 @@ public enum EquityCalculator {
                                         breakdown: breakdown))
         }
 
-        return EquityResult(players: players, totalRunouts: totalRunouts)
+        let coWinMatrix = coWin.map { row in row.map { $0 / total } }
+        return EquityResult(players: players, totalRunouts: totalRunouts, coWinMatrix: coWinMatrix)
     }
 }
 

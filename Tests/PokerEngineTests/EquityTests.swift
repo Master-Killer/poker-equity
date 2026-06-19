@@ -66,6 +66,22 @@ final class EquityTests: XCTestCase {
         XCTAssertEqual(mc.players[0].equity, exact.players[0].equity, accuracy: 0.006)
     }
 
+    /// The split is pairwise: in AA vs AA vs KK vs KK the two aces chop together
+    /// (~95%) and the two kings chop together (~1.3%); aces rarely chop with kings.
+    func testCoWinMatrixHasTwoBlocks() {
+        let result = EquityCalculator.compute(
+            hands: [hand("As Ah"), hand("Ac Ad"), hand("Ks Kd"), hand("Kh Kc")],
+            board: []
+        )
+        let m = result.coWinMatrix
+        XCTAssertEqual(m[0][1], 0.95, accuracy: 0.02, "the two aces chop together")
+        XCTAssertEqual(m[2][3], 0.013, accuracy: 0.01, "the two kings chop together")
+        // Not exactly zero: ~0.5% of boards "play" for everyone (a straight/flush
+        // on the board) and chop four ways — but far smaller than the same-rank blocks.
+        XCTAssertLessThan(m[0][2], 0.02, "aces rarely chop with kings")
+        XCTAssertLessThan(m[0][2], m[0][1] / 10)
+    }
+
     // MARK: - Helpers
 
     private func printBreakdown(_ result: EquityResult) {

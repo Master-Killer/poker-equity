@@ -3,39 +3,19 @@ import PokerEngine
 
 struct ContentView: View {
     @StateObject private var vm = GameViewModel()
+    @Environment(\.horizontalSizeClass) private var hSize
+
+    /// iPad / Mac (Catalyst) get the roomier layout.
+    private var isWide: Bool { hSize == .regular }
 
     var body: some View {
         VStack(spacing: 0) {
             header
             ScrollView {
-                VStack(spacing: 12) {
-                    ForEach(vm.playerCards.indices, id: \.self) { i in
-                        PlayerRowView(vm: vm, index: i)
-                    }
-
-                    if vm.playerCards.count < 9 {
-                        Button { vm.addPlayer() } label: {
-                            Label("Main", systemImage: "plus")
-                                .font(.subheadline)
-                        }
-                        .buttonStyle(.bordered)
-                        .tint(.secondary)
-                    }
-
-                    Divider().overlay(Color.white.opacity(0.12))
-
-                    VStack(alignment: .leading, spacing: 8) {
-                        Text("TABLEAU")
-                            .font(.caption2.weight(.semibold))
-                            .foregroundStyle(.secondary)
-                        BoardRowView(vm: vm)
-                    }
-
-                    if let outs = vm.outs {
-                        OutsView(outs: outs, vm: vm)
-                    }
-                }
-                .padding()
+                content
+                    .frame(maxWidth: 1000)
+                    .frame(maxWidth: .infinity)
+                    .padding()
             }
             CardPickerView(vm: vm)
         }
@@ -48,9 +28,7 @@ struct ContentView: View {
             Text("Équité Poker")
                 .font(.system(.headline, design: .monospaced))
             Spacer()
-            if vm.isCalculating {
-                ProgressView().controlSize(.small)
-            }
+            if vm.isCalculating { ProgressView().controlSize(.small) }
             Button { vm.reset() } label: {
                 Image(systemName: "arrow.counterclockwise")
             }
@@ -59,6 +37,48 @@ struct ContentView: View {
         .padding(.horizontal)
         .padding(.vertical, 10)
     }
+
+    @ViewBuilder private var content: some View {
+        VStack(spacing: 16) {
+            if isWide {
+                LazyVGrid(columns: [GridItem(.adaptive(minimum: 360), spacing: 16, alignment: .top)],
+                          alignment: .leading, spacing: 16) {
+                    playerRows
+                }
+            } else {
+                playerRows
+            }
+
+            if vm.playerCards.count < 9 {
+                Button { vm.addPlayer() } label: {
+                    Label("Main", systemImage: "plus").font(.subheadline)
+                }
+                .buttonStyle(.bordered)
+                .tint(.secondary)
+            }
+
+            Divider().overlay(Color.white.opacity(0.12))
+
+            VStack(alignment: .leading, spacing: 8) {
+                Text("TABLEAU")
+                    .font(.caption2.weight(.semibold))
+                    .foregroundStyle(.secondary)
+                BoardRowView(vm: vm)
+                    .frame(maxWidth: 520)
+            }
+            .frame(maxWidth: .infinity, alignment: .leading)
+
+            if let outs = vm.outs {
+                OutsView(outs: outs, vm: vm)
+            }
+        }
+    }
+
+    @ViewBuilder private var playerRows: some View {
+        ForEach(vm.playerCards.indices, id: \.self) { i in
+            PlayerRowView(vm: vm, index: i, defaultExpanded: isWide)
+        }
+    }
 }
 
 // MARK: - Player row
@@ -66,7 +86,13 @@ struct ContentView: View {
 struct PlayerRowView: View {
     @ObservedObject var vm: GameViewModel
     let index: Int
-    @State private var expanded = false
+    @State private var expanded: Bool
+
+    init(vm: GameViewModel, index: Int, defaultExpanded: Bool) {
+        _vm = ObservedObject(wrappedValue: vm)
+        self.index = index
+        _expanded = State(initialValue: defaultExpanded)
+    }
 
     private var equity: PlayerEquity? { vm.equity?.players[safe: index] }
 
@@ -79,27 +105,8 @@ struct PlayerRowView: View {
                         .frame(width: 48)
                         .onTapGesture { vm.focus(slot) }
                 }
-
                 Spacer()
-
-                if let equity {
-                    VStack(alignment: .trailing, spacing: 0) {
-                        Text(percentString(equity.winProb))
-                            .font(.system(size: 34, weight: .semibold, design: .rounded))
-                            .foregroundStyle(Theme.accent)
-                            .contentTransition(.numericText())
-                        if equity.tieProb > 0.0005 {
-                            Text("Partage \(percentString(equity.tieProb))")
-                                .font(.caption2)
-                                .foregroundStyle(.secondary)
-                        }
-                    }
-                } else {
-                    Text("—")
-                        .font(.system(size: 28, weight: .regular, design: .rounded))
-                        .foregroundStyle(.secondary)
-                }
-
+                headline
                 if vm.playerCards.count > 2 {
                     Button { vm.removePlayer(index) } label: {
                         Image(systemName: "xmark.circle.fill")
@@ -120,12 +127,71 @@ struct PlayerRowView: View {
                 }
                 if expanded {
                     DecompositionView(equity: equity)
+                    splitPartners
                 }
             }
         }
         .padding(12)
         .background(Theme.panel.opacity(0.45))
         .clipShape(RoundedRectangle(cornerRadius: 12))
+    }
+
+    @ViewBuilder private var headline: some View {
+        if let equity {
+            VStack(alignment: .trailing, spacing: 0) {
+                Text(percentString(equity.winProb))
+                    .font(.system(size: 34, weight: .semibold, design: .rounded))
+                    .foregroundStyle(Theme.accent)
+                    .contentTransition(.numericText())
+                if equity.tieProb > 0.00005 {
+                    Text("Partage \(percentString(equity.tieProb))")
+                        .font(.caption2)
+                        .foregroundStyle(.secondary)
+                }
+            }
+        } else {
+            Text("—")
+                .font(.system(size: 28, weight: .regular, design: .rounded))
+                .foregroundStyle(.secondary)
+        }
+    }
+
+    /// Pairwise split breakdown: who this player chops with (3+ player pots).
+    @ViewBuilder private var splitPartners: some View {
+        let partners = partnerList
+        if !partners.isEmpty {
+            VStack(alignment: .leading, spacing: 4) {
+                Text("Partagé avec")
+                    .font(.caption2.weight(.semibold))
+                    .foregroundStyle(.secondary)
+                ForEach(partners, id: \.index) { partner in
+                    HStack {
+                        handLabel(partner.cards).font(.caption)
+                        Spacer()
+                        Text(percentString(partner.prob))
+                            .font(.caption.monospacedDigit())
+                            .foregroundStyle(.secondary)
+                    }
+                }
+            }
+            .padding(.top, 6)
+        }
+    }
+
+    private struct Partner { let index: Int; let cards: [Card]; let prob: Double }
+
+    private var partnerList: [Partner] {
+        guard vm.playerCards.count > 2,
+              let matrix = vm.equity?.coWinMatrix,
+              matrix.indices.contains(index) else { return [] }
+        var result: [Partner] = []
+        for j in matrix[index].indices where j != index {
+            let prob = matrix[index][j]
+            guard prob > 0.00005 else { continue }
+            let cards = vm.playerCards[safe: j]?.compactMap { $0 } ?? []
+            result.append(Partner(index: j, cards: cards, prob: prob))
+        }
+        return result.sorted { $0.prob > $1.prob }
     }
 }
 
@@ -144,9 +210,9 @@ struct DecompositionView: View {
         VStack(spacing: 4) {
             HStack {
                 Text("Main").frame(maxWidth: .infinity, alignment: .leading)
-                Text("Gagne").frame(width: 56, alignment: .trailing)
-                Text("Perd").frame(width: 56, alignment: .trailing)
-                Text("Partage").frame(width: 56, alignment: .trailing)
+                Text("Gagne").frame(width: 64, alignment: .trailing)
+                Text("Perd").frame(width: 64, alignment: .trailing)
+                Text("Partage").frame(width: 64, alignment: .trailing)
             }
             .font(.caption2.weight(.semibold))
             .foregroundStyle(.secondary)
@@ -166,7 +232,7 @@ struct DecompositionView: View {
 
     private func cell(_ value: Double, color: Color) -> some View {
         Text(value < 0.00005 ? "·" : percentString(value))
-            .frame(width: 56, alignment: .trailing)
+            .frame(width: 64, alignment: .trailing)
             .foregroundStyle(color)
     }
 }
@@ -206,7 +272,8 @@ struct OutsView: View {
 
                 ForEach(trailing, id: \.playerIndex) { po in
                     VStack(alignment: .leading, spacing: 6) {
-                        Text("\(handName(po.playerIndex)) — \(po.directOuts.count) cartes pour passer devant")
+                        (handLabel(handCards(po.playerIndex))
+                         + Text(" — \(po.directOuts.count) cartes pour passer devant"))
                             .font(.subheadline.weight(.semibold))
 
                         LazyVGrid(columns: [GridItem(.adaptive(minimum: 30), spacing: 4)], spacing: 4) {
@@ -232,8 +299,7 @@ struct OutsView: View {
         }
     }
 
-    private func handName(_ index: Int) -> String {
-        let cards = vm.playerCards[safe: index]?.compactMap { $0 } ?? []
-        return cards.map { $0.description }.joined(separator: " ")
+    private func handCards(_ index: Int) -> [Card] {
+        vm.playerCards[safe: index]?.compactMap { $0 } ?? []
     }
 }
