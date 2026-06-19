@@ -45,6 +45,28 @@ extension HandCategory {
     }
 }
 
+extension Suit {
+    /// Suit colour legible on a dark background (black suits shown light grey).
+    var onDarkColor: Color {
+        isRed ? Color(red: 0.92, green: 0.36, blue: 0.36) : Color(white: 0.92)
+    }
+}
+
+extension Card {
+    /// "A♠", "T♥" — rank + suit symbol (no English letters).
+    var symbolText: String { "\(rankLetter)\(suit.symbol)" }
+}
+
+/// A hand rendered as coloured rank+symbol tokens, e.g. A♠ A♥ (for dark panels).
+func handLabel(_ cards: [Card]) -> Text {
+    var text = Text("")
+    for (i, card) in cards.enumerated() {
+        if i > 0 { text = text + Text(" ") }
+        text = text + Text(card.symbolText).foregroundColor(card.suit.onDarkColor)
+    }
+    return text
+}
+
 // MARK: - Selection slot
 
 /// A position the focus can sit on. Hands are traversed before the board.
@@ -62,5 +84,6 @@ extension Array {
 }
 
 func percentString(_ x: Double) -> String {
-    String(format: "%.2f%%", x * 100)
+    // French decimal separator (comma).
+    String(format: "%.2f", x * 100).replacingOccurrences(of: ".", with: ",") + "%"
 }
