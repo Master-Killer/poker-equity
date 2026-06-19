@@ -199,6 +199,7 @@ struct PlayerRowView: View {
 
 struct DecompositionView: View {
     let equity: PlayerEquity
+    @State private var expanded: Set<HandCategory> = []
 
     private var rows: [(HandCategory, CategoryBreakdown)] {
         HandCategory.allCases.reversed().compactMap { cat in
@@ -208,7 +209,8 @@ struct DecompositionView: View {
 
     var body: some View {
         VStack(spacing: 4) {
-            HStack {
+            HStack(spacing: 4) {
+                Color.clear.frame(width: 11)
                 Text("Main").frame(maxWidth: .infinity, alignment: .leading)
                 Text("Gagne").frame(width: 64, alignment: .trailing)
                 Text("Perd").frame(width: 64, alignment: .trailing)
@@ -218,16 +220,72 @@ struct DecompositionView: View {
             .foregroundStyle(.secondary)
 
             ForEach(rows, id: \.0) { cat, b in
-                HStack {
-                    Text(cat.frenchName).frame(maxWidth: .infinity, alignment: .leading)
-                    cell(b.winProb, color: b.winProb > 0 ? Theme.win : .secondary)
-                    cell(b.loseProb, color: .secondary)
-                    cell(b.tieProb, color: .secondary)
+                let canExpand = b.winProb > 0.00005 || b.loseProb > 0.00005
+                Button {
+                    if canExpand {
+                        if expanded.contains(cat) { expanded.remove(cat) } else { expanded.insert(cat) }
+                    }
+                } label: {
+                    HStack(spacing: 4) {
+                        Image(systemName: expanded.contains(cat) ? "chevron.down" : "chevron.right")
+                            .font(.system(size: 9))
+                            .foregroundStyle(.secondary)
+                            .opacity(canExpand ? 1 : 0)
+                            .frame(width: 11)
+                        Text(cat.frenchName).frame(maxWidth: .infinity, alignment: .leading)
+                        cell(b.winProb, color: b.winProb > 0 ? Theme.win : .secondary)
+                        cell(b.loseProb, color: .secondary)
+                        cell(b.tieProb, color: .secondary)
+                    }
+                    .font(.caption.monospacedDigit())
+                    .contentShape(Rectangle())
                 }
-                .font(.caption.monospacedDigit())
+                .buttonStyle(.plain)
+                .disabled(!canExpand)
+
+                if expanded.contains(cat) {
+                    attribution(for: cat)
+                }
             }
         }
         .padding(.top, 4)
+    }
+
+    @ViewBuilder private func attribution(for cat: HandCategory) -> some View {
+        VStack(alignment: .leading, spacing: 3) {
+            if let wins = sorted(equity.winVs[cat]) {
+                block(title: "gagne en battant", items: wins, color: Theme.win)
+            }
+            if let losses = sorted(equity.loseVs[cat]) {
+                block(title: "battu par", items: losses, color: .secondary)
+            }
+        }
+        .padding(.leading, 15)
+        .padding(.vertical, 3)
+    }
+
+    @ViewBuilder private func block(title: String, items: [(HandCategory, Double)], color: Color) -> some View {
+        VStack(alignment: .leading, spacing: 1) {
+            Text(title)
+                .font(.caption2.weight(.semibold))
+                .foregroundStyle(.secondary)
+            ForEach(items, id: \.0) { oppCat, prob in
+                HStack {
+                    Text(oppCat.frenchName)
+                    Spacer()
+                    Text(percentString(prob)).monospacedDigit()
+                }
+                .font(.caption2)
+                .foregroundStyle(color)
+                .padding(.leading, 8)
+            }
+        }
+    }
+
+    /// Opponent-category attribution, sorted by probability (most common first).
+    private func sorted(_ dict: [HandCategory: Double]?) -> [(HandCategory, Double)]? {
+        guard let dict, !dict.isEmpty else { return nil }
+        return dict.sorted { $0.value > $1.value }.map { ($0.key, $0.value) }
     }
 
     private func cell(_ value: Double, color: Color) -> some View {

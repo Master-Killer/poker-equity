@@ -24,6 +24,13 @@ public struct PlayerEquity: Sendable {
     public let tieProb: Double
     /// Per-category win/lose/tie decomposition.
     public let breakdown: [HandCategory: CategoryBreakdown]
+    /// `winVs[ownCategory][beatenCategory]` — when this player wins with
+    /// `ownCategory`, the probability the best opponent held `beatenCategory`.
+    /// Summing the inner values gives the category's win probability.
+    public let winVs: [HandCategory: [HandCategory: Double]]
+    /// `loseVs[ownCategory][winnerCategory]` — when this player loses while
+    /// holding `ownCategory`, the probability the winner held `winnerCategory`.
+    public let loseVs: [HandCategory: [HandCategory: Double]]
 }
 
 public struct EquityResult: Sendable {
@@ -60,6 +67,9 @@ public enum EquityCalculator {
         var loseCat = Array(repeating: [Double](repeating: 0, count: categoryCount), count: playerCount)
         var equityPoints = [Double](repeating: 0, count: playerCount)
         var coWin = Array(repeating: [Double](repeating: 0, count: playerCount), count: playerCount)
+        // [player][ownCategory][opponentCategory]
+        var winSrc = Array(repeating: Array(repeating: [Double](repeating: 0, count: categoryCount), count: categoryCount), count: playerCount)
+        var loseSrc = Array(repeating: Array(repeating: [Double](repeating: 0, count: categoryCount), count: categoryCount), count: playerCount)
         var totalRunouts = 0
 
         var ranks = [HandRank](repeating: evaluate5([Card](repeating: remaining[0], count: 5)),
@@ -70,7 +80,8 @@ public enum EquityCalculator {
 
         // Tally one runout: `fill` is the cards completing the board.
         func tally(_ fill: [Card]) {
-            var bestScore = Int.min
+            var bestScore = Int.min, bestCat = 0
+            var secondScore = Int.min, secondCat = 0
             for p in 0..<playerCount {
                 sevenCards[0] = hands[p][0]
                 sevenCards[1] = hands[p][1]
@@ -79,7 +90,12 @@ public enum EquityCalculator {
                 for c in fill { sevenCards[idx] = c; idx += 1 }
                 let r = evaluate(sevenCards)
                 ranks[p] = r
-                if r.score > bestScore { bestScore = r.score }
+                if r.score > bestScore {
+                    secondScore = bestScore; secondCat = bestCat
+                    bestScore = r.score; bestCat = r.category.rawValue
+                } else if r.score > secondScore {
+                    secondScore = r.score; secondCat = r.category.rawValue
+                }
             }
 
             winners.removeAll(keepingCapacity: true)
@@ -95,8 +111,10 @@ public enum EquityCalculator {
                     if ranks[p].score == bestScore {
                         winCat[p][cat] += 1
                         equityPoints[p] += 1
+                        winSrc[p][cat][secondCat] += 1   // what the winner beat
                     } else {
                         loseCat[p][cat] += 1
+                        loseSrc[p][cat][bestCat] += 1     // what beat this player
                     }
                 }
             } else {
@@ -108,6 +126,7 @@ public enum EquityCalculator {
                         equityPoints[p] += share
                     } else {
                         loseCat[p][cat] += 1
+                        loseSrc[p][cat][bestCat] += 1
                     }
                 }
             }
@@ -153,11 +172,29 @@ public enum EquityCalculator {
                 winSum += winCat[p][i]
                 tieSum += tieCat[p][i]
             }
+
+            var winVs = [HandCategory: [HandCategory: Double]]()
+            var loseVs = [HandCategory: [HandCategory: Double]]()
+            for own in HandCategory.allCases {
+                var wins = [HandCategory: Double]()
+                var losses = [HandCategory: Double]()
+                for opp in HandCategory.allCases {
+                    let w = winSrc[p][own.rawValue][opp.rawValue]
+                    if w > 0 { wins[opp] = w / total }
+                    let l = loseSrc[p][own.rawValue][opp.rawValue]
+                    if l > 0 { losses[opp] = l / total }
+                }
+                if !wins.isEmpty { winVs[own] = wins }
+                if !losses.isEmpty { loseVs[own] = losses }
+            }
+
             players.append(PlayerEquity(hand: hands[p],
                                         equity: equityPoints[p] / total,
                                         winProb: winSum / total,
                                         tieProb: tieSum / total,
-                                        breakdown: breakdown))
+                                        breakdown: breakdown,
+                                        winVs: winVs,
+                                        loseVs: loseVs))
         }
 
         let coWinMatrix = coWin.map { row in row.map { $0 / total } }

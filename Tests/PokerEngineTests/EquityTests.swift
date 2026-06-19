@@ -82,6 +82,22 @@ final class EquityTests: XCTestCase {
         XCTAssertLessThan(m[0][2], m[0][1] / 10)
     }
 
+    /// The win/lose attribution must sum back to the decomposition cells.
+    func testAttributionSumsMatchBreakdown() {
+        let result = EquityCalculator.compute(
+            hands: [hand("Ks Qs"), hand("7c 7d")],
+            board: hand("Js 6s 2c")
+        )
+        for player in result.players {
+            for (cat, b) in player.breakdown {
+                let winSum = player.winVs[cat]?.values.reduce(0, +) ?? 0
+                XCTAssertEqual(winSum, b.winProb, accuracy: 1e-9, "winVs sums to win prob (\(cat))")
+                let loseSum = player.loseVs[cat]?.values.reduce(0, +) ?? 0
+                XCTAssertEqual(loseSum, b.loseProb, accuracy: 1e-9, "loseVs sums to lose prob (\(cat))")
+            }
+        }
+    }
+
     // MARK: - Helpers
 
     private func printBreakdown(_ result: EquityResult) {
