@@ -45,14 +45,25 @@ final class EquityTests: XCTestCase {
         }
     }
 
-    /// Classic benchmark: AA vs KK preflop ≈ 81.9% / 18.1% (exact enumeration).
+    /// Benchmark: A♠A♥ vs K♠K♥ preflop, exact enumeration.
+    /// 82.36% wins + 0.55% split → 82.64% equity for the aces.
     func testAcesVsKingsPreflop() {
         let result = EquityCalculator.compute(
             hands: [hand("As Ah"), hand("Ks Kh")],
             board: []
         )
         XCTAssertEqual(result.totalRunouts, 1_712_304) // C(48,5)
-        XCTAssertEqual(result.players[0].equity, 0.8197, accuracy: 0.01, "AA equity")
+        XCTAssertEqual(result.players[0].equity, 0.8264, accuracy: 0.001, "AA equity")
+    }
+
+    /// Monte-Carlo sampling must be unbiased: close to the exact value.
+    func testMonteCarloMatchesExactPreflop() {
+        let hands = [hand("As Ah"), hand("Ks Kh")]
+        let exact = EquityCalculator.compute(hands: hands, board: [])
+        let mc = EquityCalculator.compute(hands: hands, board: [], maxRunouts: 200_000)
+        print("AA vs KK — exact=\(exact.players[0].equity) mc=\(mc.players[0].equity) samples=\(mc.totalRunouts)")
+        XCTAssertEqual(mc.totalRunouts, 200_000)
+        XCTAssertEqual(mc.players[0].equity, exact.players[0].equity, accuracy: 0.006)
     }
 
     // MARK: - Helpers

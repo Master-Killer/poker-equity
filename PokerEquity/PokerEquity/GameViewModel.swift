@@ -145,7 +145,10 @@ final class GameViewModel: ObservableObject {
         isCalculating = true
         calcTask = Task { [weak self] in
             let result = await Task.detached(priority: .userInitiated) {
-                EquityCalculator.compute(hands: hands, board: boardCards)
+                // Cap the work: exact for small spaces (flop/turn), Monte-Carlo
+                // beyond ~200k runouts (preflop / many players) so it stays snappy
+                // even in a debug build on device.
+                EquityCalculator.compute(hands: hands, board: boardCards, maxRunouts: 200_000)
             }.value
             let outsResult: OutsResult? = (boardCards.count == 3 || boardCards.count == 4)
                 ? await Task.detached(priority: .userInitiated) {

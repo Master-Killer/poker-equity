@@ -33,12 +33,15 @@ public struct EquityResult: Sendable {
 
 public enum EquityCalculator {
 
-    /// Exact equity by enumerating every remaining board runout.
+    /// Equity over the remaining board runouts.
     ///
     /// - Parameters:
     ///   - hands: each player's two hole cards.
     ///   - board: 0...5 community cards already known.
-    public static func compute(hands: [[Card]], board: [Card]) -> EquityResult {
+    ///   - maxRunouts: if the number of exact runouts exceeds this, the result
+    ///     is estimated by Monte-Carlo sampling with `maxRunouts` random runouts
+    ///     instead. Defaults to exact (unbounded) enumeration.
+    public static func compute(hands: [[Card]], board: [Card], maxRunouts: Int = .max) -> EquityResult {
         precondition(hands.count >= 2, "need at least two hands")
         let playerCount = hands.count
         let categoryCount = HandCategory.allCases.count
@@ -58,9 +61,8 @@ public enum EquityCalculator {
                                count: playerCount)
         var sevenCards = [Card](repeating: remaining[0], count: 7)
 
-        forEachCombination(remaining, choose: missing) { fill in
-            // Build the full board once, then evaluate each player's 7 cards.
-            // sevenCards = 2 hole + 5 board (board.count + fill.count == 5).
+        // Tally one runout: `fill` is the cards completing the board.
+        func tally(_ fill: [Card]) {
             var bestScore = Int.min
             for p in 0..<playerCount {
                 sevenCards[0] = hands[p][0]
@@ -73,7 +75,6 @@ public enum EquityCalculator {
                 if r.score > bestScore { bestScore = r.score }
             }
 
-            // Count winners at the best score.
             var winnerCount = 0
             for p in 0..<playerCount where ranks[p].score == bestScore { winnerCount += 1 }
 
@@ -102,6 +103,30 @@ public enum EquityCalculator {
             }
         }
 
+        let exactCount = combinationCount(remaining.count, missing)
+        if exactCount <= maxRunouts {
+            forEachCombination(remaining, choose: missing) { tally($0) }
+        } else {
+            // Monte-Carlo: sample `maxRunouts` distinct-card runouts.
+            // Deterministic RNG seeded from the known cards, so identical inputs
+            // always yield identical estimates (no flicker between recomputes).
+            var seed: UInt64 = 0x9E3779B97F4A7C15
+            for hand in hands { for card in hand { seed = seed &* 1099511628211 &+ UInt64(card.index + 1) } }
+            for card in board { seed = seed &* 1099511628211 &+ UInt64(card.index + 1) }
+            var rng = SplitMix64(seed: seed)
+            var deck = remaining
+            let n = deck.count
+            var fill = [Card](repeating: deck[0], count: missing)
+            for _ in 0..<maxRunouts {
+                for i in 0..<missing {
+                    let j = Int.random(in: i..<n, using: &rng)
+                    deck.swapAt(i, j)
+                    fill[i] = deck[i]
+                }
+                tally(fill)
+            }
+        }
+
         let total = Double(max(totalRunouts, 1))
         var players = [PlayerEquity]()
         players.reserveCapacity(playerCount)
@@ -126,5 +151,19 @@ public enum EquityCalculator {
         }
 
         return EquityResult(players: players, totalRunouts: totalRunouts)
+    }
+}
+
+/// Small, fast, seedable PRNG (SplitMix64) for reproducible Monte-Carlo runs.
+struct SplitMix64: RandomNumberGenerator {
+    private var state: UInt64
+    init(seed: UInt64) { state = seed }
+
+    mutating func next() -> UInt64 {
+        state = state &+ 0x9E3779B97F4A7C15
+        var z = state
+        z = (z ^ (z >> 30)) &* 0xBF58476D1CE4E5B9
+        z = (z ^ (z >> 27)) &* 0x94D049BB133111EB
+        return z ^ (z >> 31)
     }
 }
