@@ -215,6 +215,39 @@ func forEachCombination<T>(_ items: [T], choose k: Int, _ body: ([T]) -> Void) {
     }
 }
 
+/// All index combinations choosing `k` of `n` (small n; used for display only).
+func combinationIndices(n: Int, k: Int) -> [[Int]] {
+    var result = [[Int]]()
+    guard k >= 0, k <= n else { return result }
+    if k == 0 { return [[]] }
+    var idx = Array(0..<k)
+    while true {
+        result.append(idx)
+        var i = k - 1
+        while i >= 0 && idx[i] == n - k + i { i -= 1 }
+        if i < 0 { break }
+        idx[i] += 1
+        for j in (i + 1)..<k { idx[j] = idx[j - 1] + 1 }
+    }
+    return result
+}
+
+/// The actual 5 cards forming the best hand from 5...7 cards (for illustration).
+public func bestFive(_ cards: [Card]) -> [Card] {
+    precondition(cards.count >= 5 && cards.count <= 7)
+    if cards.count == 5 { return cards }
+    var bestScore = Int.min
+    var bestCards = Array(cards.prefix(5))
+    for combo in combinationIndices(n: cards.count, k: 5) {
+        var five = [Card]()
+        five.reserveCapacity(5)
+        for i in combo { five.append(cards[i]) }
+        let s = evaluate5(five).score
+        if s > bestScore { bestScore = s; bestCards = five }
+    }
+    return bestCards
+}
+
 /// Number of combinations C(n, k). Safe for the small n, k used here.
 func combinationCount(_ n: Int, _ k: Int) -> Int {
     guard k >= 0, k <= n else { return 0 }
