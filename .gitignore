@@ -1,0 +1,19 @@
+# Xcode / SwiftPM
+.DS_Store
+/.build
+/Packages
+DerivedData/
+*.xcodeproj/xcuserdata/
+*.xcodeproj/project.xcworkspace/xcuserdata/
+*.xcworkspace/xcuserdata/
+xcuserdata/
+.swiftpm/
+*.xcscmblueprint
+*.xccheckout
+
+# Build products
+build/
+*.ipa
+*.dSYM.zip
+*.dSYM
+.idea
