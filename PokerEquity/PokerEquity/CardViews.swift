@@ -73,24 +73,45 @@ struct PickerCell: View {
 }
 
 /// The full 52-card picker pinned at the bottom: four suit rows × thirteen ranks.
+/// Collapsible via the handle so it can free up vertical space.
 struct CardPickerView: View {
     @ObservedObject var vm: GameViewModel
     private let ranks = [14, 13, 12, 11, 10, 9, 8, 7, 6, 5, 4, 3, 2]
 
     var body: some View {
-        VStack(spacing: 3) {
-            ForEach(Suit.allCases, id: \.self) { suit in
-                HStack(spacing: 3) {
-                    ForEach(ranks, id: \.self) { rank in
-                        let card = Card(rank: rank, suit: suit)
-                        PickerCell(card: card, used: vm.usedCards.contains(card)) {
-                            vm.tapPickerCard(card)
+        VStack(spacing: 0) {
+            Button {
+                withAnimation(.easeInOut(duration: 0.2)) { vm.isPickerVisible.toggle() }
+            } label: {
+                HStack(spacing: 6) {
+                    Image(systemName: vm.isPickerVisible ? "chevron.compact.down" : "chevron.compact.up")
+                    Text(vm.isPickerVisible ? "Masquer les cartes" : "Choisir les cartes")
+                    Spacer()
+                }
+                .font(.caption.weight(.medium))
+                .foregroundStyle(.secondary)
+                .padding(.horizontal, 12)
+                .padding(.vertical, 10)
+                .contentShape(Rectangle())
+            }
+
+            if vm.isPickerVisible {
+                VStack(spacing: 3) {
+                    ForEach(Suit.allCases, id: \.self) { suit in
+                        HStack(spacing: 3) {
+                            ForEach(ranks, id: \.self) { rank in
+                                let card = Card(rank: rank, suit: suit)
+                                PickerCell(card: card, used: vm.usedCards.contains(card)) {
+                                    vm.tapPickerCard(card)
+                                }
+                            }
                         }
                     }
                 }
+                .padding(.horizontal, 8)
+                .padding(.bottom, 8)
             }
         }
-        .padding(8)
         .background(Theme.background.shadow(.drop(color: .black.opacity(0.5), radius: 6, y: -2)))
     }
 }

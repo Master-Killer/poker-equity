@@ -45,7 +45,7 @@ struct ContentView: View {
 
     private var header: some View {
         HStack {
-            Text("Poker Equity")
+            Text("Équité Poker")
                 .font(.system(.headline, design: .monospaced))
             Spacer()
             if vm.isCalculating {
@@ -83,10 +83,17 @@ struct PlayerRowView: View {
                 Spacer()
 
                 if let equity {
-                    Text(percentString(equity.equity))
-                        .font(.system(size: 34, weight: .semibold, design: .rounded))
-                        .foregroundStyle(Theme.accent)
-                        .contentTransition(.numericText())
+                    VStack(alignment: .trailing, spacing: 0) {
+                        Text(percentString(equity.winProb))
+                            .font(.system(size: 34, weight: .semibold, design: .rounded))
+                            .foregroundStyle(Theme.accent)
+                            .contentTransition(.numericText())
+                        if equity.tieProb > 0.0005 {
+                            Text("Partage \(percentString(equity.tieProb))")
+                                .font(.caption2)
+                                .foregroundStyle(.secondary)
+                        }
+                    }
                 } else {
                     Text("—")
                         .font(.system(size: 28, weight: .regular, design: .rounded))
@@ -104,7 +111,7 @@ struct PlayerRowView: View {
             if let equity {
                 Button { withAnimation(.easeInOut(duration: 0.15)) { expanded.toggle() } } label: {
                     HStack(spacing: 4) {
-                        Text(expanded ? "Masquer le détail" : "Détail des \(percentString(equity.equity))")
+                        Text(expanded ? "Masquer le détail" : "Détail de la victoire")
                         Image(systemName: expanded ? "chevron.up" : "chevron.down")
                     }
                     .font(.caption)
@@ -136,17 +143,17 @@ struct DecompositionView: View {
     var body: some View {
         VStack(spacing: 4) {
             HStack {
-                Text("Catégorie").frame(maxWidth: .infinity, alignment: .leading)
+                Text("Main").frame(maxWidth: .infinity, alignment: .leading)
                 Text("Gagne").frame(width: 56, alignment: .trailing)
                 Text("Perd").frame(width: 56, alignment: .trailing)
-                Text("Égalité").frame(width: 56, alignment: .trailing)
+                Text("Partage").frame(width: 56, alignment: .trailing)
             }
             .font(.caption2.weight(.semibold))
             .foregroundStyle(.secondary)
 
             ForEach(rows, id: \.0) { cat, b in
                 HStack {
-                    Text(cat.label).frame(maxWidth: .infinity, alignment: .leading)
+                    Text(cat.frenchName).frame(maxWidth: .infinity, alignment: .leading)
                     cell(b.winProb, color: b.winProb > 0 ? Theme.win : .secondary)
                     cell(b.loseProb, color: .secondary)
                     cell(b.tieProb, color: .secondary)
@@ -158,7 +165,7 @@ struct DecompositionView: View {
     }
 
     private func cell(_ value: Double, color: Color) -> some View {
-        Text(value < 0.0005 ? "·" : percentString(value))
+        Text(value < 0.00005 ? "·" : percentString(value))
             .frame(width: 56, alignment: .trailing)
             .foregroundStyle(color)
     }
@@ -193,13 +200,13 @@ struct OutsView: View {
     var body: some View {
         if !trailing.isEmpty {
             VStack(alignment: .leading, spacing: 12) {
-                Text("OUTS")
+                Text("CARTES QUI AMÉLIORENT")
                     .font(.caption2.weight(.semibold))
                     .foregroundStyle(.secondary)
 
                 ForEach(trailing, id: \.playerIndex) { po in
                     VStack(alignment: .leading, spacing: 6) {
-                        Text("\(handName(po.playerIndex)) — \(po.directOuts.count) outs directs")
+                        Text("\(handName(po.playerIndex)) — \(po.directOuts.count) cartes pour passer devant")
                             .font(.subheadline.weight(.semibold))
 
                         LazyVGrid(columns: [GridItem(.adaptive(minimum: 30), spacing: 4)], spacing: 4) {
@@ -211,7 +218,7 @@ struct OutsView: View {
 
                         ForEach(po.runnerRunner.indices, id: \.self) { idx in
                             let rr = po.runnerRunner[idx]
-                            Text("Runner-runner \(rr.category.label) · \(percentString(rr.probability))")
+                            Text("Tirage en deux cartes — \(rr.category.frenchName) · \(percentString(rr.probability))")
                                 .font(.caption)
                                 .foregroundStyle(.secondary)
                         }

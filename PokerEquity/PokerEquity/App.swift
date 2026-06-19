@@ -28,6 +28,23 @@ extension Suit {
     }
 }
 
+extension HandCategory {
+    /// French poker hand names for display.
+    var frenchName: String {
+        switch self {
+        case .highCard: return "Carte haute"
+        case .onePair: return "Une paire"
+        case .twoPair: return "Deux paires"
+        case .trips: return "Brelan"
+        case .straight: return "Quinte"
+        case .flush: return "Couleur"
+        case .fullHouse: return "Full"
+        case .quads: return "Carré"
+        case .straightFlush: return "Quinte flush"
+        }
+    }
+}
+
 // MARK: - Selection slot
 
 /// A position the focus can sit on. Hands are traversed before the board.
@@ -45,5 +62,5 @@ extension Array {
 }
 
 func percentString(_ x: Double) -> String {
-    String(format: "%.1f%%", x * 100)
+    String(format: "%.2f%%", x * 100)
 }

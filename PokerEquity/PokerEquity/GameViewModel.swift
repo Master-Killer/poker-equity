@@ -9,6 +9,8 @@ final class GameViewModel: ObservableObject {
     @Published var board: [Card?] = Array(repeating: nil, count: 5)
     /// The slot the picker currently writes to.
     @Published var focusedSlot: Slot? = .hole(player: 0, index: 0)
+    /// Whether the 52-card picker is expanded (collapsible to free up space).
+    @Published var isPickerVisible = true
 
     @Published private(set) var equity: EquityResult?
     @Published private(set) var outs: OutsResult?
@@ -56,7 +58,10 @@ final class GameViewModel: ObservableObject {
         }
     }
 
-    func focus(_ slot: Slot) { focusedSlot = slot }
+    func focus(_ slot: Slot) {
+        focusedSlot = slot
+        isPickerVisible = true // reopen the picker when a slot is selected
+    }
 
     /// A tap in the picker grid: place the card at the focus, or remove it if it
     /// is already in play (and move the focus to the freed slot).
@@ -145,10 +150,9 @@ final class GameViewModel: ObservableObject {
         isCalculating = true
         calcTask = Task { [weak self] in
             let result = await Task.detached(priority: .userInitiated) {
-                // Cap the work: exact for small spaces (flop/turn), Monte-Carlo
-                // beyond ~200k runouts (preflop / many players) so it stays snappy
-                // even in a debug build on device.
-                EquityCalculator.compute(hands: hands, board: boardCards, maxRunouts: 200_000)
+                // Exact enumeration everywhere (including preflop). Slower on
+                // device for large spaces, but precise to the last decimal.
+                EquityCalculator.compute(hands: hands, board: boardCards)
             }.value
             let outsResult: OutsResult? = (boardCards.count == 3 || boardCards.count == 4)
                 ? await Task.detached(priority: .userInitiated) {
