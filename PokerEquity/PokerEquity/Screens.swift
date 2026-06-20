@@ -212,14 +212,16 @@ struct PlayerRowView: View {
     private struct Partner { let index: Int; let cards: [Card]; let prob: Double }
 
     private var partnerList: [Partner] {
-        guard vm.playerCards.count > 2,
-              let matrix = vm.equity?.coWinMatrix,
-              matrix.indices.contains(index) else { return [] }
+        // Read the matrix AND the partner hands from the same equity snapshot,
+        // so a mid-recompute player-count change can't cross-map indices.
+        guard let eq = vm.equity, eq.players.count > 2,
+              eq.coWinMatrix.indices.contains(index) else { return [] }
+        let matrix = eq.coWinMatrix
         var result: [Partner] = []
         for j in matrix[index].indices where j != index {
             let prob = matrix[index][j]
             guard prob > 0.00005 else { continue }
-            let cards = vm.playerCards[safe: j]?.compactMap { $0 } ?? []
+            let cards = eq.players[safe: j]?.hand ?? []
             result.append(Partner(index: j, cards: cards, prob: prob))
         }
         return result.sorted { $0.prob > $1.prob }
