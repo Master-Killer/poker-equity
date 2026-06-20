@@ -248,6 +248,17 @@ public func bestFive(_ cards: [Card]) -> [Card] {
     return bestCards
 }
 
+/// Showdown standing from each player's packed score: the best score, how many
+/// players share it, and the sole leader's index (-1 when the lead is tied).
+func standing(_ scores: [Int]) -> (best: Int, winnerCount: Int, soleLeader: Int) {
+    var best = Int.min
+    for s in scores where s > best { best = s }
+    var winnerCount = 0
+    var soleLeader = -1
+    for (i, s) in scores.enumerated() where s == best { winnerCount += 1; soleLeader = i }
+    return (best, winnerCount, winnerCount == 1 ? soleLeader : -1)
+}
+
 /// Number of combinations C(n, k). Safe for the small n, k used here.
 func combinationCount(_ n: Int, _ k: Int) -> Int {
     guard k >= 0, k <= n else { return 0 }
