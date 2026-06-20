@@ -57,22 +57,25 @@ public enum OutsAnalyzer {
             let trailing = !(currentLeader == p)
 
             // Direct outs: a single next card that makes p the sole leader.
+            // Only trailing players are displayed, so skip the work for the leader.
             var directOuts = [DirectOut]()
             var giveLead = [Bool](repeating: false, count: 52) // by card index
-            for c in remaining {
-                let nextBoard = board + [c]
-                var best = Int.min
-                var bestPlayer = -1
-                var tie = false
-                for q in 0..<playerCount {
-                    let s = evaluate(hands[q] + nextBoard).score
-                    if s > best { best = s; bestPlayer = q; tie = false }
-                    else if s == best { tie = true }
-                }
-                if !tie && bestPlayer == p {
-                    let cat = evaluate(hands[p] + nextBoard).category
-                    directOuts.append(DirectOut(card: c, resultingCategory: cat))
-                    giveLead[c.index] = true
+            if trailing {
+                for c in remaining {
+                    let nextBoard = board + [c]
+                    var best = Int.min
+                    var bestPlayer = -1
+                    var tie = false
+                    for q in 0..<playerCount {
+                        let s = evaluate(hands[q] + nextBoard).score
+                        if s > best { best = s; bestPlayer = q; tie = false }
+                        else if s == best { tie = true }
+                    }
+                    if !tie && bestPlayer == p {
+                        let cat = evaluate(hands[p] + nextBoard).category
+                        directOuts.append(DirectOut(card: c, resultingCategory: cat))
+                        giveLead[c.index] = true
+                    }
                 }
             }
 
