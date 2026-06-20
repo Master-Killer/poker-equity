@@ -1,0 +1,34 @@
+name: CI
+
+on:
+  push:
+    branches: [main, "claude/**"]
+  pull_request:
+
+jobs:
+  test:
+    name: Build, test & coverage
+    runs-on: ubuntu-latest
+    container: swift:5.9
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Build (with tests)
+        run: swift build --build-tests
+
+      - name: Run tests with coverage
+        run: swift test --enable-code-coverage
+
+      - name: Coverage report
+        shell: bash
+        run: |
+          set -euo pipefail
+          BIN_PATH="$(swift build --show-bin-path)"
+          PROFDATA="$BIN_PATH/codecov/default.profdata"
+          XCTEST="$(find "$BIN_PATH" -name '*.xctest' -type f | head -n 1)"
+          echo "Test binary: $XCTEST"
+          # Report coverage for the engine sources only (exclude tests & deps).
+          llvm-cov report "$XCTEST" \
+            -instr-profile "$PROFDATA" \
+            -ignore-filename-regex='\.build|Tests|Package\.swift' \
+            Sources/PokerEngine

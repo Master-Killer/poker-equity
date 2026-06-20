@@ -10,8 +10,15 @@ let package = Package(
     products: [
         .library(name: "PokerEngine", targets: ["PokerEngine"])
     ],
+    dependencies: [
+        // Property-based testing (QuickCheck for Swift).
+        .package(url: "https://github.com/typelift/SwiftCheck.git", from: "0.12.0")
+    ],
     targets: [
         .target(name: "PokerEngine"),
-        .testTarget(name: "PokerEngineTests", dependencies: ["PokerEngine"])
+        .testTarget(
+            name: "PokerEngineTests",
+            dependencies: ["PokerEngine", "SwiftCheck"]
+        )
     ]
 )
