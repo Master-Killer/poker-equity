@@ -86,6 +86,9 @@ extension Array {
     }
 }
 
+/// Below this probability a value is shown as a dot ("·") rather than a number.
+let negligibleProbability = 0.00005
+
 func percentString(_ x: Double) -> String {
     // French decimal separator (comma).
     String(format: "%.2f", x * 100).replacingOccurrences(of: ".", with: ",") + "%"

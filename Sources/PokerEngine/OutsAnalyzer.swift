@@ -46,9 +46,7 @@ public enum OutsAnalyzer {
 
         // Current standing on the existing board.
         let currentRanks = hands.map { evaluate($0 + board) }
-        let currentBest = currentRanks.map { $0.score }.max()!
-        let currentWinners = (0..<playerCount).filter { currentRanks[$0].score == currentBest }
-        let currentLeader = currentWinners.count == 1 ? currentWinners[0] : -1
+        let currentLeader = standing(currentRanks.map { $0.score }).soleLeader
 
         var perPlayer = [PlayerOuts]()
         perPlayer.reserveCapacity(playerCount)
@@ -57,22 +55,18 @@ public enum OutsAnalyzer {
             let trailing = !(currentLeader == p)
 
             // Direct outs: a single next card that makes p the sole leader.
+            // Only trailing players are displayed, so skip the work for the leader.
             var directOuts = [DirectOut]()
             var giveLead = [Bool](repeating: false, count: 52) // by card index
-            for c in remaining {
-                let nextBoard = board + [c]
-                var best = Int.min
-                var bestPlayer = -1
-                var tie = false
-                for q in 0..<playerCount {
-                    let s = evaluate(hands[q] + nextBoard).score
-                    if s > best { best = s; bestPlayer = q; tie = false }
-                    else if s == best { tie = true }
-                }
-                if !tie && bestPlayer == p {
-                    let cat = evaluate(hands[p] + nextBoard).category
-                    directOuts.append(DirectOut(card: c, resultingCategory: cat))
-                    giveLead[c.index] = true
+            if trailing {
+                for c in remaining {
+                    let nextBoard = board + [c]
+                    let scores = (0..<playerCount).map { evaluate(hands[$0] + nextBoard).score }
+                    if standing(scores).soleLeader == p {
+                        let cat = evaluate(hands[p] + nextBoard).category
+                        directOuts.append(DirectOut(card: c, resultingCategory: cat))
+                        giveLead[c.index] = true
+                    }
                 }
             }
 
@@ -84,23 +78,11 @@ public enum OutsAnalyzer {
                 forEachCombination(remaining, choose: 2) { pair in
                     totalPairs += 1
                     let finalBoard = board + pair
-                    var best = Int.min
-                    var winnerCount = 0
-                    var pScore = 0
-                    var pCategory = HandCategory.highCard
-                    var ranksScore = [Int](repeating: 0, count: playerCount)
-                    for q in 0..<playerCount {
-                        let r = evaluate(hands[q] + finalBoard)
-                        ranksScore[q] = r.score
-                        if q == p { pScore = r.score; pCategory = r.category }
-                        if r.score > best { best = r.score }
-                    }
-                    for q in 0..<playerCount where ranksScore[q] == best { winnerCount += 1 }
-                    let pWinsAlone = (pScore == best && winnerCount == 1)
-                    guard pWinsAlone else { return }
+                    let ranks = (0..<playerCount).map { evaluate(hands[$0] + finalBoard) }
+                    guard standing(ranks.map { $0.score }).soleLeader == p else { return }
                     // Runner-runner only if neither single card already gives the lead.
                     if giveLead[pair[0].index] || giveLead[pair[1].index] { return }
-                    rrCounts[pCategory.rawValue] += 1
+                    rrCounts[ranks[p].category.rawValue] += 1
                 }
                 let denom = Double(max(totalPairs, 1))
                 for cat in HandCategory.allCases where rrCounts[cat.rawValue] > 0 {

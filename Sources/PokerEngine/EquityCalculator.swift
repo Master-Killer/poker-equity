@@ -54,7 +54,10 @@ public enum EquityCalculator {
     ///   - maxRunouts: if the number of exact runouts exceeds this, the result
     ///     is estimated by Monte-Carlo sampling with `maxRunouts` random runouts
     ///     instead. Defaults to exact (unbounded) enumeration.
-    public static func compute(hands: [[Card]], board: [Card], maxRunouts: Int = .max) -> EquityResult {
+    ///   - shouldCancel: polled periodically during enumeration; when it returns
+    ///     true the loop bails out early (the partial result should be discarded).
+    public static func compute(hands: [[Card]], board: [Card], maxRunouts: Int = .max,
+                               shouldCancel: () -> Bool = { false }) -> EquityResult {
         precondition(hands.count >= 2, "need at least two hands")
         let playerCount = hands.count
         let categoryCount = HandCategory.allCases.count
@@ -63,6 +66,7 @@ public enum EquityCalculator {
         let remaining = Card.fullDeck.filter { !known.contains($0) }
         let missing = 5 - board.count
         precondition(missing >= 0, "board has more than 5 cards")
+        precondition(remaining.count >= missing, "not enough cards left to complete the board")
 
         var winCat = Array(repeating: [Double](repeating: 0, count: categoryCount), count: playerCount)
         var tieCat = Array(repeating: [Double](repeating: 0, count: categoryCount), count: playerCount)
@@ -90,10 +94,14 @@ public enum EquityCalculator {
             sharedMask[p] = mine & others
         }
 
-        var ranks = [HandRank](repeating: evaluate5([Card](repeating: remaining[0], count: 5)),
+        // Placeholder cards just size the reused buffers; every slot is
+        // overwritten before use, so a fixed deck card avoids indexing an
+        // empty `remaining` when the board is already complete.
+        let placeholder = Card.fullDeck[0]
+        var ranks = [HandRank](repeating: evaluate5([Card](repeating: placeholder, count: 5)),
                                count: playerCount)
-        var sevenCards = [Card](repeating: remaining[0], count: 7)
-        var boardBuf = [Card](repeating: remaining[0], count: 5)
+        var sevenCards = [Card](repeating: placeholder, count: 7)
+        var boardBuf = [Card](repeating: placeholder, count: 5)
         var winners = [Int]()
         winners.reserveCapacity(playerCount)
 
@@ -134,6 +142,7 @@ public enum EquityCalculator {
             for c in boardBuf { boardRankMask |= 1 << c.rank }
             for p in 0..<playerCount {
                 let outcome = ranks[p].score == bestScore ? (winnerCount == 1 ? 0 : 1) : 2
+                let outcomeEnum = RelOutcome(rawValue: outcome)!
                 let src = ranks[p].score == bd.score ? 2
                     : (ranks[p].category.rawValue > bd.category.rawValue ? 0 : 1)
                 relProb[p][src][outcome] += 1
@@ -153,17 +162,19 @@ public enum EquityCalculator {
                         mech = 2
                     }
                     relEdge[p][mech][outcome] += 1
-                    key = "edge-\(mech)-\(outcome)"
+                    key = RelativeAnalysis.leafKey(source: .ownEdge, outcome: outcomeEnum,
+                                                   mechanism: EdgeMechanism(rawValue: mech)!)
                 } else if src == 1 {
                     if outcome == 1 {
                         let tex = boardTexture(boardBuf, bd)
                         relChop[p][tex] += 1
-                        key = "kicker-tie-\(tex)"
+                        key = RelativeAnalysis.leafKey(source: .kicker, outcome: .tie,
+                                                       texture: ChopTexture(rawValue: tex)!)
                     } else {
-                        key = "kicker-\(outcome)"
+                        key = RelativeAnalysis.leafKey(source: .kicker, outcome: outcomeEnum)
                     }
                 } else {
-                    key = "board-\(outcome)"
+                    key = RelativeAnalysis.leafKey(source: .playsBoard, outcome: outcomeEnum)
                 }
                 if (relExamples[p][key]?.count ?? 0) < 3 {
                     relExamples[p][key, default: []].append(boardBuf)
@@ -199,7 +210,14 @@ public enum EquityCalculator {
 
         let exactCount = combinationCount(remaining.count, missing)
         if exactCount <= maxRunouts {
-            forEachCombination(remaining, choose: missing) { tally($0) }
+            var stop = false
+            var sinceCheck = 0
+            forEachCombination(remaining, choose: missing) { combo in
+                if stop { return }
+                sinceCheck += 1
+                if sinceCheck >= 8192 { sinceCheck = 0; if shouldCancel() { stop = true; return } }
+                tally(combo)
+            }
         } else {
             // Monte-Carlo: sample `maxRunouts` distinct-card runouts.
             // Deterministic RNG seeded from the known cards, so identical inputs
@@ -211,7 +229,8 @@ public enum EquityCalculator {
             var deck = remaining
             let n = deck.count
             var fill = [Card](repeating: deck[0], count: missing)
-            for _ in 0..<maxRunouts {
+            for k in 0..<maxRunouts {
+                if k & 8191 == 0 && shouldCancel() { break }
                 for i in 0..<missing {
                     let j = Int.random(in: i..<n, using: &rng)
                     deck.swapAt(i, j)

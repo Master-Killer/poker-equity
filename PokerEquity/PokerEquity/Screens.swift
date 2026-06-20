@@ -75,7 +75,7 @@ struct ContentView: View {
     }
 
     @ViewBuilder private var playerRows: some View {
-        ForEach(vm.playerCards.indices, id: \.self) { i in
+        ForEach(Array(zip(vm.playerIDs.indices, vm.playerIDs)), id: \.1) { i, _ in
             PlayerRowView(vm: vm, index: i, defaultExpanded: isWide)
         }
     }
@@ -174,7 +174,7 @@ struct PlayerRowView: View {
                     .font(.system(size: 34, weight: .semibold, design: .rounded))
                     .foregroundStyle(Theme.accent)
                     .contentTransition(.numericText())
-                if equity.tieProb > 0.00005 {
+                if equity.tieProb > negligibleProbability {
                     Text("Partage \(percentString(equity.tieProb))")
                         .font(.caption2)
                         .foregroundStyle(.secondary)
@@ -212,14 +212,16 @@ struct PlayerRowView: View {
     private struct Partner { let index: Int; let cards: [Card]; let prob: Double }
 
     private var partnerList: [Partner] {
-        guard vm.playerCards.count > 2,
-              let matrix = vm.equity?.coWinMatrix,
-              matrix.indices.contains(index) else { return [] }
+        // Read the matrix AND the partner hands from the same equity snapshot,
+        // so a mid-recompute player-count change can't cross-map indices.
+        guard let eq = vm.equity, eq.players.count > 2,
+              eq.coWinMatrix.indices.contains(index) else { return [] }
+        let matrix = eq.coWinMatrix
         var result: [Partner] = []
         for j in matrix[index].indices where j != index {
             let prob = matrix[index][j]
-            guard prob > 0.00005 else { continue }
-            let cards = vm.playerCards[safe: j]?.compactMap { $0 } ?? []
+            guard prob > negligibleProbability else { continue }
+            let cards = eq.players[safe: j]?.hand ?? []
             result.append(Partner(index: j, cards: cards, prob: prob))
         }
         return result.sorted { $0.prob > $1.prob }
@@ -251,7 +253,7 @@ struct DecompositionView: View {
             .foregroundStyle(.secondary)
 
             ForEach(rows, id: \.0) { cat, b in
-                let canExpand = b.winProb > 0.00005 || b.loseProb > 0.00005
+                let canExpand = b.winProb > negligibleProbability || b.loseProb > negligibleProbability
                 Button {
                     if canExpand {
                         if expanded.contains(cat) { expanded.remove(cat) } else { expanded.insert(cat) }
@@ -320,7 +322,7 @@ struct DecompositionView: View {
     }
 
     private func cell(_ value: Double, color: Color) -> some View {
-        Text(value < 0.00005 ? "·" : percentString(value))
+        Text(value < negligibleProbability ? "·" : percentString(value))
             .frame(width: 64, alignment: .trailing)
             .foregroundStyle(color)
     }

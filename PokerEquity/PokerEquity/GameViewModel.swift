@@ -5,6 +5,9 @@ import PokerEngine
 final class GameViewModel: ObservableObject {
     /// Each player's two (optional) hole cards. Two players by default.
     @Published var playerCards: [[Card?]] = [[nil, nil], [nil, nil]]
+    /// Stable identity per player (kept in lock-step with `playerCards`) so the
+    /// SwiftUI rows keep their own @State across insertions/removals.
+    @Published private(set) var playerIDs: [UUID] = [UUID(), UUID()]
     /// Five (optional) community card slots.
     @Published var board: [Card?] = Array(repeating: nil, count: 5)
     /// The slot the picker currently writes to.
@@ -17,6 +20,9 @@ final class GameViewModel: ObservableObject {
     @Published private(set) var isCalculating = false
 
     private var calcTask: Task<Void, Never>?
+    /// Signals the in-flight background enumeration to stop (Task.detached does
+    /// not inherit calcTask's cancellation, and `compute` runs synchronously).
+    private var cancelFlag: CancelFlag?
 
     // MARK: Derived
 
@@ -86,25 +92,35 @@ final class GameViewModel: ObservableObject {
     func addPlayer() {
         guard playerCards.count < 9 else { return }
         playerCards.append([nil, nil])
+        playerIDs.append(UUID())
         recompute()
     }
 
     func removePlayer(_ p: Int) {
         guard playerCards.count > 2, playerCards.indices.contains(p) else { return }
         playerCards.remove(at: p)
-        if !orderedSlots.contains(where: { $0 == focusedSlot }) {
-            focusedSlot = firstEmptySlot()
+        playerIDs.remove(at: p)
+        // Keep the focus on the same logical card after the index shift.
+        if case .hole(let q, let i) = focusedSlot {
+            if q == p {
+                focusedSlot = firstEmptySlot()
+            } else if q > p {
+                focusedSlot = .hole(player: q - 1, index: i)
+            }
         }
         recompute()
     }
 
     func reset() {
         calcTask?.cancel()
+        cancelFlag?.cancel()
         playerCards = [[nil, nil], [nil, nil]]
+        playerIDs = [UUID(), UUID()]
         board = Array(repeating: nil, count: 5)
         focusedSlot = .hole(player: 0, index: 0)
         equity = nil
         outs = nil
+        isCalculating = false
     }
 
     // MARK: Focus
@@ -140,6 +156,7 @@ final class GameViewModel: ObservableObject {
 
     func recompute() {
         calcTask?.cancel()
+        cancelFlag?.cancel() // stop the previous background enumeration
         guard let hands = completeHands() else {
             equity = nil
             outs = nil
@@ -147,22 +164,34 @@ final class GameViewModel: ObservableObject {
             return
         }
         let boardCards = board.compactMap { $0 }
+        let flag = CancelFlag()
+        cancelFlag = flag
         isCalculating = true
         calcTask = Task { [weak self] in
             let result = await Task.detached(priority: .userInitiated) {
                 // Exact enumeration everywhere (including preflop). Slower on
                 // device for large spaces, but precise to the last decimal.
-                EquityCalculator.compute(hands: hands, board: boardCards)
+                EquityCalculator.compute(hands: hands, board: boardCards,
+                                         shouldCancel: { flag.isCancelled })
             }.value
+            if flag.isCancelled { return }
             let outsResult: OutsResult? = (boardCards.count == 3 || boardCards.count == 4)
                 ? await Task.detached(priority: .userInitiated) {
                     OutsAnalyzer.analyze(hands: hands, board: boardCards)
                 }.value
                 : nil
-            guard let self, !Task.isCancelled else { return }
+            guard let self, !Task.isCancelled, !flag.isCancelled else { return }
             self.equity = result
             self.outs = outsResult
             self.isCalculating = false
         }
     }
+}
+
+/// Thread-safe one-shot cancellation flag shared with a background computation.
+final class CancelFlag: @unchecked Sendable {
+    private let lock = NSLock()
+    private var cancelled = false
+    var isCancelled: Bool { lock.lock(); defer { lock.unlock() }; return cancelled }
+    func cancel() { lock.lock(); cancelled = true; lock.unlock() }
 }

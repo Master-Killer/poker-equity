@@ -38,8 +38,6 @@ public enum HandCategory: Int, Comparable, CaseIterable, Sendable {
 public struct HandRank: Comparable, Sendable {
     public let score: Int
     public let category: HandCategory
-    /// True only for the ace-high straight flush, so the UI can label it "Royal Flush".
-    public let isRoyalFlush: Bool
 
     public static func < (lhs: HandRank, rhs: HandRank) -> Bool { lhs.score < rhs.score }
     public static func == (lhs: HandRank, rhs: HandRank) -> Bool { lhs.score == rhs.score }
@@ -131,8 +129,7 @@ public func evaluate(_ cards: [Card]) -> HandRank {
         let sfHigh = straightHigh(flushMask)
         if sfHigh != 0 {
             return HandRank(score: packScore(.straightFlush, sfHigh),
-                            category: .straightFlush,
-                            isRoyalFlush: sfHigh == 14)
+                            category: .straightFlush)
         }
     }
 
@@ -156,38 +153,38 @@ public func evaluate(_ cards: [Card]) -> HandRank {
 
     if quad != 0 {
         return HandRank(score: packScore(.quads, quad, highestRank(rankMask, from: 14, exclude1: quad)),
-                        category: .quads, isRoyalFlush: false)
+                        category: .quads)
     }
     if trip != 0 && (pair1 != 0 || trip2 != 0) {
         let pairRank = max(pair1, trip2) // a second trip can fill the pair slot
         return HandRank(score: packScore(.fullHouse, trip, pairRank),
-                        category: .fullHouse, isRoyalFlush: false)
+                        category: .fullHouse)
     }
     if flushMask != 0 {
         return HandRank(score: scoreFromMask(.flush, flushMask, take: 5),
-                        category: .flush, isRoyalFlush: false)
+                        category: .flush)
     }
     let sHigh = straightHigh(rankMask)
     if sHigh != 0 {
-        return HandRank(score: packScore(.straight, sHigh), category: .straight, isRoyalFlush: false)
+        return HandRank(score: packScore(.straight, sHigh), category: .straight)
     }
     if trip != 0 {
         let k1 = highestRank(rankMask, from: 14, exclude1: trip)
         let k2 = highestRank(rankMask, from: k1 - 1, exclude1: trip)
-        return HandRank(score: packScore(.trips, trip, k1, k2), category: .trips, isRoyalFlush: false)
+        return HandRank(score: packScore(.trips, trip, k1, k2), category: .trips)
     }
     if pair1 != 0 && pair2 != 0 {
         let kicker = highestRank(rankMask, from: 14, exclude1: pair1, exclude2: pair2)
-        return HandRank(score: packScore(.twoPair, pair1, pair2, kicker), category: .twoPair, isRoyalFlush: false)
+        return HandRank(score: packScore(.twoPair, pair1, pair2, kicker), category: .twoPair)
     }
     if pair1 != 0 {
         let k1 = highestRank(rankMask, from: 14, exclude1: pair1)
         let k2 = highestRank(rankMask, from: k1 - 1, exclude1: pair1)
         let k3 = highestRank(rankMask, from: k2 - 1, exclude1: pair1)
-        return HandRank(score: packScore(.onePair, pair1, k1, k2, k3), category: .onePair, isRoyalFlush: false)
+        return HandRank(score: packScore(.onePair, pair1, k1, k2, k3), category: .onePair)
     }
     return HandRank(score: scoreFromMask(.highCard, rankMask, take: 5),
-                    category: .highCard, isRoyalFlush: false)
+                    category: .highCard)
 }
 
 /// Convenience for callers (and tests) that pass exactly five cards.
@@ -246,6 +243,17 @@ public func bestFive(_ cards: [Card]) -> [Card] {
         if s > bestScore { bestScore = s; bestCards = five }
     }
     return bestCards
+}
+
+/// Showdown standing from each player's packed score: the best score, how many
+/// players share it, and the sole leader's index (-1 when the lead is tied).
+func standing(_ scores: [Int]) -> (best: Int, winnerCount: Int, soleLeader: Int) {
+    var best = Int.min
+    for s in scores where s > best { best = s }
+    var winnerCount = 0
+    var soleLeader = -1
+    for (i, s) in scores.enumerated() where s == best { winnerCount += 1; soleLeader = i }
+    return (best, winnerCount, winnerCount == 1 ? soleLeader : -1)
 }
 
 /// Number of combinations C(n, k). Safe for the small n, k used here.
