@@ -17,6 +17,9 @@ final class GameViewModel: ObservableObject {
     @Published private(set) var isCalculating = false
 
     private var calcTask: Task<Void, Never>?
+    /// Signals the in-flight background enumeration to stop (Task.detached does
+    /// not inherit calcTask's cancellation, and `compute` runs synchronously).
+    private var cancelFlag: CancelFlag?
 
     // MARK: Derived
 
@@ -140,6 +143,7 @@ final class GameViewModel: ObservableObject {
 
     func recompute() {
         calcTask?.cancel()
+        cancelFlag?.cancel() // stop the previous background enumeration
         guard let hands = completeHands() else {
             equity = nil
             outs = nil
@@ -147,22 +151,34 @@ final class GameViewModel: ObservableObject {
             return
         }
         let boardCards = board.compactMap { $0 }
+        let flag = CancelFlag()
+        cancelFlag = flag
         isCalculating = true
         calcTask = Task { [weak self] in
             let result = await Task.detached(priority: .userInitiated) {
                 // Exact enumeration everywhere (including preflop). Slower on
                 // device for large spaces, but precise to the last decimal.
-                EquityCalculator.compute(hands: hands, board: boardCards)
+                EquityCalculator.compute(hands: hands, board: boardCards,
+                                         shouldCancel: { flag.isCancelled })
             }.value
+            if flag.isCancelled { return }
             let outsResult: OutsResult? = (boardCards.count == 3 || boardCards.count == 4)
                 ? await Task.detached(priority: .userInitiated) {
                     OutsAnalyzer.analyze(hands: hands, board: boardCards)
                 }.value
                 : nil
-            guard let self, !Task.isCancelled else { return }
+            guard let self, !Task.isCancelled, !flag.isCancelled else { return }
             self.equity = result
             self.outs = outsResult
             self.isCalculating = false
         }
     }
+}
+
+/// Thread-safe one-shot cancellation flag shared with a background computation.
+final class CancelFlag: @unchecked Sendable {
+    private let lock = NSLock()
+    private var cancelled = false
+    var isCancelled: Bool { lock.lock(); defer { lock.unlock() }; return cancelled }
+    func cancel() { lock.lock(); cancelled = true; lock.unlock() }
 }

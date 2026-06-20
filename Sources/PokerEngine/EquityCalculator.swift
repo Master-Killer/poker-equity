@@ -54,7 +54,10 @@ public enum EquityCalculator {
     ///   - maxRunouts: if the number of exact runouts exceeds this, the result
     ///     is estimated by Monte-Carlo sampling with `maxRunouts` random runouts
     ///     instead. Defaults to exact (unbounded) enumeration.
-    public static func compute(hands: [[Card]], board: [Card], maxRunouts: Int = .max) -> EquityResult {
+    ///   - shouldCancel: polled periodically during enumeration; when it returns
+    ///     true the loop bails out early (the partial result should be discarded).
+    public static func compute(hands: [[Card]], board: [Card], maxRunouts: Int = .max,
+                               shouldCancel: () -> Bool = { false }) -> EquityResult {
         precondition(hands.count >= 2, "need at least two hands")
         let playerCount = hands.count
         let categoryCount = HandCategory.allCases.count
@@ -199,7 +202,14 @@ public enum EquityCalculator {
 
         let exactCount = combinationCount(remaining.count, missing)
         if exactCount <= maxRunouts {
-            forEachCombination(remaining, choose: missing) { tally($0) }
+            var stop = false
+            var sinceCheck = 0
+            forEachCombination(remaining, choose: missing) { combo in
+                if stop { return }
+                sinceCheck += 1
+                if sinceCheck >= 8192 { sinceCheck = 0; if shouldCancel() { stop = true; return } }
+                tally(combo)
+            }
         } else {
             // Monte-Carlo: sample `maxRunouts` distinct-card runouts.
             // Deterministic RNG seeded from the known cards, so identical inputs
@@ -211,7 +221,8 @@ public enum EquityCalculator {
             var deck = remaining
             let n = deck.count
             var fill = [Card](repeating: deck[0], count: missing)
-            for _ in 0..<maxRunouts {
+            for k in 0..<maxRunouts {
+                if k & 8191 == 0 && shouldCancel() { break }
                 for i in 0..<missing {
                     let j = Int.random(in: i..<n, using: &rng)
                     deck.swapAt(i, j)
