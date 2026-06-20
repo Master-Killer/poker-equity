@@ -19,14 +19,15 @@ final class EvaluatorTests: XCTestCase {
         XCTAssertGreaterThan(straightFlush, quads)
     }
 
-    func testRoyalFlushDetected() {
-        let royal = evaluate5(hand("As Ks Qs Js Ts"))
-        XCTAssertEqual(royal.category, .straightFlush)
-        XCTAssertTrue(royal.isRoyalFlush)
+    func testAceHighStraightFlushIsTopStraightFlush() {
+        // The ace-high straight flush is just the strongest straight flush,
+        // not a separate hand category.
+        let aceHigh = evaluate5(hand("As Ks Qs Js Ts"))
+        XCTAssertEqual(aceHigh.category, .straightFlush)
 
         let lowerStraightFlush = evaluate5(hand("Ks Qs Js Ts 9s"))
-        XCTAssertFalse(lowerStraightFlush.isRoyalFlush)
-        XCTAssertGreaterThan(royal, lowerStraightFlush)
+        XCTAssertEqual(lowerStraightFlush.category, .straightFlush)
+        XCTAssertGreaterThan(aceHigh, lowerStraightFlush)
     }
 
     func testWheelIsAFiveHighStraight() {
