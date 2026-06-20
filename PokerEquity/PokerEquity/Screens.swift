@@ -87,6 +87,7 @@ struct PlayerRowView: View {
     @ObservedObject var vm: GameViewModel
     let index: Int
     @State private var expanded: Bool
+    @State private var showRelative = true
 
     init(vm: GameViewModel, index: Int, defaultExpanded: Bool) {
         _vm = ObservedObject(wrappedValue: vm)
@@ -126,14 +127,44 @@ struct PlayerRowView: View {
                     .frame(maxWidth: .infinity, alignment: .leading)
                 }
                 if expanded {
-                    DecompositionView(equity: equity)
-                    splitPartners
+                    modeToggle
+                    if showRelative, let rel = vm.equity?.relative[safe: index] {
+                        RelativeView(analysis: rel, playerIndex: index, vm: vm)
+                    } else {
+                        DecompositionView(equity: equity)
+                        splitPartners
+                    }
                 }
             }
         }
         .padding(12)
         .background(Theme.panel.opacity(0.45))
         .clipShape(RoundedRectangle(cornerRadius: 12))
+    }
+
+    private var modeToggle: some View {
+        HStack(spacing: 3) {
+            segButton("Par catégorie", on: !showRelative) { showRelative = false }
+            segButton("Comment j'améliore", on: showRelative) { showRelative = true }
+        }
+        .padding(3)
+        .background(Color.black.opacity(0.30))
+        .clipShape(RoundedRectangle(cornerRadius: 9))
+        .padding(.vertical, 4)
+    }
+
+    private func segButton(_ title: String, on: Bool, _ action: @escaping () -> Void) -> some View {
+        Button(action: action) {
+            Text(title)
+                .font(.caption)
+                .fontWeight(on ? .medium : .regular)
+                .foregroundStyle(on ? Color.primary : .secondary)
+                .frame(maxWidth: .infinity)
+                .padding(.vertical, 6)
+                .background(on ? Color(white: 0.22) : .clear)
+                .clipShape(RoundedRectangle(cornerRadius: 6))
+        }
+        .buttonStyle(.plain)
     }
 
     @ViewBuilder private var headline: some View {

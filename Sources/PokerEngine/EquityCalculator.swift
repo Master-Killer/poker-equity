@@ -40,6 +40,8 @@ public struct EquityResult: Sendable {
     /// among the winners. The diagonal is each player's win-or-tie probability;
     /// off-diagonal entries reveal who splits with whom (pairwise).
     public let coWinMatrix: [[Double]]
+    /// "How do I improve relative to the field" decomposition, one per player.
+    public let relative: [RelativeAnalysis]
 }
 
 public enum EquityCalculator {
@@ -72,14 +74,35 @@ public enum EquityCalculator {
         var loseSrc = Array(repeating: Array(repeating: [Double](repeating: 0, count: categoryCount), count: categoryCount), count: playerCount)
         var totalRunouts = 0
 
+        // Relative ("how I improve") accumulators + per-player rank bitmasks.
+        var relProb = Array(repeating: Array(repeating: [Double](repeating: 0, count: 3), count: 3), count: playerCount)
+        var relEdge = Array(repeating: Array(repeating: [Double](repeating: 0, count: 3), count: 3), count: playerCount)
+        var relChop = Array(repeating: [Double](repeating: 0, count: 4), count: playerCount)
+        var relExamples = Array(repeating: [String: [[Card]]](), count: playerCount)
+        var unsharedMask = [Int](repeating: 0, count: playerCount)
+        var sharedMask = [Int](repeating: 0, count: playerCount)
+        for p in 0..<playerCount {
+            var mine = 0
+            for c in hands[p] { mine |= 1 << c.rank }
+            var others = 0
+            for q in 0..<playerCount where q != p { for c in hands[q] { others |= 1 << c.rank } }
+            unsharedMask[p] = mine & ~others
+            sharedMask[p] = mine & others
+        }
+
         var ranks = [HandRank](repeating: evaluate5([Card](repeating: remaining[0], count: 5)),
                                count: playerCount)
         var sevenCards = [Card](repeating: remaining[0], count: 7)
+        var boardBuf = [Card](repeating: remaining[0], count: 5)
         var winners = [Int]()
         winners.reserveCapacity(playerCount)
 
         // Tally one runout: `fill` is the cards completing the board.
         func tally(_ fill: [Card]) {
+            var bi = 0
+            for c in board { boardBuf[bi] = c; bi += 1 }
+            for c in fill { boardBuf[bi] = c; bi += 1 }
+
             var bestScore = Int.min, bestCat = 0
             var secondScore = Int.min, secondCat = 0
             for p in 0..<playerCount {
@@ -104,6 +127,48 @@ public enum EquityCalculator {
 
             totalRunouts += 1
             for a in winners { for b in winners { coWin[a][b] += 1 } }
+
+            // --- relative ("how I improve") classification ---
+            let bd = evaluate(boardBuf)
+            var boardRankMask = 0
+            for c in boardBuf { boardRankMask |= 1 << c.rank }
+            for p in 0..<playerCount {
+                let outcome = ranks[p].score == bestScore ? (winnerCount == 1 ? 0 : 1) : 2
+                let src = ranks[p].score == bd.score ? 2
+                    : (ranks[p].category.rawValue > bd.category.rawValue ? 0 : 1)
+                relProb[p][src][outcome] += 1
+
+                var key: String
+                if src == 0 {
+                    let c = ranks[p].category.rawValue
+                    let mech: Int
+                    if c == HandCategory.straight.rawValue || c == HandCategory.flush.rawValue
+                        || c == HandCategory.straightFlush.rawValue {
+                        mech = 2
+                    } else if unsharedMask[p] & boardRankMask != 0 {
+                        mech = 0
+                    } else if sharedMask[p] & boardRankMask != 0 {
+                        mech = 1
+                    } else {
+                        mech = 2
+                    }
+                    relEdge[p][mech][outcome] += 1
+                    key = "edge-\(mech)-\(outcome)"
+                } else if src == 1 {
+                    if outcome == 1 {
+                        let tex = boardTexture(boardBuf, bd)
+                        relChop[p][tex] += 1
+                        key = "kicker-tie-\(tex)"
+                    } else {
+                        key = "kicker-\(outcome)"
+                    }
+                } else {
+                    key = "board-\(outcome)"
+                }
+                if (relExamples[p][key]?.count ?? 0) < 3 {
+                    relExamples[p][key, default: []].append(boardBuf)
+                }
+            }
 
             if winnerCount == 1 {
                 for p in 0..<playerCount {
@@ -197,8 +262,21 @@ public enum EquityCalculator {
                                         loseVs: loseVs))
         }
 
+        var relative = [RelativeAnalysis]()
+        relative.reserveCapacity(playerCount)
+        for p in 0..<playerCount {
+            relative.append(RelativeAnalysis(
+                hand: hands[p],
+                prob: relProb[p].map { row in row.map { $0 / total } },
+                edgeMechanism: relEdge[p].map { row in row.map { $0 / total } },
+                kickerChopTexture: relChop[p].map { $0 / total },
+                examples: relExamples[p]
+            ))
+        }
+
         let coWinMatrix = coWin.map { row in row.map { $0 / total } }
-        return EquityResult(players: players, totalRunouts: totalRunouts, coWinMatrix: coWinMatrix)
+        return EquityResult(players: players, totalRunouts: totalRunouts,
+                            coWinMatrix: coWinMatrix, relative: relative)
     }
 }
 

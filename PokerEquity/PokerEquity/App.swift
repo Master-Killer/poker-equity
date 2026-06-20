@@ -19,7 +19,10 @@ enum Theme {
     static let cardFace = Color(white: 0.93)
     static let focus = Color(red: 0.86, green: 0.69, blue: 0.20)   // gold focus border
     static let accent = Color(red: 0.45, green: 0.58, blue: 0.96)  // equity blue
-    static let win = Color(red: 0.32, green: 0.78, blue: 0.47)
+    // Shared win / tie / lose colour code (triplets + composition bar).
+    static let win = Color(red: 0.30, green: 0.74, blue: 0.45)
+    static let tie = Color(red: 0.45, green: 0.49, blue: 0.80)
+    static let lose = Color(red: 0.82, green: 0.34, blue: 0.34)
 }
 
 extension Suit {
