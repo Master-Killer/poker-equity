@@ -100,8 +100,13 @@ final class GameViewModel: ObservableObject {
         guard playerCards.count > 2, playerCards.indices.contains(p) else { return }
         playerCards.remove(at: p)
         playerIDs.remove(at: p)
-        if !orderedSlots.contains(where: { $0 == focusedSlot }) {
-            focusedSlot = firstEmptySlot()
+        // Keep the focus on the same logical card after the index shift.
+        if case .hole(let q, let i) = focusedSlot {
+            if q == p {
+                focusedSlot = firstEmptySlot()
+            } else if q > p {
+                focusedSlot = .hole(player: q - 1, index: i)
+            }
         }
         recompute()
     }
