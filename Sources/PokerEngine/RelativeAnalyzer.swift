@@ -83,16 +83,8 @@ public struct RelativeAnalysis: Sendable {
     }
 }
 
-/// Decomposes runouts by HOW a hand improves *relative to the opponent*, setting aside
-/// contributions shared by the board. Heads-up oriented; for 3+ players the result is
-/// measured against the best opponent ("the field").
-public enum RelativeAnalyzer {
-    /// The relative decomposition is computed in the same single enumeration pass
-    /// as the equity (see `EquityCalculator.compute`); this is a thin accessor.
-    public static func analyze(hands: [[Card]], board: [Card], maxRunouts: Int = .max) -> [RelativeAnalysis] {
-        EquityCalculator.compute(hands: hands, board: board, maxRunouts: maxRunouts).relative
-    }
-}
+// The relative decomposition is produced in the same single enumeration pass as
+// the equity: read it from `EquityCalculator.compute(...).relative`.
 
 /// Texture of the board behind a kicker-chop (module-internal helper).
 func boardTexture(_ board: [Card], _ bd: HandRank) -> Int {

@@ -9,7 +9,7 @@ final class RelativeTests: XCTestCase {
     /// Prints the relative decomposition for the user's 10-2 vs 10-7 example,
     /// and asserts the 9 buckets partition 100% of runouts for each player.
     func testRelativeDecomposition_T2_vs_T7() {
-        let result = RelativeAnalyzer.analyze(hands: [hand("Tc 2d"), hand("Td 7h")], board: [])
+        let result = EquityCalculator.compute(hands: [hand("Tc 2d"), hand("Td 7h")], board: []).relative
 
         for a in result {
             let name = a.hand.map { $0.description }.joined(separator: " ")
@@ -42,7 +42,7 @@ final class RelativeTests: XCTestCase {
     /// counter-intuitive tiny cells the user asked about.
     func testExplainWeirdCells() {
         let p = hand("Tc 2d"); let q = hand("Td 7h")
-        let me = RelativeAnalyzer.analyze(hands: [p, q], board: [])[0]
+        let me = EquityCalculator.compute(hands: [p, q], board: []).relative[0]
 
         func desc(_ cards: [Card]) -> String {
             let five = bestFive(cards)
@@ -69,7 +69,7 @@ final class RelativeTests: XCTestCase {
     func testRelativeOutcomesMatchEquity() {
         let hands = [hand("Ks Qs"), hand("7c 7d")]
         let board = hand("Js 6s 2c")
-        let rel = RelativeAnalyzer.analyze(hands: hands, board: board)
+        let rel = EquityCalculator.compute(hands: hands, board: board).relative
         let eq = EquityCalculator.compute(hands: hands, board: board)
 
         for p in hands.indices {
