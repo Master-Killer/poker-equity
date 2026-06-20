@@ -137,6 +137,7 @@ public enum EquityCalculator {
             for c in boardBuf { boardRankMask |= 1 << c.rank }
             for p in 0..<playerCount {
                 let outcome = ranks[p].score == bestScore ? (winnerCount == 1 ? 0 : 1) : 2
+                let outcomeEnum = RelOutcome(rawValue: outcome)!
                 let src = ranks[p].score == bd.score ? 2
                     : (ranks[p].category.rawValue > bd.category.rawValue ? 0 : 1)
                 relProb[p][src][outcome] += 1
@@ -156,17 +157,19 @@ public enum EquityCalculator {
                         mech = 2
                     }
                     relEdge[p][mech][outcome] += 1
-                    key = "edge-\(mech)-\(outcome)"
+                    key = RelativeAnalysis.leafKey(source: .ownEdge, outcome: outcomeEnum,
+                                                   mechanism: EdgeMechanism(rawValue: mech)!)
                 } else if src == 1 {
                     if outcome == 1 {
                         let tex = boardTexture(boardBuf, bd)
                         relChop[p][tex] += 1
-                        key = "kicker-tie-\(tex)"
+                        key = RelativeAnalysis.leafKey(source: .kicker, outcome: .tie,
+                                                       texture: ChopTexture(rawValue: tex)!)
                     } else {
-                        key = "kicker-\(outcome)"
+                        key = RelativeAnalysis.leafKey(source: .kicker, outcome: outcomeEnum)
                     }
                 } else {
-                    key = "board-\(outcome)"
+                    key = RelativeAnalysis.leafKey(source: .playsBoard, outcome: outcomeEnum)
                 }
                 if (relExamples[p][key]?.count ?? 0) < 3 {
                     relExamples[p][key, default: []].append(boardBuf)
