@@ -1,0 +1,343 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Poker Equity — Documentation</title>
+<style>
+  :root{
+    --bg:#0e0f12; --bg2:#15161a; --panel:#1b1c21; --panel2:#23242b; --line:rgba(255,255,255,.10);
+    --face:#ecebe6; --ink:#16171a; --redcard:#c23b3b; --blue:#6f8ff5;
+    --win:#4caf72; --tie:#6b78c4; --lose:#cf4b4b; --gold:#d6a833;
+    --sec:#9698a1; --txt:#e7e7ea; --txt2:#c7c8cd;
+    --mono:ui-monospace,"SF Mono",Menlo,Consolas,monospace;
+    --sans:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,sans-serif;
+  }
+  *{box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{margin:0;background:var(--bg);color:var(--txt);font-family:var(--sans);line-height:1.65;font-size:16px}
+  a{color:var(--blue);text-decoration:none}
+  .container{max-width:1060px;margin:0 auto;padding:0 20px}
+
+  header.hero{padding:54px 0 30px;border-bottom:1px solid var(--line);background:
+    radial-gradient(1200px 300px at 50% -120px, rgba(111,143,245,.12), transparent)}
+  .hero h1{font-size:34px;margin:0 0 6px;font-weight:600;letter-spacing:-.5px}
+  .hero .sub{color:var(--sec);font-size:17px;max-width:720px}
+  .badges{display:flex;gap:8px;flex-wrap:wrap;margin-top:18px}
+  .badge{font-size:12.5px;border:1px solid var(--line);border-radius:20px;padding:4px 11px;color:var(--txt2);background:var(--bg2)}
+  .badge b{color:var(--win)}
+
+  nav.toc{position:sticky;top:0;z-index:10;background:rgba(14,15,18,.86);backdrop-filter:blur(8px);
+    border-bottom:1px solid var(--line)}
+  nav.toc .container{display:flex;gap:6px;flex-wrap:wrap;padding-top:10px;padding-bottom:10px}
+  nav.toc a{font-size:13.5px;color:var(--sec);padding:5px 11px;border-radius:7px}
+  nav.toc a:hover{background:var(--panel);color:var(--txt)}
+
+  section{padding:42px 0;border-bottom:1px solid var(--line)}
+  h2{font-size:24px;font-weight:600;margin:0 0 6px;letter-spacing:-.3px}
+  h2 .n{color:var(--gold);font-family:var(--mono);font-size:15px;margin-right:10px}
+  .tagline{color:var(--sec);margin:0 0 22px;max-width:760px}
+  h3{font-size:17px;font-weight:600;margin:26px 0 8px}
+  p{color:var(--txt2)}
+  code{font-family:var(--mono);font-size:.88em;background:var(--bg2);border:1px solid var(--line);
+    border-radius:5px;padding:1px 6px;color:#dfe3ea}
+  .lead-quote{border-left:3px solid var(--gold);padding:10px 16px;background:var(--bg2);border-radius:0 8px 8px 0;
+    color:var(--txt2);margin:18px 0}
+
+  .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:14px;margin-top:18px}
+  .card{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:16px}
+  .card h4{margin:0 0 6px;font-size:15.5px;font-weight:600;display:flex;align-items:center;gap:8px}
+  .card p{margin:0;font-size:14px;color:var(--sec);line-height:1.55}
+  .pill{font-size:11px;color:var(--gold);border:1px solid rgba(214,168,51,.4);border-radius:5px;padding:1px 6px;margin-left:auto}
+
+  /* architecture diagram */
+  .arch{display:flex;flex-direction:column;gap:12px;margin-top:18px}
+  .layer{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:14px 16px}
+  .layer .lh{font-size:12px;letter-spacing:.06em;text-transform:uppercase;color:var(--sec);margin-bottom:10px}
+  .mods{display:flex;gap:10px;flex-wrap:wrap}
+  .mod{flex:1;min-width:150px;background:var(--bg2);border:1px solid var(--line);border-radius:9px;padding:11px 12px}
+  .mod b{font-family:var(--mono);font-size:13.5px;color:#dfe3ea}
+  .mod span{display:block;font-size:12.5px;color:var(--sec);margin-top:3px;line-height:1.45}
+  .arrow{text-align:center;color:var(--sec);font-size:18px;line-height:1}
+  .flow{display:flex;align-items:center;gap:8px;flex-wrap:wrap;font-family:var(--mono);font-size:13px;color:var(--txt2);
+    background:var(--bg2);border:1px solid var(--line);border-radius:9px;padding:12px;margin-top:8px}
+  .flow .step{background:var(--panel);border:1px solid var(--line);border-radius:6px;padding:4px 9px}
+  .flow .sep{color:var(--gold)}
+
+  ul.clean{list-style:none;padding:0;margin:12px 0}
+  ul.clean li{padding:6px 0 6px 24px;position:relative;color:var(--txt2);font-size:14.5px;border-bottom:1px solid rgba(255,255,255,.05)}
+  ul.clean li::before{content:"›";position:absolute;left:6px;color:var(--gold)}
+
+  table.spec{width:100%;border-collapse:collapse;margin-top:14px;font-size:14px}
+  table.spec th,table.spec td{text-align:left;padding:8px 10px;border-bottom:1px solid var(--line);vertical-align:top}
+  table.spec th{color:var(--sec);font-weight:600;font-size:12.5px;text-transform:uppercase;letter-spacing:.04em}
+  table.spec td:first-child{font-family:var(--mono);color:#dfe3ea;white-space:nowrap}
+
+  /* ---- interactive demo ---- */
+  .demoWrap{display:flex;gap:22px;flex-wrap:wrap;align-items:flex-start;margin-top:18px}
+  .phone{width:340px;max-width:100%;background:var(--bg);border:1px solid #2c2d33;border-radius:26px;padding:14px 12px 16px;box-shadow:0 0 0 1px #000}
+  .demoNote{flex:1;min-width:240px}
+  .bar-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px}
+  .appname{font:600 15px var(--mono)} .dim{color:var(--sec)}
+  .card2{display:inline-flex;flex-direction:column;align-items:center;justify-content:center;
+    width:26px;height:34px;background:var(--face);border-radius:4px;color:var(--ink);font:700 13px/1 var(--sans);margin-right:3px}
+  .card2 .s{font-size:11px;margin-top:1px} .card2.r{color:var(--redcard)}
+  .mini{width:21px;height:28px;font-size:11px;border-radius:3px} .mini .s{font-size:9px}
+  .pl{background:var(--panel);border-radius:14px;padding:13px}
+  .pl-head{display:flex;align-items:center;gap:8px;margin-bottom:9px}
+  .eq{margin-left:auto;text-align:right}.eq b{font:600 30px var(--sans);color:var(--blue);letter-spacing:-.5px}
+  .eq .pg{display:block;font-size:11px;color:var(--sec)}
+  .compo{display:flex;height:13px;border-radius:7px;overflow:hidden;margin:2px 0 6px}
+  .legend{display:flex;gap:13px;font-size:11px;color:var(--sec);margin-bottom:12px}
+  .legend b{display:inline-block;width:9px;height:9px;border-radius:2px;margin-right:4px;vertical-align:middle}
+  .seg{display:flex;background:#15161a;border:1px solid var(--line);border-radius:9px;padding:3px;margin:2px 0 12px;font-size:12px}
+  .seg span{flex:1;text-align:center;padding:6px 4px;border-radius:6px;color:var(--sec)}
+  .seg span.on{background:#33343c;color:var(--txt);font-weight:500}
+  .grp{margin-bottom:12px}
+  .grp-h{display:flex;align-items:baseline;gap:8px;border-bottom:1px solid var(--line);padding-bottom:4px}
+  .grp-h .t{font-weight:500;font-size:14px}
+  .grp-h .trip{margin-left:auto;font:500 12px var(--mono)}
+  .gsub{font-size:11px;color:var(--sec);margin:3px 0 6px}
+  .row{display:flex;align-items:center;gap:8px;padding:4px 0;font-size:12.5px}
+  .row .lab{color:var(--txt2)} .row .lab.q{color:var(--sec)}
+  .row .trip{margin-left:auto;font-family:var(--mono);font-size:12px;white-space:nowrap}
+  .w{color:var(--win)} .t{color:var(--tie)} .l{color:var(--lose)} .z{color:#55565e}
+  .clk{cursor:pointer;border-bottom:1px dotted currentColor;padding-bottom:1px}
+  .clk.active{background:rgba(255,255,255,.06);border-radius:4px;padding:1px 4px;border-bottom-color:transparent}
+  .ex{display:none;margin:1px 0 8px 4px;padding:7px 9px;background:#14151a;border-radius:8px;border-left:2px solid var(--gold)}
+  .ex.show{display:block}
+  .ex .brd{margin-bottom:4px}
+  .ex .hl{font-size:11.5px;color:var(--sec)} .ex .hl .who{display:inline-block;width:30px;color:var(--sec)}
+
+  footer{padding:30px 0 60px;color:var(--sec);font-size:13px}
+  .updated{color:var(--sec);font-size:13px;margin-top:4px}
+</style>
+</head>
+<body>
+
+<header class="hero">
+  <div class="container">
+    <h1>Poker Equity</h1>
+    <div class="sub">Calculateur d'équité Texas Hold'em pensé comme un <b>outil de compréhension</b> : non pas « quelle est ma cote », mais <b>pourquoi</b> ma main gagne, perd ou partage face à l'adversaire.</div>
+    <div class="badges">
+      <span class="badge">iOS · iPadOS · <b>SwiftUI</b></span>
+      <span class="badge">Moteur Swift pur · <b>0 dépendance</b></span>
+      <span class="badge">Calcul <b>exact</b> (énumération complète)</span>
+      <span class="badge"><b>21</b> tests verts</span>
+      <span class="badge">100 % hors-ligne</span>
+    </div>
+  </div>
+</header>
+
+<nav class="toc">
+  <div class="container">
+    <a href="#raison">Raison d'être</a>
+    <a href="#fonctions">Fonctionnalités</a>
+    <a href="#archi">Architecture technique</a>
+    <a href="#modele">Le modèle « relatif »</a>
+    <a href="#demo">Écran interactif</a>
+    <a href="#etat">État &amp; suite</a>
+  </div>
+</nav>
+
+<section id="raison">
+  <div class="container">
+    <h2><span class="n">01</span>Raison d'être</h2>
+    <p class="tagline">Les calculateurs classiques affichent la distribution <em>absolue</em> d'une main (« 35 % de faire couleur »), indépendamment de l'adversaire. C'est peu actionnable.</p>
+    <p>Ce projet répond à une autre question : <b>comment ma main s'améliore-t-elle <em>relativement</em> à l'adversaire</b>, en mettant de côté ce que le tableau apporte à parts égales (une paire au board que tout le monde joue, une couleur que personne ne tient…).</p>
+    <div class="lead-quote">
+      Exemple fil rouge — <b>10-2 contre 10-7</b> en préflop. Les deux ont un 10. Pairer le 10 commun ne départage rien : c'est le <b>kicker</b> (7 &gt; 2) qui décide. Le seul vrai moteur de victoire du 10-2, c'est <b>pairer son 2</b>. L'app rend ces mécanismes explicites et chiffrés.
+    </div>
+    <p>Objectif affiché : comprendre les <b>cas limites</b> (« pourquoi ce 0,04 % ? »), chaque chiffre étant adossé à un <b>tableau-exemple réel</b> montrant la main jouée par chacun.</p>
+  </div>
+</section>
+
+<section id="fonctions">
+  <div class="container">
+    <h2><span class="n">02</span>Architecture fonctionnelle</h2>
+    <p class="tagline">Ce que l'app calcule et montre, par main et par joueur.</p>
+    <div class="grid">
+      <div class="card"><h4>Équité exacte</h4><p>Énumération complète des runouts restants (préflop → river). Repli Monte-Carlo déterministe disponible si on veut privilégier la vitesse.</p></div>
+      <div class="card"><h4>Décomposition par catégorie</h4><p>Pour chaque catégorie de main finale (paire, couleur…), la répartition <span class="w">Gagne</span> / <span class="l">Perd</span> / <span class="t">Partage</span>.</p></div>
+      <div class="card"><h4>Attribution gagne/perd</h4><p>« Par quoi je gagne » et « par quoi je suis battu », croisé avec ma propre catégorie. Repliable par ligne.</p></div>
+      <div class="card"><h4>Matrice de co-partage</h4><p>Qui partage avec qui (pairwise). En pot à 4, révèle les blocs « les As entre eux / les Rois entre eux ».</p></div>
+      <div class="card"><h4>Outs façon télé</h4><p>Une fois le flop posé : cartes qui font passer devant au turn + tirages runner-runner par catégorie.</p></div>
+      <div class="card"><h4>Vue « Comment j'améliore » <span class="pill">phare</span></h4><p>Décomposition <b>relative</b> à l'adversaire en 3 sources, avec exemples cliquables. Détaillée plus bas.</p></div>
+      <div class="card"><h4>Exemples par case</h4><p>Chaque pourcentage est adossé à un vrai tableau-exemple et aux 5 cartes jouées par chaque joueur.</p></div>
+      <div class="card"><h4>UI</h4><p>Bascule par vue, sélecteur de 52 cartes escamotable, version iPad enrichie, 100 % français, virgules décimales, code couleur unifié.</p></div>
+    </div>
+  </div>
+</section>
+
+<section id="archi">
+  <div class="container">
+    <h2><span class="n">03</span>Architecture technique</h2>
+    <p class="tagline">Deux couches nettes : un moteur Swift pur testable, et une app SwiftUI.</p>
+
+    <div class="arch">
+      <div class="layer">
+        <div class="lh">App — PokerEquity (SwiftUI)</div>
+        <div class="mods">
+          <div class="mod"><b>GameViewModel</b><span>état des mains/tableau, focus, calcul async hors-main-thread</span></div>
+          <div class="mod"><b>Screens</b><span>lignes joueurs, bascule, board, outs, layout adaptatif iPhone/iPad</span></div>
+          <div class="mod"><b>RelativeView</b><span>vue « comment j'améliore » + exemples cliquables</span></div>
+          <div class="mod"><b>CardViews</b><span>cartes, picker 52 cartes escamotable</span></div>
+        </div>
+      </div>
+      <div class="arrow">▲ dépend de</div>
+      <div class="layer">
+        <div class="lh">Moteur — PokerEngine (Swift pur, package SPM)</div>
+        <div class="mods">
+          <div class="mod"><b>Card</b><span>modèle carte/couleur, deck, parsing « Ks »</span></div>
+          <div class="mod"><b>HandEvaluator</b><span>évaluateur 5–7 cartes sans allocation (masques de bits)</span></div>
+          <div class="mod"><b>EquityCalculator</b><span>énumération unique → équité + décompositions + co-partage + relatif</span></div>
+          <div class="mod"><b>RelativeAnalyzer</b><span>types de la vue relative (façade sur le calcul fusionné)</span></div>
+          <div class="mod"><b>OutsAnalyzer</b><span>outs directs + runner-runner (post-flop)</span></div>
+        </div>
+      </div>
+    </div>
+
+    <h3>Choix techniques clés</h3>
+    <ul class="clean">
+      <li><b>Évaluateur sans allocation</b> — la force d'une main de 7 cartes est calculée via quatre masques de rangs (un par couleur) et de l'arithmétique de bits, sans tableaux temporaires. Rapide même en build Debug.</li>
+      <li><b>Énumération exacte</b> — tous les runouts restants sont parcourus (C(48,5)=1 712 304 en préflop heads-up). Repli Monte-Carlo déterministe (graine dérivée des cartes) au-delà d'un seuil, pour la fluidité.</li>
+      <li><b>Passe unique</b> — équité, décomposition par catégorie, attribution, matrice de co-partage et analyse relative sont toutes accumulées dans <em>la même</em> boucle d'énumération.</li>
+      <li><b>Exemples en réservoir</b> — pendant cette passe, on garde quelques tableaux-exemples par case (feuille de décomposition) ; aucun second passage.</li>
+      <li><b>Déterminisme &amp; tests</b> — score de main empaqueté dans un entier (catégorie en bits de poids fort), comparable par <code>&lt;</code> ; 21 tests verrouillent évaluateur, équités de référence, exhaustivité des décompositions et cohérence inter-analyses.</li>
+    </ul>
+
+    <h3>Du saisi à l'affiché</h3>
+    <div class="flow">
+      <span class="step">mains + tableau</span><span class="sep">→</span>
+      <span class="step">deck restant</span><span class="sep">→</span>
+      <span class="step">énumération des runouts</span><span class="sep">→</span>
+      <span class="step">evaluate() par joueur</span><span class="sep">→</span>
+      <span class="step">accumulateurs</span><span class="sep">→</span>
+      <span class="step">EquityResult</span><span class="sep">→</span>
+      <span class="step">vues SwiftUI</span>
+    </div>
+  </div>
+</section>
+
+<section id="modele">
+  <div class="container">
+    <h2><span class="n">04</span>Le modèle « relatif »</h2>
+    <p class="tagline">Le cœur conceptuel. Chaque runout est comparé au <b>tableau nu</b> (<code>evaluate(board)</code>), ce qui donne 3 sources, croisées avec gagne/partage/perd.</p>
+    <table class="spec">
+      <tr><th>Source</th><th>Définition (par runout)</th><th>Sens</th></tr>
+      <tr><td>Amélioration propre</td><td>catégorie(moi+board) &gt; catégorie(board)</td><td>mes cartes fabriquent une vraie main au-dessus du tableau</td></tr>
+      <tr><td>Le kicker tranche</td><td>score &gt; board mais même catégorie</td><td>même main que le tableau, seul le rang/kicker bouge</td></tr>
+      <tr><td>Le tableau joue</td><td>score(moi+board) == score(board)</td><td>mes cartes n'ajoutent rien — mis de côté / partage</td></tr>
+    </table>
+    <p style="margin-top:14px">La source « Amélioration propre » est sous-étiquetée par <b>mécanisme</b> : <em>via une carte non partagée</em> (ma carte distinctive, ex. le 2), <em>via un rang partagé</em> (le 10 commun), <em>via un tirage</em> (couleur/quinte). La trichotomie est <b>exhaustive</b> (les 9 feuilles couvrent 100 % des runouts, vérifié par test) et se reconstruit en équité exacte.</p>
+  </div>
+</section>
+
+<section id="demo">
+  <div class="container">
+    <h2><span class="n">05</span>Écran interactif</h2>
+    <p class="tagline">La vue « Comment j'améliore » pour <b>10-2</b> (préflop, vs 10-7). Chiffres exacts. <b>Touchez un chiffre souligné</b> pour révéler un tableau-exemple et la main jouée par chacun.</p>
+    <div class="demoWrap">
+      <div class="phone">
+        <div class="bar-top"><span class="appname">Équité&nbsp;Poker</span><span class="dim">↺</span></div>
+        <div class="pl">
+          <div class="pl-head"><span class="card2">10<span class="s">♣</span></span><span class="card2 r">2<span class="s">♦</span></span>
+            <div class="eq"><b>20,96%</b><span class="pg">Partage 27,78%</span></div></div>
+          <div class="compo"><i style="width:21%;background:var(--win)"></i><i style="width:28%;background:var(--tie)"></i><i style="width:51%;background:var(--lose)"></i></div>
+          <div class="legend"><span><b style="background:var(--win)"></b>gagne 20,96%</span><span><b style="background:var(--tie)"></b>partage 27,78%</span><span><b style="background:var(--lose)"></b>perd 51,25%</span></div>
+          <div class="seg"><span>Par catégorie</span><span class="on">Comment j'améliore</span></div>
+
+          <div class="grp">
+            <div class="grp-h"><span class="t">Amélioration propre</span><span class="trip"><span class="w">20,92</span> · <span class="t">9,43</span> · <span class="l">16,58</span></span></div>
+            <div class="gsub">les cartes privatives font une vraie main au-dessus du tableau</div>
+            <div class="row"><span class="lab">carte non partagée</span><span class="trip"><span class="w clk" data-ex="d1">19,43</span> · <span class="t">0,51</span> · <span class="l">7,59</span></span></div>
+            <div class="ex" id="d1">
+              <div class="brd"><span class="card2 mini">2<span class="s">♠</span></span><span class="card2 mini">9<span class="s">♦</span></span><span class="card2 mini">5<span class="s">♣</span></span><span class="card2 mini r">4<span class="s">♥</span></span><span class="card2 mini">Q<span class="s">♠</span></span></div>
+              <div class="hl"><span class="who">moi</span> Une paire — paire de 2</div>
+              <div class="hl"><span class="who">adv</span> Carte haute — Q-high</div>
+            </div>
+            <div class="row"><span class="lab q">rang partagé (le 10)</span><span class="trip"><span class="z">·</span> · <span class="t">6,83</span> · <span class="l">7,79</span></span></div>
+            <div class="row"><span class="lab q">tirage (couleur/quinte)</span><span class="trip"><span class="w clk" data-ex="d2">1,49</span> · <span class="t">2,09</span> · <span class="l">1,20</span></span></div>
+            <div class="ex" id="d2">
+              <div class="brd"><span class="card2 mini">3<span class="s">♠</span></span><span class="card2 mini">4<span class="s">♠</span></span><span class="card2 mini">5<span class="s">♠</span></span><span class="card2 mini">T<span class="s">♠</span></span><span class="card2 mini r">A<span class="s">♥</span></span></div>
+              <div class="hl"><span class="who">moi</span> Quinte — le wheel A-2-3-4-5 (avec le 2)</div>
+              <div class="hl"><span class="who">adv</span> Une paire — paire de 10</div>
+            </div>
+          </div>
+
+          <div class="grp">
+            <div class="grp-h"><span class="t">Le kicker tranche</span><span class="trip"><span class="w">0,04</span> · <span class="t">15,96</span> · <span class="l">34,33</span></span></div>
+            <div class="gsub">même main que le tableau, seul le kicker bouge</div>
+            <div class="row"><span class="lab">le kicker décide</span><span class="trip"><span class="w clk" data-ex="d3">0,04</span> &nbsp; <span class="l clk" data-ex="d4">34,33</span></span></div>
+            <div class="ex" id="d3">
+              <div class="brd"><span class="card2 mini">2<span class="s">♣</span></span><span class="card2 mini">3<span class="s">♣</span></span><span class="card2 mini">4<span class="s">♣</span></span><span class="card2 mini">5<span class="s">♣</span></span><span class="card2 mini">7<span class="s">♣</span></span></div>
+              <div class="hl"><span class="who">moi</span> Couleur au 10 (mon 10♣ surclasse) — gagne</div>
+              <div class="hl"><span class="who">adv</span> Couleur au 7 (couleur du tableau)</div>
+            </div>
+            <div class="ex" id="d4">
+              <div class="brd"><span class="card2 mini">10<span class="s">♥</span></span><span class="card2 mini">K<span class="s">♠</span></span><span class="card2 mini r">8<span class="s">♦</span></span><span class="card2 mini">5<span class="s">♣</span></span><span class="card2 mini">3<span class="s">♠</span></span></div>
+              <div class="hl"><span class="who">moi</span> Une paire — paire de 10, kicker 8-5</div>
+              <div class="hl"><span class="who">adv</span> Une paire — paire de 10, le <b>7</b> départage</div>
+            </div>
+            <div class="row"><span class="lab q">partage · tableau s'appaire ≥10</span><span class="trip"><span class="t clk" data-ex="d5">5,95</span></span></div>
+            <div class="ex" id="d5">
+              <div class="brd"><span class="card2 mini">K<span class="s">♠</span></span><span class="card2 mini r">K<span class="s">♥</span></span><span class="card2 mini r">Q<span class="s">♦</span></span><span class="card2 mini">J<span class="s">♣</span></span><span class="card2 mini">9<span class="s">♠</span></span></div>
+              <div class="hl"><span class="who">moi</span> Une paire (K) · K-Q-J-10 — kicker 2 hors jeu</div>
+              <div class="hl"><span class="who">adv</span> Une paire (K) · K-Q-J-10 — kicker 7 hors jeu → partage</div>
+            </div>
+            <div class="row"><span class="lab q">partage · tableau s'appaire &lt;10</span><span class="trip"><span class="t">7,78</span></span></div>
+          </div>
+
+          <div class="grp">
+            <div class="grp-h"><span class="t">Le tableau joue</span><span class="trip"><span class="z">·</span> · <span class="t">2,39</span> · <span class="l">0,34</span></span></div>
+            <div class="gsub">les cartes privatives n'ajoutent rien</div>
+            <div class="row"><span class="lab q">le tableau fait la main</span><span class="trip"><span class="t clk" data-ex="d6">2,39</span></span></div>
+            <div class="ex" id="d6">
+              <div class="brd"><span class="card2 mini">A<span class="s">♠</span></span><span class="card2 mini r">A<span class="s">♥</span></span><span class="card2 mini">A<span class="s">♣</span></span><span class="card2 mini">K<span class="s">♠</span></span><span class="card2 mini r">K<span class="s">♦</span></span></div>
+              <div class="hl"><span class="who">moi</span> Full au tableau (AAA KK)</div>
+              <div class="hl"><span class="who">adv</span> Full au tableau (AAA KK) → partage</div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="demoNote">
+        <h3 style="margin-top:0">Lecture</h3>
+        <p>Le seul moteur de victoire du 10-2 est <b><span class="w">carte non partagée 19,43 %</span></b> (pairer le 2). Le gros de l'histoire est ailleurs : <b><span class="l">kicker · perd 34,33 %</span></b> — on paire le 10 commun mais le 7 adverse tranche. Et ~16 % de <span class="t">partage</span> sont des cas « ça ne change rien » (le tableau s'appaire, les petits kickers sortent).</p>
+        <p>Les <b>cas limites</b> deviennent évidents d'un clic : le <span class="w">0,04 %</span> n'est pas le « 2 » mais une <b>couleur au tableau</b> que le 10♣ surclasse.</p>
+        <p style="color:var(--sec);font-size:13px">Note : c'est une reproduction statique de l'écran SwiftUI (mêmes chiffres exacts). Dans l'app, les exemples sont générés par le moteur pour n'importe quelle donne.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="etat">
+  <div class="container">
+    <h2><span class="n">06</span>État &amp; suite</h2>
+    <div class="grid">
+      <div class="card"><h4>✓ Acquis</h4><p>Moteur exact + évaluateur rapide · équité, décompositions, attribution, co-partage, outs, vue relative + exemples · UI iPhone/iPad française · 21 tests verts.</p></div>
+      <div class="card"><h4>↗ Pistes</h4><p>Attribution au niveau kicker (« paire de 10 + meilleur kicker ») · ligne de résumé en langage naturel · réglages d'affichage.</p></div>
+      <div class="card"><h4>⊕ Omaha</h4><p>Toute la mécanique (relatif, exemples, attribution) est générique : seul l'évaluateur change. Le terrain est prêt.</p></div>
+      <div class="card"><h4>⚙ Perf</h4><p>Le préflop multi-joueurs exact est lourd sur device ; le repli Monte-Carlo est à une ligne près si l'on veut la fluidité.</p></div>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="container">
+    Poker Equity — documentation interne. Page autonome (aucune dépendance externe).
+    <div class="updated">Générée à la main, à tenir à jour au fil des évolutions.</div>
+  </div>
+</footer>
+
+<script>
+  document.querySelectorAll('.clk').forEach(function(el){
+    el.addEventListener('click', function(){
+      var ex = document.getElementById(el.getAttribute('data-ex'));
+      if(!ex) return;
+      var open = ex.classList.toggle('show');
+      el.classList.toggle('active', open);
+    });
+  });
+</script>
+</body>
+</html>
