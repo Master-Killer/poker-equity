@@ -66,6 +66,7 @@ public enum EquityCalculator {
         let remaining = Card.fullDeck.filter { !known.contains($0) }
         let missing = 5 - board.count
         precondition(missing >= 0, "board has more than 5 cards")
+        precondition(remaining.count >= missing, "not enough cards left to complete the board")
 
         var winCat = Array(repeating: [Double](repeating: 0, count: categoryCount), count: playerCount)
         var tieCat = Array(repeating: [Double](repeating: 0, count: categoryCount), count: playerCount)
@@ -93,10 +94,14 @@ public enum EquityCalculator {
             sharedMask[p] = mine & others
         }
 
-        var ranks = [HandRank](repeating: evaluate5([Card](repeating: remaining[0], count: 5)),
+        // Placeholder cards just size the reused buffers; every slot is
+        // overwritten before use, so a fixed deck card avoids indexing an
+        // empty `remaining` when the board is already complete.
+        let placeholder = Card.fullDeck[0]
+        var ranks = [HandRank](repeating: evaluate5([Card](repeating: placeholder, count: 5)),
                                count: playerCount)
-        var sevenCards = [Card](repeating: remaining[0], count: 7)
-        var boardBuf = [Card](repeating: remaining[0], count: 5)
+        var sevenCards = [Card](repeating: placeholder, count: 7)
+        var boardBuf = [Card](repeating: placeholder, count: 5)
         var winners = [Int]()
         winners.reserveCapacity(playerCount)
 
