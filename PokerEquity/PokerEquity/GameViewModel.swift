@@ -103,11 +103,13 @@ final class GameViewModel: ObservableObject {
 
     func reset() {
         calcTask?.cancel()
+        cancelFlag?.cancel()
         playerCards = [[nil, nil], [nil, nil]]
         board = Array(repeating: nil, count: 5)
         focusedSlot = .hole(player: 0, index: 0)
         equity = nil
         outs = nil
+        isCalculating = false
     }
 
     // MARK: Focus
