@@ -96,7 +96,11 @@ public enum RelativeAnalyzer {
 
 /// Texture of the board behind a kicker-chop (module-internal helper).
 func boardTexture(_ board: [Card], _ bd: HandRank) -> Int {
-    if bd.category >= .straight { return 2 } // straight/flush/… on the board
+    // Only an actual straight/flush on the board is a "run"; a paired board
+    // (full house / quads) is classified by its paired rank below.
+    if bd.category == .straight || bd.category == .flush || bd.category == .straightFlush {
+        return 2
+    }
     var counts = [Int](repeating: 0, count: 15)
     for c in board { counts[c.rank] += 1 }
     for r in stride(from: 14, through: 2, by: -1) where counts[r] >= 2 {
