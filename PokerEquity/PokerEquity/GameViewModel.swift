@@ -5,6 +5,9 @@ import PokerEngine
 final class GameViewModel: ObservableObject {
     /// Each player's two (optional) hole cards. Two players by default.
     @Published var playerCards: [[Card?]] = [[nil, nil], [nil, nil]]
+    /// Stable identity per player (kept in lock-step with `playerCards`) so the
+    /// SwiftUI rows keep their own @State across insertions/removals.
+    @Published private(set) var playerIDs: [UUID] = [UUID(), UUID()]
     /// Five (optional) community card slots.
     @Published var board: [Card?] = Array(repeating: nil, count: 5)
     /// The slot the picker currently writes to.
@@ -89,12 +92,14 @@ final class GameViewModel: ObservableObject {
     func addPlayer() {
         guard playerCards.count < 9 else { return }
         playerCards.append([nil, nil])
+        playerIDs.append(UUID())
         recompute()
     }
 
     func removePlayer(_ p: Int) {
         guard playerCards.count > 2, playerCards.indices.contains(p) else { return }
         playerCards.remove(at: p)
+        playerIDs.remove(at: p)
         if !orderedSlots.contains(where: { $0 == focusedSlot }) {
             focusedSlot = firstEmptySlot()
         }
@@ -105,6 +110,7 @@ final class GameViewModel: ObservableObject {
         calcTask?.cancel()
         cancelFlag?.cancel()
         playerCards = [[nil, nil], [nil, nil]]
+        playerIDs = [UUID(), UUID()]
         board = Array(repeating: nil, count: 5)
         focusedSlot = .hole(player: 0, index: 0)
         equity = nil

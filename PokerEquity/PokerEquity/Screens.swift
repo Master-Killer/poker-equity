@@ -75,7 +75,7 @@ struct ContentView: View {
     }
 
     @ViewBuilder private var playerRows: some View {
-        ForEach(vm.playerCards.indices, id: \.self) { i in
+        ForEach(Array(zip(vm.playerIDs.indices, vm.playerIDs)), id: \.1) { i, _ in
             PlayerRowView(vm: vm, index: i, defaultExpanded: isWide)
         }
     }
