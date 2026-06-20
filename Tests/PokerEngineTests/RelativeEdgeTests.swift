@@ -23,7 +23,7 @@ final class RelativeEdgeTests: XCTestCase {
     /// The mechanism split must reconstruct the `ownEdge` row exactly, and the
     /// chop-texture split must reconstruct the `(kicker, tie)` cell.
     func testSubSplitsReconstructTheirCells() {
-        let rel = RelativeAnalyzer.analyze(hands: [hand("Tc 2d"), hand("Td 7h")], board: [])
+        let rel = EquityCalculator.compute(hands: [hand("Tc 2d"), hand("Td 7h")], board: []).relative
         for a in rel {
             for o in RelOutcome.allCases {
                 let mechSum = EdgeMechanism.allCases.reduce(0.0) {

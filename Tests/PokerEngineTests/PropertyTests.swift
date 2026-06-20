@@ -57,7 +57,7 @@ final class PropertyTests: XCTestCase {
     // MARK: - Evaluator
 
     func testEvaluateMatchesBestFive() {
-        property("evaluate(5...7) == evaluate5(bestFive)") <- forAll(postflopDealGen) { deal in
+        property("evaluate(5...7) == evaluate5(bestFive)") <- forAllNoShrink(postflopDealGen) { deal in
             for hand in deal.hands {
                 let cards = hand + deal.board
                 if evaluate(cards).score != evaluate5(bestFive(cards)).score { return false }
@@ -67,7 +67,7 @@ final class PropertyTests: XCTestCase {
     }
 
     func testHigherCategoryAlwaysOutranks() {
-        property("a stronger category always packs a higher score") <- forAll(postflopDealGen) { deal in
+        property("a stronger category always packs a higher score") <- forAllNoShrink(postflopDealGen) { deal in
             let ranks = deal.hands.map { evaluate($0 + deal.board) }
             for a in ranks {
                 for b in ranks where a.category > b.category {
@@ -81,7 +81,7 @@ final class PropertyTests: XCTestCase {
     // MARK: - Equity
 
     func testEquityIsAProbabilityDistribution() {
-        property("equities lie in [0,1] and sum to 1") <- forAll(postflopDealGen) { deal in
+        property("equities lie in [0,1] and sum to 1") <- forAllNoShrink(postflopDealGen) { deal in
             let r = EquityCalculator.compute(hands: deal.hands, board: deal.board)
             let sum = r.players.reduce(0.0) { $0 + $1.equity }
             guard abs(sum - 1.0) <= 1e-9 else { return false }
@@ -90,7 +90,7 @@ final class PropertyTests: XCTestCase {
     }
 
     func testCoWinDiagonalEqualsWinPlusTie() {
-        property("coWinMatrix diagonal == win + tie probability") <- forAll(postflopDealGen) { deal in
+        property("coWinMatrix diagonal == win + tie probability") <- forAllNoShrink(postflopDealGen) { deal in
             let r = EquityCalculator.compute(hands: deal.hands, board: deal.board)
             for p in r.players.indices {
                 let expected = r.players[p].winProb + r.players[p].tieProb
@@ -101,7 +101,7 @@ final class PropertyTests: XCTestCase {
     }
 
     func testBreakdownPartitionsRunouts() {
-        property("per-player category breakdown totals to 1") <- forAll(postflopDealGen) { deal in
+        property("per-player category breakdown totals to 1") <- forAllNoShrink(postflopDealGen) { deal in
             let r = EquityCalculator.compute(hands: deal.hands, board: deal.board)
             for player in r.players {
                 let total = player.breakdown.values.reduce(0.0) { $0 + $1.total }
@@ -112,7 +112,7 @@ final class PropertyTests: XCTestCase {
     }
 
     func testAttributionMatchesBreakdown() {
-        property("winVs/loseVs sum back to the breakdown cells") <- forAll(postflopDealGen) { deal in
+        property("winVs/loseVs sum back to the breakdown cells") <- forAllNoShrink(postflopDealGen) { deal in
             let r = EquityCalculator.compute(hands: deal.hands, board: deal.board)
             for player in r.players {
                 for (cat, b) in player.breakdown {
@@ -130,8 +130,8 @@ final class PropertyTests: XCTestCase {
 
     func testRelativeDecompositionInvariants() {
         property("relative buckets partition runouts and sub-splits stay consistent")
-            <- forAll(postflopDealGen) { deal in
-                let rel = RelativeAnalyzer.analyze(hands: deal.hands, board: deal.board)
+            <- forAllNoShrink(postflopDealGen) { deal in
+                let rel = EquityCalculator.compute(hands: deal.hands, board: deal.board).relative
                 for a in rel {
                     // The 3×3 grid partitions every runout.
                     let sum = a.prob.flatMap { $0 }.reduce(0, +)
@@ -152,7 +152,7 @@ final class PropertyTests: XCTestCase {
     }
 
     func testRelativeOutcomesMatchEquity() {
-        property("relative win/tie totals equal the equity engine") <- forAll(postflopDealGen) { deal in
+        property("relative win/tie totals equal the equity engine") <- forAllNoShrink(postflopDealGen) { deal in
             let result = EquityCalculator.compute(hands: deal.hands, board: deal.board)
             let rel = result.relative
             for p in deal.hands.indices {
@@ -168,14 +168,14 @@ final class PropertyTests: XCTestCase {
     // MARK: - Cards
 
     func testCardDescriptionRoundTrips() {
-        property("Card.description parses back to the same card") <- forAll(anyDealGen) { deal in
+        property("Card.description parses back to the same card") <- forAllNoShrink(anyDealGen) { deal in
             let cards = deal.hands.flatMap { $0 } + deal.board
             return cards.allSatisfy { Card($0.description) == $0 }
         }
     }
 
     func testDealtCardsAreDistinct() {
-        property("a single deal never repeats a card") <- forAll(anyDealGen) { deal in
+        property("a single deal never repeats a card") <- forAllNoShrink(anyDealGen) { deal in
             let cards = deal.hands.flatMap { $0 } + deal.board
             return Set(cards).count == cards.count
         }
