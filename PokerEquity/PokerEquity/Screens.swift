@@ -57,7 +57,7 @@ struct ContentView: View {
                 .tint(.secondary)
             }
 
-            Divider().overlay(Color.white.opacity(0.12))
+            Divider().overlay(Theme.hairline)
 
             VStack(alignment: .leading, spacing: 8) {
                 Text("TABLEAU")
@@ -104,7 +104,7 @@ struct PlayerRowView: View {
                     let slot = Slot.hole(player: index, index: i)
                     CardSlotView(card: vm.card(at: slot), isFocused: vm.focusedSlot == slot)
                         .frame(width: 48)
-                        .onTapGesture { vm.focus(slot) }
+                        .onTapGesture { vm.tapSlot(slot) }
                 }
                 Spacer()
                 headline
@@ -131,14 +131,15 @@ struct PlayerRowView: View {
                     if showRelative, let rel = vm.equity?.relative[safe: index] {
                         RelativeView(analysis: rel, playerIndex: index, vm: vm)
                     } else {
-                        DecompositionView(equity: equity)
+                        DecompositionView(equity: equity,
+                                          totalRunouts: vm.equity?.totalRunouts ?? 0)
                         splitPartners
                     }
                 }
             }
         }
         .padding(12)
-        .background(Theme.panel.opacity(0.45))
+        .background(Theme.surface)
         .clipShape(RoundedRectangle(cornerRadius: 12))
     }
 
@@ -148,7 +149,7 @@ struct PlayerRowView: View {
             segButton("Comment j'améliore", on: showRelative) { showRelative = true }
         }
         .padding(3)
-        .background(Color.black.opacity(0.30))
+        .background(Theme.segmentTrack)
         .clipShape(RoundedRectangle(cornerRadius: 9))
         .padding(.vertical, 4)
     }
@@ -161,7 +162,7 @@ struct PlayerRowView: View {
                 .foregroundStyle(on ? Color.primary : .secondary)
                 .frame(maxWidth: .infinity)
                 .padding(.vertical, 6)
-                .background(on ? Color(white: 0.22) : .clear)
+                .background(on ? Theme.segmentSelected : .clear)
                 .clipShape(RoundedRectangle(cornerRadius: 6))
         }
         .buttonStyle(.plain)
@@ -232,6 +233,8 @@ struct PlayerRowView: View {
 
 struct DecompositionView: View {
     let equity: PlayerEquity
+    /// Nombre total de runouts énumérés, pour traduire une probabilité en combos.
+    let totalRunouts: Int
     @State private var expanded: Set<HandCategory> = []
 
     private var rows: [(HandCategory, CategoryBreakdown)] {
@@ -306,7 +309,7 @@ struct DecompositionView: View {
                 HStack {
                     Text(oppCat.frenchName)
                     Spacer()
-                    Text(percentString(prob)).monospacedDigit()
+                    Text(attributionValue(prob)).monospacedDigit()
                 }
                 .font(.caption2)
                 .foregroundStyle(color)
@@ -315,10 +318,22 @@ struct DecompositionView: View {
         }
     }
 
+    /// Pourcentage, ou nombre de combos quand la proba (non nulle) s'arrondirait
+    /// à « 0,00 % » — pour ne jamais afficher un faux zéro.
+    private func attributionValue(_ prob: Double) -> String {
+        if prob < negligibleProbability {
+            let combos = max(Int((prob * Double(totalRunouts)).rounded()), 1)
+            return combos == 1 ? "1 combo" : "\(combos) combos"
+        }
+        return percentString(prob)
+    }
+
     /// Opponent-category attribution, sorted by probability (most common first).
+    /// Categories with a strictly-zero probability are dropped.
     private func sorted(_ dict: [HandCategory: Double]?) -> [(HandCategory, Double)]? {
-        guard let dict, !dict.isEmpty else { return nil }
-        return dict.sorted { $0.value > $1.value }.map { ($0.key, $0.value) }
+        guard let dict else { return nil }
+        let items = dict.filter { $0.value > 0 }.sorted { $0.value > $1.value }.map { ($0.key, $0.value) }
+        return items.isEmpty ? nil : items
     }
 
     private func cell(_ value: Double, color: Color) -> some View {
@@ -338,7 +353,7 @@ struct BoardRowView: View {
             ForEach(0..<5, id: \.self) { i in
                 let slot = Slot.board(i)
                 CardSlotView(card: vm.card(at: slot), isFocused: vm.focusedSlot == slot)
-                    .onTapGesture { vm.focus(slot) }
+                    .onTapGesture { vm.tapSlot(slot) }
             }
         }
     }

@@ -9,15 +9,22 @@ struct CardFace: View {
 
     var body: some View {
         VStack(spacing: 0) {
-            Text(card.rankLetter)
+            Text(card.rankLabel)
                 .font(.system(size: rankSize, weight: .bold, design: .rounded))
+                .lineLimit(1)
+                .minimumScaleFactor(0.6)   // « 10 » se réduit si la carte est petite
             Text(card.suit.symbol)
                 .font(.system(size: suitSize))
         }
         .foregroundStyle(card.suit.displayColor)
+        .padding(.horizontal, 1)
         .frame(maxWidth: .infinity, maxHeight: .infinity)
         .background(Theme.cardFace)
         .clipShape(RoundedRectangle(cornerRadius: 6))
+        .overlay(   // filet discret pour détacher la carte du fond (surtout en clair)
+            RoundedRectangle(cornerRadius: 6)
+                .strokeBorder(Theme.cardBorder, lineWidth: 0.5)
+        )
     }
 }
 
@@ -37,7 +44,7 @@ struct CardSlotView: View {
         }
         .overlay(
             RoundedRectangle(cornerRadius: 6)
-                .strokeBorder(isFocused ? Theme.focus : Color.white.opacity(0.15),
+                .strokeBorder(isFocused ? Theme.focus : Theme.hairline,
                               lineWidth: isFocused ? 2.5 : 1)
         )
         .aspectRatio(0.7, contentMode: .fit)
@@ -53,8 +60,10 @@ struct PickerCell: View {
     var body: some View {
         Button(action: action) {
             VStack(spacing: 0) {
-                Text(card.rankLetter)
+                Text(card.rankLabel)
                     .font(.system(size: 13, weight: .bold, design: .rounded))
+                    .lineLimit(1)
+                    .minimumScaleFactor(0.6)
                 Text(card.suit.symbol)
                     .font(.system(size: 11))
             }

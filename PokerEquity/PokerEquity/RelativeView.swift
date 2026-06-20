@@ -65,7 +65,7 @@ struct RelativeView: View {
                 Spacer()
                 triplet(w, t, l, clickable: false, source: source)
             }
-            Rectangle().fill(Color.white.opacity(0.10)).frame(height: 1)
+            Rectangle().fill(Theme.hairline).frame(height: 1)
             Text(subtitle).font(.caption2).foregroundStyle(.secondary)
             rows(for: source)
         }
@@ -154,7 +154,7 @@ struct RelativeView: View {
         }
         .padding(8)
         .frame(maxWidth: .infinity, alignment: .leading)
-        .background(Color.black.opacity(0.28))
+        .background(Theme.exampleBackground)
         .clipShape(RoundedRectangle(cornerRadius: 8))
         .padding(.vertical, 2)
     }

@@ -86,7 +86,18 @@ final class GameViewModel: ObservableObject {
     func clearCard(at slot: Slot) {
         set(nil, at: slot)
         focusedSlot = slot
+        isPickerVisible = true // rouvrir le picker pour reposer une carte
         recompute()
+    }
+
+    /// Tap sur un emplacement (main ou tableau) : s'il contient une carte, on la
+    /// retire (désélection) ; sinon on place le focus dessus.
+    func tapSlot(_ slot: Slot) {
+        if card(at: slot) != nil {
+            clearCard(at: slot)
+        } else {
+            focus(slot)
+        }
     }
 
     func addPlayer() {
