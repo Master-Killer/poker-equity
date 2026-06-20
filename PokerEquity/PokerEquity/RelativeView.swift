@@ -78,7 +78,7 @@ struct RelativeView: View {
         case .ownEdge:
             ForEach(EdgeMechanism.allCases, id: \.self) { m in
                 let v = analysis.edgeMechanism[m.rawValue]
-                if v[0] + v[1] + v[2] > 0.00005 {
+                if v[0] + v[1] + v[2] > negligibleProbability {
                     row(.ownEdge, shortLabel(m),
                         [(v[0], Theme.win, .win, m, nil),
                          (v[1], Theme.tie, .tie, m, nil),
@@ -91,7 +91,7 @@ struct RelativeView: View {
                  (analysis.prob[1][2], Theme.lose, .lose, nil, nil)])
             ForEach(ChopTexture.allCases, id: \.self) { tex in
                 let v = analysis.kickerChopTexture[tex.rawValue]
-                if v > 0.00005 {
+                if v > negligibleProbability {
                     row(.kicker, "partage · \(tex.label)", [(v, Theme.tie, .tie, nil, tex)])
                 }
             }
@@ -128,10 +128,10 @@ struct RelativeView: View {
 
     private func value(_ e: Entry, source: RelSource) -> some View {
         let k = keyFor(e, source: source)
-        let hasEx = (analysis.examples[k]?.isEmpty == false) && e.value >= 0.00005
-        return Text(e.value < 0.00005 ? "·" : percentString(e.value))
+        let hasEx = (analysis.examples[k]?.isEmpty == false) && e.value >= negligibleProbability
+        return Text(e.value < negligibleProbability ? "·" : percentString(e.value))
             .font(.caption.monospacedDigit())
-            .foregroundStyle(e.value < 0.00005 ? Color.secondary : e.color)
+            .foregroundStyle(e.value < negligibleProbability ? Color.secondary : e.color)
             .overlay(alignment: .bottom) {
                 if hasEx { Rectangle().fill(e.color.opacity(0.55)).frame(height: 1) }
             }
@@ -196,11 +196,11 @@ struct RelativeView: View {
 
     private func triplet(_ w: Double, _ t: Double, _ l: Double, clickable: Bool, source: RelSource) -> some View {
         HStack(spacing: 4) {
-            Text(w < 0.00005 ? "·" : percentString(w)).foregroundStyle(Theme.win)
+            Text(w < negligibleProbability ? "·" : percentString(w)).foregroundStyle(Theme.win)
             Text("·").foregroundStyle(.secondary)
-            Text(t < 0.00005 ? "·" : percentString(t)).foregroundStyle(Theme.tie)
+            Text(t < negligibleProbability ? "·" : percentString(t)).foregroundStyle(Theme.tie)
             Text("·").foregroundStyle(.secondary)
-            Text(l < 0.00005 ? "·" : percentString(l)).foregroundStyle(Theme.lose)
+            Text(l < negligibleProbability ? "·" : percentString(l)).foregroundStyle(Theme.lose)
         }
         .font(.caption.monospacedDigit())
     }

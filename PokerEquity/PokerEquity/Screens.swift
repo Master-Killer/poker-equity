@@ -174,7 +174,7 @@ struct PlayerRowView: View {
                     .font(.system(size: 34, weight: .semibold, design: .rounded))
                     .foregroundStyle(Theme.accent)
                     .contentTransition(.numericText())
-                if equity.tieProb > 0.00005 {
+                if equity.tieProb > negligibleProbability {
                     Text("Partage \(percentString(equity.tieProb))")
                         .font(.caption2)
                         .foregroundStyle(.secondary)
@@ -220,7 +220,7 @@ struct PlayerRowView: View {
         var result: [Partner] = []
         for j in matrix[index].indices where j != index {
             let prob = matrix[index][j]
-            guard prob > 0.00005 else { continue }
+            guard prob > negligibleProbability else { continue }
             let cards = eq.players[safe: j]?.hand ?? []
             result.append(Partner(index: j, cards: cards, prob: prob))
         }
@@ -253,7 +253,7 @@ struct DecompositionView: View {
             .foregroundStyle(.secondary)
 
             ForEach(rows, id: \.0) { cat, b in
-                let canExpand = b.winProb > 0.00005 || b.loseProb > 0.00005
+                let canExpand = b.winProb > negligibleProbability || b.loseProb > negligibleProbability
                 Button {
                     if canExpand {
                         if expanded.contains(cat) { expanded.remove(cat) } else { expanded.insert(cat) }
@@ -322,7 +322,7 @@ struct DecompositionView: View {
     }
 
     private func cell(_ value: Double, color: Color) -> some View {
-        Text(value < 0.00005 ? "·" : percentString(value))
+        Text(value < negligibleProbability ? "·" : percentString(value))
             .frame(width: 64, alignment: .trailing)
             .foregroundStyle(color)
     }
