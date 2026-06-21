@@ -78,11 +78,18 @@ public enum EquityCalculator {
         var loseSrc = Array(repeating: Array(repeating: [Double](repeating: 0, count: categoryCount), count: categoryCount), count: playerCount)
         var totalRunouts = 0
 
-        // Relative ("how I improve") accumulators + per-player rank bitmasks.
-        var relProb = Array(repeating: Array(repeating: [Double](repeating: 0, count: 3), count: 3), count: playerCount)
-        var relEdge = Array(repeating: Array(repeating: [Double](repeating: 0, count: 3), count: 3), count: playerCount)
+        // Relative ("how I improve, vs the opponent") accumulators + rank bitmasks.
+        // Each runout is classified by the showdown verdict against the best opponent.
+        let mechCount = EdgeMechanism.allCases.count
+        var relWinCombo = Array(repeating: [Double](repeating: 0, count: mechCount), count: playerCount)
+        var relWinKicker = [Double](repeating: 0, count: playerCount)
         var relChop = Array(repeating: [Double](repeating: 0, count: 4), count: playerCount)
-        var relExamples = Array(repeating: [String: [[Card]]](), count: playerCount)
+        var relLoseCombo = [Double](repeating: 0, count: playerCount)
+        var relLoseKicker = [Double](repeating: 0, count: playerCount)
+        // Per (player, leaf key): runouts bucketed by scenario signature, so the
+        // few examples kept are varied (typical + contrasting) instead of the
+        // near-identical adjacent boards that lexicographic enumeration yields.
+        var relBuckets = Array(repeating: [String: [Int: ExampleBucket]](), count: playerCount)
         var unsharedMask = [Int](repeating: 0, count: playerCount)
         var sharedMask = [Int](repeating: 0, count: playerCount)
         for p in 0..<playerCount {
@@ -111,7 +118,7 @@ public enum EquityCalculator {
             for c in board { boardBuf[bi] = c; bi += 1 }
             for c in fill { boardBuf[bi] = c; bi += 1 }
 
-            var bestScore = Int.min, bestCat = 0
+            var bestScore = Int.min, bestCat = 0, bestIdx = 0
             var secondScore = Int.min, secondCat = 0
             for p in 0..<playerCount {
                 sevenCards[0] = hands[p][0]
@@ -123,7 +130,7 @@ public enum EquityCalculator {
                 ranks[p] = r
                 if r.score > bestScore {
                     secondScore = bestScore; secondCat = bestCat
-                    bestScore = r.score; bestCat = r.category.rawValue
+                    bestScore = r.score; bestCat = r.category.rawValue; bestIdx = p
                 } else if r.score > secondScore {
                     secondScore = r.score; secondCat = r.category.rawValue
                 }
@@ -141,43 +148,68 @@ public enum EquityCalculator {
             var boardRankMask = 0
             for c in boardBuf { boardRankMask |= 1 << c.rank }
             for p in 0..<playerCount {
-                let outcome = ranks[p].score == bestScore ? (winnerCount == 1 ? 0 : 1) : 2
-                let outcomeEnum = RelOutcome(rawValue: outcome)!
-                let src = ranks[p].score == bd.score ? 2
-                    : (ranks[p].category.rawValue > bd.category.rawValue ? 0 : 1)
-                relProb[p][src][outcome] += 1
+                // Classify by the showdown against the best opponent: the runner-up
+                // when p is the sole leader, otherwise the table best.
+                let myScore = ranks[p].score
+                let myCatEnum = ranks[p].category
+                let myCat = myCatEnum.rawValue
+                let pSoleBest = myScore == bestScore && winnerCount == 1
+                let oppScore = pSoleBest ? secondScore : bestScore
+                let oppCat = pSoleBest ? secondCat : bestCat
+                let verdict = showdownVerdict(myScore: myScore, myCategory: myCatEnum,
+                                              oppScore: oppScore, oppCategory: HandCategory(rawValue: oppCat)!)
 
                 var key: String
-                if src == 0 {
-                    let c = ranks[p].category.rawValue
-                    let mech: Int
-                    if c == HandCategory.straight.rawValue || c == HandCategory.flush.rawValue
-                        || c == HandCategory.straightFlush.rawValue {
-                        mech = 2
+                var mech = -1
+                var winnerHand = hands[p]   // whose combination to highlight on the board
+                switch verdict {
+                case .higherCategory, .betterCombination:
+                    // I win by my combination — classify how my hole built it over the board.
+                    if myCat == HandCategory.straight.rawValue || myCat == HandCategory.flush.rawValue
+                        || myCat == HandCategory.straightFlush.rawValue {
+                        mech = EdgeMechanism.draw.rawValue
                     } else if unsharedMask[p] & boardRankMask != 0 {
-                        mech = 0
+                        mech = EdgeMechanism.unsharedCard.rawValue
                     } else if sharedMask[p] & boardRankMask != 0 {
-                        mech = 1
+                        mech = EdgeMechanism.sharedRank.rawValue
                     } else {
-                        mech = 2
+                        mech = EdgeMechanism.pocketPair.rawValue
                     }
-                    relEdge[p][mech][outcome] += 1
-                    key = RelativeAnalysis.leafKey(source: .ownEdge, outcome: outcomeEnum,
-                                                   mechanism: EdgeMechanism(rawValue: mech)!)
-                } else if src == 1 {
-                    if outcome == 1 {
-                        let tex = boardTexture(boardBuf, bd)
-                        relChop[p][tex] += 1
-                        key = RelativeAnalysis.leafKey(source: .kicker, outcome: .tie,
-                                                       texture: ChopTexture(rawValue: tex)!)
-                    } else {
-                        key = RelativeAnalysis.leafKey(source: .kicker, outcome: outcomeEnum)
-                    }
-                } else {
-                    key = RelativeAnalysis.leafKey(source: .playsBoard, outcome: outcomeEnum)
+                    relWinCombo[p][mech] += 1
+                    key = RelativeAnalysis.winComboKey(EdgeMechanism(rawValue: mech)!)
+                case .kickerWin:
+                    relWinKicker[p] += 1
+                    key = RelativeAnalysis.winKickerKey
+                case .chop:
+                    let tex = boardTexture(boardBuf, bd)
+                    relChop[p][tex] += 1
+                    key = RelativeAnalysis.chopKey(ChopTexture(rawValue: tex)!)
+                case .worseCombination, .lowerCategory:
+                    relLoseCombo[p] += 1
+                    key = RelativeAnalysis.loseComboKey
+                    winnerHand = hands[bestIdx]   // highlight the opponent's winning combination
+                case .kickerLose:
+                    relLoseKicker[p] += 1
+                    key = RelativeAnalysis.loseKickerKey
                 }
-                if (relExamples[p][key]?.count ?? 0) < 3 {
-                    relExamples[p][key, default: []].append(boardBuf)
+
+                // Bucket this runout by its scenario signature so the kept examples
+                // stay varied (typical + contrasting), not near-identical boards.
+                var decisiveRank = 0
+                if mech == EdgeMechanism.unsharedCard.rawValue {
+                    decisiveRank = highestSetRank(unsharedMask[p] & boardRankMask)
+                } else if mech == EdgeMechanism.sharedRank.rawValue {
+                    decisiveRank = highestSetRank(sharedMask[p] & boardRankMask)
+                }
+                let sig = (myCat << 16) | (oppCat << 8) | decisiveRank
+                if relBuckets[p][key]?[sig] != nil {
+                    relBuckets[p][key]![sig]!.count += 1
+                } else {
+                    // First runout of this signature: representative + decisive cards.
+                    let dec = decisiveBoardIndices(hand: winnerHand, board: boardBuf)
+                    relBuckets[p][key, default: [:]][sig] =
+                        ExampleBucket(sig: sig, count: 1, board: boardBuf,
+                                      decisive: dec, myCat: myCat, oppCat: oppCat)
                 }
             }
 
@@ -284,12 +316,18 @@ public enum EquityCalculator {
         var relative = [RelativeAnalysis]()
         relative.reserveCapacity(playerCount)
         for p in 0..<playerCount {
+            var examples = [String: [RelExample]]()
+            for (key, buckets) in relBuckets[p] {
+                examples[key] = selectVariedExamples(Array(buckets.values), limit: relExampleLimit, total: total)
+            }
             relative.append(RelativeAnalysis(
                 hand: hands[p],
-                prob: relProb[p].map { row in row.map { $0 / total } },
-                edgeMechanism: relEdge[p].map { row in row.map { $0 / total } },
-                kickerChopTexture: relChop[p].map { $0 / total },
-                examples: relExamples[p]
+                winCombination: relWinCombo[p].map { $0 / total },
+                winKicker: relWinKicker[p] / total,
+                chop: relChop[p].map { $0 / total },
+                loseCombination: relLoseCombo[p] / total,
+                loseKicker: relLoseKicker[p] / total,
+                examples: examples
             ))
         }
 
@@ -297,6 +335,105 @@ public enum EquityCalculator {
         return EquityResult(players: players, totalRunouts: totalRunouts,
                             coWinMatrix: coWinMatrix, relative: relative)
     }
+}
+
+// MARK: - Relative example selection
+
+/// How many example runouts to keep per leaf cell.
+private let relExampleLimit = 3
+
+/// One scenario bucket gathered during the pass: a representative board plus how
+/// often this signature occurs, used to pick varied examples afterwards.
+private struct ExampleBucket {
+    let sig: Int
+    var count: Int
+    let board: [Card]
+    let decisive: [Int]
+    let myCat: Int
+    let oppCat: Int
+}
+
+/// Highest rank (2...14) set in a 15-bit rank mask, or 0 if none.
+@inline(__always)
+func highestSetRank(_ mask: Int) -> Int {
+    var r = 14
+    while r >= 2 { if mask & (1 << r) != 0 { return r }; r -= 1 }
+    return 0
+}
+
+/// A packed score stripped of its *kicker* nibbles, keeping only the category and
+/// the ranks that form the combination itself (the paired part; all five ranks for
+/// a flush; the run-high for a straight). Two hands with the same `combinationScore`
+/// hold the exact same combination and differ — if at all — only by a kicker.
+@inline(__always)
+func combinationScore(_ score: Int, _ category: HandCategory) -> Int {
+    // Score layout: category<<20 | k1<<16 | k2<<12 | k3<<8 | k4<<4 | k5.
+    let lowMask: Int
+    switch category {
+    case .highCard:               lowMask = 0x00000          // all five are kickers
+    case .onePair, .trips, .quads,
+         .straight, .straightFlush: lowMask = 0xF0000        // first nibble only
+    case .twoPair, .fullHouse:    lowMask = 0xFF000          // first two nibbles
+    case .flush:                  lowMask = 0xFFFFF          // a flush has no kicker
+    }
+    return (score & ~0xFFFFF) | (score & lowMask)
+}
+
+/// The board cards that compose the given hand's combination — both pairs of a two
+/// pair, the trips and pair of a full house, all five of a straight/flush, etc.
+/// (kickers excluded). Highlighting these shows the whole made hand. `hand` is the
+/// winner's hole cards, so a loss highlights the opponent's winning combination.
+private func decisiveBoardIndices(hand: [Card], board: [Card]) -> [Int] {
+    let combo = Set(combinationCards(bestFive(hand + board)))
+    return board.indices.filter { combo.contains(board[$0]) }
+}
+
+/// The cards forming the combination itself — the paired ranks (two cards per
+/// pair, three for trips, four for quads), or all five for a straight/flush/full
+/// house. Pure kickers are excluded; a bare high card has no combination.
+func combinationCards(_ five: [Card]) -> [Card] {
+    switch evaluate(five).category {
+    case .highCard: return []
+    case .straight, .flush, .fullHouse, .straightFlush: return five
+    case .onePair, .twoPair, .trips, .quads:
+        var counts = [Int: Int]()
+        for c in five { counts[c.rank, default: 0] += 1 }
+        return five.filter { (counts[$0.rank] ?? 0) >= 2 }
+    }
+}
+
+/// "Variété max": the most frequent scenario first, then greedily the buckets
+/// that contrast most with those already chosen (different opponent category
+/// outweighs a different own category, which outweighs a different decisive
+/// rank), ties broken by frequency. Each example carries its share of the cell.
+private func selectVariedExamples(_ buckets: [ExampleBucket], limit: Int, total: Double) -> [RelExample] {
+    guard !buckets.isEmpty else { return [] }
+    var pool = buckets.sorted { $0.count > $1.count }
+    var chosen = [pool.removeFirst()]
+    while chosen.count < limit && !pool.isEmpty {
+        var bestIdx = 0
+        var bestKey = (-1, -1)
+        for (i, b) in pool.enumerated() {
+            let minDist = chosen.map { bucketDistance($0, b) }.min() ?? 0
+            let candidate = (minDist, b.count)
+            if candidate > bestKey { bestKey = candidate; bestIdx = i }
+        }
+        chosen.append(pool.remove(at: bestIdx))
+    }
+    return chosen.map { b in
+        RelExample(board: b.board, decisive: b.decisive,
+                   myCategory: HandCategory(rawValue: b.myCat)!,
+                   oppCategory: HandCategory(rawValue: b.oppCat)!,
+                   count: b.count,
+                   share: Double(b.count) / total)   // absolute: fraction of all runouts
+    }
+}
+
+/// Contrast between two scenario buckets (higher = more different).
+private func bucketDistance(_ a: ExampleBucket, _ b: ExampleBucket) -> Int {
+    (a.oppCat != b.oppCat ? 4 : 0)
+        + (a.myCat != b.myCat ? 2 : 0)
+        + ((a.sig & 0xFF) != (b.sig & 0xFF) ? 1 : 0)
 }
 
 /// Small, fast, seedable PRNG (SplitMix64) for reproducible Monte-Carlo runs.

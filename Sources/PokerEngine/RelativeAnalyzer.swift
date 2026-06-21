@@ -7,35 +7,20 @@ public enum RelOutcome: Int, Sendable, CaseIterable {
     case lose      // someone else is better
 }
 
-/// Where a player's result comes from, measured against the *bare board*.
-public enum RelSource: Int, Sendable, CaseIterable {
-    /// Hole cards build a strictly higher category than the bare board (a real new hand).
-    case ownEdge = 0
-    /// Same category as the bare board; hole cards only shift in-category rank/kicker.
-    case kicker
-    /// Hole cards add nothing to the best five — the board plays.
-    case playsBoard
-
-    public var label: String {
-        switch self {
-        case .ownEdge: return "Mon edge propre"
-        case .kicker: return "Le kicker tranche"
-        case .playsBoard: return "Le tableau joue"
-        }
-    }
-}
-
-/// For an `ownEdge`, which hole card(s) created the new hand.
+/// When I WIN by combination, which hole card(s) built that combination over the
+/// board.
 public enum EdgeMechanism: Int, Sendable, CaseIterable {
     case unsharedCard = 0   // an UNSHARED hole rank paired on the board (e.g. my 2)
     case sharedRank         // a rank both players hold paired (e.g. the common 10)
-    case draw               // a straight/flush from my hole, no paired hole rank
+    case draw               // my hole makes the better straight/flush (completed, or higher than the board's)
+    case pocketPair         // my two hole cards are a pair, above the board (no hole rank on board)
 
     public var label: String {
         switch self {
         case .unsharedCard: return "via ma carte non partagée"
         case .sharedRank: return "via un rang partagé"
-        case .draw: return "via un tirage (couleur/quinte)"
+        case .draw: return "via une quinte/couleur"
+        case .pocketPair: return "via une paire servie"
         }
     }
 }
@@ -58,33 +43,96 @@ public enum ChopTexture: Int, Sendable, CaseIterable {
     }
 }
 
+/// One illustrative runout for a leaf cell: a real board, which board card(s)
+/// are decisive, what each side ends up with, and how representative it is.
+public struct RelExample: Sendable {
+    /// The complete five-card board for this runout.
+    public let board: [Card]
+    /// Indices into `board` of the card(s) that make the player's hand
+    /// (the paired hole rank, or the cards completing a straight/flush).
+    /// Empty when the board plays or only a kicker decides.
+    public let decisive: [Int]
+    /// The five-card category the player ends up with.
+    public let myCategory: HandCategory
+    /// The five-card category of the *best opponent* on this board.
+    public let oppCategory: HandCategory
+    /// Number of runouts (board combinations) matching this example's scenario.
+    public let count: Int
+    /// `count` as a fraction of *all* runouts (absolute probability, not relative
+    /// to the cell) — the UI shows this in %, or `count` combos when it rounds to 0.
+    public let share: Double
+}
+
+/// "How I improve, relative to the opponent" — a decomposition of every runout by
+/// the **showdown** between me and the best opponent (not by what I add to the bare
+/// board). This keeps "le kicker tranche" to genuine kicker duels: same combination
+/// on both sides, a side card decides. All values are fractions of all runouts.
 public struct RelativeAnalysis: Sendable {
     public let hand: [Card]
-    /// `prob[source.rawValue][outcome.rawValue]` — fractions of all runouts, summing to 1.
-    public let prob: [[Double]]
-    /// `edgeMechanism[mechanism.rawValue][outcome.rawValue]` — splits the `ownEdge` row.
-    public let edgeMechanism: [[Double]]
-    /// `kickerChopTexture[texture.rawValue]` — splits the `kicker`+`tie` cell.
-    public let kickerChopTexture: [Double]
-    /// Up to a few example boards per *leaf cell*, keyed by `leafKey(...)`.
-    /// Every non-empty cell has at least one, so every number is explainable.
-    public let examples: [String: [[Card]]]
+    /// I win because my combination beats the opponent's, split by how my hole
+    /// built that combination over the board (`EdgeMechanism`).
+    public let winCombination: [Double]   // indexed by EdgeMechanism.rawValue
+    /// I win a genuine kicker duel (same combination as the opponent, my side card wins).
+    public let winKicker: Double
+    /// Chop — identical hands — split by board texture (`ChopTexture`).
+    public let chop: [Double]             // indexed by ChopTexture.rawValue
+    /// I lose because the opponent has a better combination.
+    public let loseCombination: Double
+    /// I lose a genuine kicker duel.
+    public let loseKicker: Double
+    /// A few *varied* example runouts per leaf, keyed by the helpers below; every
+    /// non-empty leaf has at least one, so every number is explainable.
+    public let examples: [String: [RelExample]]
 
-    public func p(_ s: RelSource, _ o: RelOutcome) -> Double { prob[s.rawValue][o.rawValue] }
+    public var winTotal: Double { winCombination.reduce(0, +) + winKicker }
+    public var tieTotal: Double { chop.reduce(0, +) }
+    public var loseTotal: Double { loseCombination + loseKicker }
 
-    /// Stable key for a leaf cell of the decomposition.
-    public static func leafKey(source: RelSource, outcome: RelOutcome,
-                               mechanism: EdgeMechanism? = nil, texture: ChopTexture? = nil) -> String {
-        switch source {
-        case .ownEdge: return "edge-\(mechanism?.rawValue ?? -1)-\(outcome.rawValue)"
-        case .kicker: return outcome == .tie ? "kicker-tie-\(texture?.rawValue ?? -1)" : "kicker-\(outcome.rawValue)"
-        case .playsBoard: return "board-\(outcome.rawValue)"
-        }
-    }
+    // Stable leaf keys.
+    public static func winComboKey(_ m: EdgeMechanism) -> String { "wincombo-\(m.rawValue)" }
+    public static let winKickerKey = "winkicker"
+    public static func chopKey(_ t: ChopTexture) -> String { "chop-\(t.rawValue)" }
+    public static let loseComboKey = "losecombo"
+    public static let loseKickerKey = "losekicker"
 }
 
 // The relative decomposition is produced in the same single enumeration pass as
 // the equity: read it from `EquityCalculator.compute(...).relative`.
+
+/// Why one five-card hand beats (or ties) another, honouring the strict kicker
+/// definition: a *kicker* decides ONLY between two identical combinations. A made
+/// hand (full / straight / flush) never has a kicker — a higher one is a
+/// `betterCombination`, never a `kickerWin`.
+public enum ShowdownVerdict: Sendable, Equatable {
+    case higherCategory     // my category outranks the opponent's
+    case lowerCategory      // the opponent's category outranks mine
+    case betterCombination  // same category, my combination is stronger (no kicker involved)
+    case worseCombination   // same category, the opponent's combination is stronger
+    case kickerWin          // identical combination, my side card wins
+    case kickerLose         // identical combination, the opponent's side card wins
+    case chop               // identical hands
+}
+
+/// Classify the showdown between two evaluated five-card hands.
+public func showdownVerdict(_ myFive: [Card], _ oppFive: [Card]) -> ShowdownVerdict {
+    let mine = evaluate(myFive), opp = evaluate(oppFive)
+    return showdownVerdict(myScore: mine.score, myCategory: mine.category,
+                           oppScore: opp.score, oppCategory: opp.category)
+}
+
+/// Same classification from already-evaluated packed scores (hot-loop friendly).
+@inline(__always)
+func showdownVerdict(myScore: Int, myCategory: HandCategory,
+                     oppScore: Int, oppCategory: HandCategory) -> ShowdownVerdict {
+    if myScore == oppScore { return .chop }
+    if myCategory != oppCategory {
+        return myCategory > oppCategory ? .higherCategory : .lowerCategory
+    }
+    let myCombi = combinationScore(myScore, myCategory)
+    let oppCombi = combinationScore(oppScore, oppCategory)
+    if myCombi == oppCombi { return myScore > oppScore ? .kickerWin : .kickerLose }
+    return myCombi > oppCombi ? .betterCombination : .worseCombination
+}
 
 /// Texture of the board behind a kicker-chop (module-internal helper).
 func boardTexture(_ board: [Card], _ bd: HandRank) -> Int {

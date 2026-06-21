@@ -189,23 +189,18 @@ final class PropertyTests: XCTestCase {
     // MARK: - Relative decomposition
 
     func testRelativeDecompositionInvariants() {
-        property("relative buckets partition runouts and sub-splits stay consistent")
+        property("relative leaves partition runouts and reconstruct their totals")
             <- forAll(postflopDealGen) { deal in
                 let rel = EquityCalculator.compute(hands: deal.hands, board: deal.board).relative
                 for a in rel {
-                    // The 3×3 grid partitions every runout.
-                    let sum = a.prob.flatMap { $0 }.reduce(0, +)
-                    if abs(sum - 1.0) > 1e-9 { return false }
-                    // edgeMechanism splits the ownEdge row, outcome by outcome.
-                    for o in RelOutcome.allCases {
-                        let mechSum = EdgeMechanism.allCases.reduce(0.0) {
-                            $0 + a.edgeMechanism[$1.rawValue][o.rawValue]
-                        }
-                        if abs(mechSum - a.p(.ownEdge, o)) > 1e-9 { return false }
-                    }
-                    // kickerChopTexture splits the (kicker, tie) cell.
-                    let texSum = a.kickerChopTexture.reduce(0, +)
-                    if abs(texSum - a.p(.kicker, .tie)) > 1e-9 { return false }
+                    // Win / chop / lose leaves partition every runout.
+                    if abs(a.winTotal + a.tieTotal + a.loseTotal - 1.0) > 1e-9 { return false }
+                    // The win-by-combination mechanisms + the kicker win reconstruct the win total.
+                    if abs(a.winCombination.reduce(0, +) + a.winKicker - a.winTotal) > 1e-9 { return false }
+                    // The chop textures reconstruct the tie total.
+                    if abs(a.chop.reduce(0, +) - a.tieTotal) > 1e-9 { return false }
+                    // Combination loss + kicker loss reconstruct the lose total.
+                    if abs(a.loseCombination + a.loseKicker - a.loseTotal) > 1e-9 { return false }
                 }
                 return true
             }
@@ -214,12 +209,9 @@ final class PropertyTests: XCTestCase {
     func testRelativeOutcomesMatchEquity() {
         property("relative win/tie totals equal the equity engine") <- forAll(postflopDealGen) { deal in
             let result = EquityCalculator.compute(hands: deal.hands, board: deal.board)
-            let rel = result.relative
             for p in deal.hands.indices {
-                let win = RelSource.allCases.reduce(0.0) { $0 + rel[p].prob[$1.rawValue][RelOutcome.win.rawValue] }
-                let tie = RelSource.allCases.reduce(0.0) { $0 + rel[p].prob[$1.rawValue][RelOutcome.tie.rawValue] }
-                if abs(win - result.players[p].winProb) > 1e-9 { return false }
-                if abs(tie - result.players[p].tieProb) > 1e-9 { return false }
+                if abs(result.relative[p].winTotal - result.players[p].winProb) > 1e-9 { return false }
+                if abs(result.relative[p].tieTotal - result.players[p].tieProb) > 1e-9 { return false }
             }
             return true
         }

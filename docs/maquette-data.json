@@ -1,0 +1,4727 @@
+{
+  "players" : [
+    {
+      "tie" : 0.0042247171063082255,
+      "groups" : [
+        {
+          "w" : 0.8146094385109186,
+          "subtitle" : "les cartes privatives font une meilleure combinaison que le tableau",
+          "l" : 0.17973502368738262,
+          "title" : "Amélioration propre",
+          "rows" : [
+            {
+              "label" : "paire servie",
+              "cells" : [
+                {
+                  "outcome" : "win",
+                  "examples" : [
+                    {
+                      "decisive" : [
+
+                      ],
+                      "board" : [
+                        {
+                          "red" : false,
+                          "r" : "2",
+                          "s" : "♠"
+                        },
+                        {
+                          "red" : false,
+                          "r" : "3",
+                          "s" : "♠"
+                        },
+                        {
+                          "red" : true,
+                          "r" : "4",
+                          "s" : "♥"
+                        },
+                        {
+                          "red" : true,
+                          "r" : "6",
+                          "s" : "♥"
+                        },
+                        {
+                          "red" : true,
+                          "r" : "9",
+                          "s" : "♥"
+                        }
+                      ],
+                      "opp" : {
+                        "five" : [
+                          {
+                            "s" : "♠",
+                            "r" : "Q",
+                            "red" : false
+                          },
+                          {
+                            "s" : "♠",
+                            "r" : "9",
+                            "red" : false
+                          },
+                          {
+                            "s" : "♥",
+                            "r" : "4",
+                            "red" : true
+                          },
+                          {
+                            "s" : "♥",
+                            "r" : "6",
+                            "red" : true
+                          },
+                          {
+                            "s" : "♥",
+                            "r" : "9",
+                            "red" : true
+                          }
+                        ],
+                        "cat" : "une paire"
+                      },
+                      "sentence" : "paire servie → une paire ; j'ai une meilleure paire",
+                      "share" : 0.16133583756155448,
+                      "count" : 276256,
+                      "me" : {
+                        "five" : [
+                          {
+                            "r" : "A",
+                            "s" : "♠",
+                            "red" : false
+                          },
+                          {
+                            "r" : "A",
+                            "s" : "♥",
+                            "red" : true
+                          },
+                          {
+                            "r" : "4",
+                            "s" : "♥",
+                            "red" : true
+                          },
+                          {
+                            "r" : "6",
+                            "s" : "♥",
+                            "red" : true
+                          },
+                          {
+                            "r" : "9",
+                            "s" : "♥",
+                            "red" : true
+                          }
+                        ],
+                        "cat" : "une paire"
+                      }
+                    },
+                    {
+                      "me" : {
+                        "five" : [
+                          {
+                            "s" : "♠",
+                            "red" : false,
+                            "r" : "A"
+                          },
+                          {
+                            "s" : "♥",
+                            "red" : true,
+                            "r" : "A"
+                          },
+                          {
+                            "s" : "♠",
+                            "red" : false,
+                            "r" : "3"
+                          },
+                          {
+                            "s" : "♥",
+                            "red" : true,
+                            "r" : "3"
+                          },
+                          {
+                            "s" : "♥",
+                            "red" : true,
+                            "r" : "4"
+                          }
+                        ],
+                        "cat" : "deux paires"
+                      },
+                      "decisive" : [
+                        2,
+                        3
+                      ],
+                      "count" : 272088,
+                      "sentence" : "paire servie → deux paires ; j'ai de meilleures deux paires",
+                      "share" : 0.15890169035404927,
+                      "opp" : {
+                        "five" : [
+                          {
+                            "s" : "♠",
+                            "red" : false,
+                            "r" : "Q"
+                          },
+                          {
+                            "s" : "♠",
+                            "red" : false,
+                            "r" : "2"
+                          },
+                          {
+                            "s" : "♥",
+                            "red" : true,
+                            "r" : "2"
+                          },
+                          {
+                            "s" : "♠",
+                            "red" : false,
+                            "r" : "3"
+                          },
+                          {
+                            "s" : "♥",
+                            "red" : true,
+                            "r" : "3"
+                          }
+                        ],
+                        "cat" : "deux paires"
+                      },
+                      "board" : [
+                        {
+                          "red" : false,
+                          "r" : "2",
+                          "s" : "♠"
+                        },
+                        {
+                          "red" : true,
+                          "r" : "2",
+                          "s" : "♥"
+                        },
+                        {
+                          "red" : false,
+                          "r" : "3",
+                          "s" : "♠"
+                        },
+                        {
+                          "red" : true,
+                          "r" : "3",
+                          "s" : "♥"
+                        },
+                        {
+                          "red" : true,
+                          "r" : "4",
+                          "s" : "♥"
+                        }
+                      ]
+                    },
+                    {
+                      "sentence" : "paire servie → full ; l'adversaire en reste à un brelan",
+                      "opp" : {
+                        "five" : [
+                          {
+                            "r" : "Q",
+                            "red" : false,
+                            "s" : "♠"
+                          },
+                          {
+                            "r" : "9",
+                            "red" : false,
+                            "s" : "♠"
+                          },
+                          {
+                            "r" : "2",
+                            "red" : false,
+                            "s" : "♠"
+                          },
+                          {
+                            "r" : "2",
+                            "red" : true,
+                            "s" : "♥"
+                          },
+                          {
+                            "r" : "2",
+                            "red" : false,
+                            "s" : "♣"
+                          }
+                        ],
+                        "cat" : "brelan"
+                      },
+                      "me" : {
+                        "five" : [
+                          {
+                            "r" : "A",
+                            "s" : "♠",
+                            "red" : false
+                          },
+                          {
+                            "r" : "A",
+                            "s" : "♥",
+                            "red" : true
+                          },
+                          {
+                            "r" : "2",
+                            "s" : "♠",
+                            "red" : false
+                          },
+                          {
+                            "r" : "2",
+                            "s" : "♥",
+                            "red" : true
+                          },
+                          {
+                            "r" : "2",
+                            "s" : "♣",
+                            "red" : false
+                          }
+                        ],
+                        "cat" : "full"
+                      },
+                      "decisive" : [
+                        0,
+                        1,
+                        2
+                      ],
+                      "board" : [
+                        {
+                          "red" : false,
+                          "r" : "2",
+                          "s" : "♠"
+                        },
+                        {
+                          "red" : true,
+                          "r" : "2",
+                          "s" : "♥"
+                        },
+                        {
+                          "red" : false,
+                          "r" : "2",
+                          "s" : "♣"
+                        },
+                        {
+                          "red" : false,
+                          "r" : "3",
+                          "s" : "♠"
+                        },
+                        {
+                          "red" : true,
+                          "r" : "4",
+                          "s" : "♥"
+                        }
+                      ],
+                      "count" : 21594,
+                      "share" : 0.012611078406638073
+                    }
+                  ],
+                  "prob" : 0.6025343630570272
+                },
+                {
+                  "prob" : 0,
+                  "examples" : [
+
+                  ],
+                  "outcome" : "tie"
+                },
+                {
+                  "prob" : 0.1699587222829591,
+                  "examples" : [
+                    {
+                      "count" : 65018,
+                      "decisive" : [
+
+                      ],
+                      "sentence" : "paire servie → une paire ; l'adversaire a deux paires",
+                      "me" : {
+                        "five" : [
+                          {
+                            "s" : "♠",
+                            "red" : false,
+                            "r" : "A"
+                          },
+                          {
+                            "s" : "♥",
+                            "red" : true,
+                            "r" : "A"
+                          },
+                          {
+                            "s" : "♥",
+                            "red" : true,
+                            "r" : "4"
+                          },
+                          {
+                            "s" : "♥",
+                            "red" : true,
+                            "r" : "9"
+                          },
+                          {
+                            "s" : "♥",
+                            "red" : true,
+                            "r" : "Q"
+                          }
+                        ],
+                        "cat" : "une paire"
+                      },
+                      "share" : 0.03797106121342939,
+                      "opp" : {
+                        "five" : [
+                          {
+                            "r" : "Q",
+                            "s" : "♠",
+                            "red" : false
+                          },
+                          {
+                            "r" : "9",
+                            "s" : "♠",
+                            "red" : false
+                          },
+                          {
+                            "r" : "4",
+                            "s" : "♥",
+                            "red" : true
+                          },
+                          {
+                            "r" : "9",
+                            "s" : "♥",
+                            "red" : true
+                          },
+                          {
+                            "r" : "Q",
+                            "s" : "♥",
+                            "red" : true
+                          }
+                        ],
+                        "cat" : "deux paires"
+                      },
+                      "board" : [
+                        {
+                          "r" : "2",
+                          "s" : "♠",
+                          "red" : false
+                        },
+                        {
+                          "r" : "3",
+                          "s" : "♠",
+                          "red" : false
+                        },
+                        {
+                          "r" : "4",
+                          "s" : "♥",
+                          "red" : true
+                        },
+                        {
+                          "r" : "9",
+                          "s" : "♥",
+                          "red" : true
+                        },
+                        {
+                          "r" : "Q",
+                          "s" : "♥",
+                          "red" : true
+                        }
+                      ]
+                    },
+                    {
+                      "sentence" : "paire servie → deux paires ; l'adversaire a un brelan",
+                      "share" : 0.02577346078733683,
+                      "me" : {
+                        "cat" : "deux paires",
+                        "five" : [
+                          {
+                            "r" : "A",
+                            "s" : "♠",
+                            "red" : false
+                          },
+                          {
+                            "r" : "A",
+                            "s" : "♥",
+                            "red" : true
+                          },
+                          {
+                            "r" : "4",
+                            "s" : "♥",
+                            "red" : true
+                          },
+                          {
+                            "r" : "9",
+                            "s" : "♥",
+                            "red" : true
+                          },
+                          {
+                            "r" : "9",
+                            "s" : "♣",
+                            "red" : false
+                          }
+                        ]
+                      },
+                      "board" : [
+                        {
+                          "r" : "2",
+                          "s" : "♠",
+                          "red" : false
+                        },
+                        {
+                          "r" : "3",
+                          "s" : "♠",
+                          "red" : false
+                        },
+                        {
+                          "r" : "4",
+                          "s" : "♥",
+                          "red" : true
+                        },
+                        {
+                          "r" : "9",
+                          "s" : "♥",
+                          "red" : true
+                        },
+                        {
+                          "r" : "9",
+                          "s" : "♣",
+                          "red" : false
+                        }
+                      ],
+                      "count" : 44132,
+                      "opp" : {
+                        "cat" : "brelan",
+                        "five" : [
+                          {
+                            "s" : "♠",
+                            "red" : false,
+                            "r" : "Q"
+                          },
+                          {
+                            "s" : "♠",
+                            "red" : false,
+                            "r" : "9"
+                          },
+                          {
+                            "s" : "♥",
+                            "red" : true,
+                            "r" : "4"
+                          },
+                          {
+                            "s" : "♥",
+                            "red" : true,
+                            "r" : "9"
+                          },
+                          {
+                            "s" : "♣",
+                            "red" : false,
+                            "r" : "9"
+                          }
+                        ]
+                      },
+                      "decisive" : [
+                        3,
+                        4
+                      ]
+                    },
+                    {
+                      "decisive" : [
+                        2,
+                        3,
+                        4
+                      ],
+                      "count" : 1806,
+                      "sentence" : "paire servie → full ; l'adversaire a un carré",
+                      "share" : 0.001054719255459311,
+                      "opp" : {
+                        "cat" : "carré",
+                        "five" : [
+                          {
+                            "red" : false,
+                            "r" : "Q",
+                            "s" : "♠"
+                          },
+                          {
+                            "red" : false,
+                            "r" : "9",
+                            "s" : "♠"
+                          },
+                          {
+                            "red" : true,
+                            "r" : "9",
+                            "s" : "♥"
+                          },
+                          {
+                            "red" : false,
+                            "r" : "9",
+                            "s" : "♣"
+                          },
+                          {
+                            "red" : true,
+                            "r" : "9",
+                            "s" : "♦"
+                          }
+                        ]
+                      },
+                      "board" : [
+                        {
+                          "r" : "2",
+                          "s" : "♠",
+                          "red" : false
+                        },
+                        {
+                          "r" : "2",
+                          "s" : "♥",
+                          "red" : true
+                        },
+                        {
+                          "r" : "9",
+                          "s" : "♥",
+                          "red" : true
+                        },
+                        {
+                          "r" : "9",
+                          "s" : "♣",
+                          "red" : false
+                        },
+                        {
+                          "r" : "9",
+                          "s" : "♦",
+                          "red" : true
+                        }
+                      ],
+                      "me" : {
+                        "cat" : "full",
+                        "five" : [
+                          {
+                            "red" : false,
+                            "r" : "A",
+                            "s" : "♠"
+                          },
+                          {
+                            "red" : true,
+                            "r" : "A",
+                            "s" : "♥"
+                          },
+                          {
+                            "red" : true,
+                            "r" : "9",
+                            "s" : "♥"
+                          },
+                          {
+                            "red" : false,
+                            "r" : "9",
+                            "s" : "♣"
+                          },
+                          {
+                            "red" : true,
+                            "r" : "9",
+                            "s" : "♦"
+                          }
+                        ]
+                      }
+                    }
+                  ],
+                  "outcome" : "lose"
+                }
+              ]
+            },
+            {
+              "label" : "carte non partagée",
+              "cells" : [
+                {
+                  "outcome" : "win",
+                  "prob" : 0.18877021837243854,
+                  "examples" : [
+                    {
+                      "count" : 93508,
+                      "me" : {
+                        "cat" : "brelan",
+                        "five" : [
+                          {
+                            "r" : "A",
+                            "s" : "♠",
+                            "red" : false
+                          },
+                          {
+                            "r" : "A",
+                            "s" : "♥",
+                            "red" : true
+                          },
+                          {
+                            "r" : "4",
+                            "s" : "♥",
+                            "red" : true
+                          },
+                          {
+                            "r" : "6",
+                            "s" : "♥",
+                            "red" : true
+                          },
+                          {
+                            "r" : "A",
+                            "s" : "♣",
+                            "red" : false
+                          }
+                        ]
+                      },
+                      "decisive" : [
+                        4
+                      ],
+                      "opp" : {
+                        "cat" : "carte haute",
+                        "five" : [
+                          {
+                            "r" : "Q",
+                            "red" : false,
+                            "s" : "♠"
+                          },
+                          {
+                            "r" : "9",
+                            "red" : false,
+                            "s" : "♠"
+                          },
+                          {
+                            "r" : "4",
+                            "red" : true,
+                            "s" : "♥"
+                          },
+                          {
+                            "r" : "6",
+                            "red" : true,
+                            "s" : "♥"
+                          },
+                          {
+                            "r" : "A",
+                            "red" : false,
+                            "s" : "♣"
+                          }
+                        ]
+                      },
+                      "board" : [
+                        {
+                          "s" : "♠",
+                          "red" : false,
+                          "r" : "2"
+                        },
+                        {
+                          "s" : "♠",
+                          "red" : false,
+                          "r" : "3"
+                        },
+                        {
+                          "s" : "♥",
+                          "red" : true,
+                          "r" : "4"
+                        },
+                        {
+                          "s" : "♥",
+                          "red" : true,
+                          "r" : "6"
+                        },
+                        {
+                          "s" : "♣",
+                          "red" : false,
+                          "r" : "A"
+                        }
+                      ],
+                      "sentence" : "A♣ apparie ma carte → brelan ; l'adversaire en reste à une carte haute",
+                      "share" : 0.0546094618712565
+                    },
+                    {
+                      "count" : 65844,
+                      "sentence" : "A♣ apparie ma carte → full ; l'adversaire en reste à une paire",
+                      "decisive" : [
+                        0,
+                        1,
+                        4
+                      ],
+                      "me" : {
+                        "cat" : "full",
+                        "five" : [
+                          {
+                            "r" : "A",
+                            "s" : "♠",
+                            "red" : false
+                          },
+                          {
+                            "r" : "A",
+                            "s" : "♥",
+                            "red" : true
+                          },
+                          {
+                            "r" : "2",
+                            "s" : "♠",
+                            "red" : false
+                          },
+                          {
+                            "r" : "2",
+                            "s" : "♥",
+                            "red" : true
+                          },
+                          {
+                            "r" : "A",
+                            "s" : "♣",
+                            "red" : false
+                          }
+                        ]
+                      },
+                      "opp" : {
+                        "cat" : "une paire",
+                        "five" : [
+                          {
+                            "s" : "♠",
+                            "red" : false,
+                            "r" : "Q"
+                          },
+                          {
+                            "s" : "♠",
+                            "red" : false,
+                            "r" : "9"
+                          },
+                          {
+                            "s" : "♠",
+                            "red" : false,
+                            "r" : "2"
+                          },
+                          {
+                            "s" : "♥",
+                            "red" : true,
+                            "r" : "2"
+                          },
+                          {
+                            "s" : "♣",
+                            "red" : false,
+                            "r" : "A"
+                          }
+                        ]
+                      },
+                      "board" : [
+                        {
+                          "s" : "♠",
+                          "red" : false,
+                          "r" : "2"
+                        },
+                        {
+                          "s" : "♥",
+                          "red" : true,
+                          "r" : "2"
+                        },
+                        {
+                          "s" : "♠",
+                          "red" : false,
+                          "r" : "3"
+                        },
+                        {
+                          "s" : "♥",
+                          "red" : true,
+                          "r" : "4"
+                        },
+                        {
+                          "s" : "♣",
+                          "red" : false,
+                          "r" : "A"
+                        }
+                      ],
+                      "share" : 0.038453452190732484
+                    },
+                    {
+                      "opp" : {
+                        "cat" : "deux paires",
+                        "five" : [
+                          {
+                            "s" : "♠",
+                            "r" : "Q",
+                            "red" : false
+                          },
+                          {
+                            "s" : "♠",
+                            "r" : "2",
+                            "red" : false
+                          },
+                          {
+                            "s" : "♥",
+                            "r" : "2",
+                            "red" : true
+                          },
+                          {
+                            "s" : "♣",
+                            "r" : "A",
+                            "red" : false
+                          },
+                          {
+                            "s" : "♦",
+                            "r" : "A",
+                            "red" : true
+                          }
+                        ]
+                      },
+                      "decisive" : [
+                        3,
+                        4
+                      ],
+                      "me" : {
+                        "cat" : "carré",
+                        "five" : [
+                          {
+                            "s" : "♠",
+                            "r" : "A",
+                            "red" : false
+                          },
+                          {
+                            "s" : "♥",
+                            "r" : "A",
+                            "red" : true
+                          },
+                          {
+                            "s" : "♠",
+                            "r" : "3",
+                            "red" : false
+                          },
+                          {
+                            "s" : "♣",
+                            "r" : "A",
+                            "red" : false
+                          },
+                          {
+                            "s" : "♦",
+                            "r" : "A",
+                            "red" : true
+                          }
+                        ]
+                      },
+                      "board" : [
+                        {
+                          "s" : "♠",
+                          "red" : false,
+                          "r" : "2"
+                        },
+                        {
+                          "s" : "♥",
+                          "red" : true,
+                          "r" : "2"
+                        },
+                        {
+                          "s" : "♠",
+                          "red" : false,
+                          "r" : "3"
+                        },
+                        {
+                          "s" : "♣",
+                          "red" : false,
+                          "r" : "A"
+                        },
+                        {
+                          "s" : "♦",
+                          "red" : true,
+                          "r" : "A"
+                        }
+                      ],
+                      "count" : 7200,
+                      "share" : 0.004204860819106888,
+                      "sentence" : "A♣ A♦ apparie ma carte → carré ; l'adversaire en reste à deux paires"
+                    }
+                  ]
+                },
+                {
+                  "prob" : 0,
+                  "outcome" : "tie",
+                  "examples" : [
+
+                  ]
+                },
+                {
+                  "prob" : 0.00876713480783786,
+                  "outcome" : "lose",
+                  "examples" : [
+                    {
+                      "opp" : {
+                        "five" : [
+                          {
+                            "r" : "Q",
+                            "s" : "♠",
+                            "red" : false
+                          },
+                          {
+                            "r" : "9",
+                            "s" : "♠",
+                            "red" : false
+                          },
+                          {
+                            "r" : "8",
+                            "s" : "♠",
+                            "red" : false
+                          },
+                          {
+                            "r" : "10",
+                            "s" : "♥",
+                            "red" : true
+                          },
+                          {
+                            "r" : "J",
+                            "s" : "♥",
+                            "red" : true
+                          }
+                        ],
+                        "cat" : "quinte"
+                      },
+                      "sentence" : "A♣ apparie ma carte → brelan ; l'adversaire a une quinte",
+                      "board" : [
+                        {
+                          "red" : false,
+                          "r" : "2",
+                          "s" : "♠"
+                        },
+                        {
+                          "red" : false,
+                          "r" : "8",
+                          "s" : "♠"
+                        },
+                        {
+                          "red" : true,
+                          "r" : "10",
+                          "s" : "♥"
+                        },
+                        {
+                          "red" : true,
+                          "r" : "J",
+                          "s" : "♥"
+                        },
+                        {
+                          "red" : false,
+                          "r" : "A",
+                          "s" : "♣"
+                        }
+                      ],
+                      "decisive" : [
+                        4
+                      ],
+                      "me" : {
+                        "five" : [
+                          {
+                            "s" : "♠",
+                            "red" : false,
+                            "r" : "A"
+                          },
+                          {
+                            "s" : "♥",
+                            "red" : true,
+                            "r" : "A"
+                          },
+                          {
+                            "s" : "♥",
+                            "red" : true,
+                            "r" : "10"
+                          },
+                          {
+                            "s" : "♥",
+                            "red" : true,
+                            "r" : "J"
+                          },
+                          {
+                            "s" : "♣",
+                            "red" : false,
+                            "r" : "A"
+                          }
+                        ],
+                        "cat" : "brelan"
+                      },
+                      "share" : 0.00487763855016399,
+                      "count" : 8352
+                    },
+                    {
+                      "opp" : {
+                        "five" : [
+                          {
+                            "s" : "♠",
+                            "red" : false,
+                            "r" : "9"
+                          },
+                          {
+                            "s" : "♥",
+                            "red" : true,
+                            "r" : "9"
+                          },
+                          {
+                            "s" : "♣",
+                            "red" : false,
+                            "r" : "9"
+                          },
+                          {
+                            "s" : "♦",
+                            "red" : true,
+                            "r" : "9"
+                          },
+                          {
+                            "s" : "♣",
+                            "red" : false,
+                            "r" : "A"
+                          }
+                        ],
+                        "cat" : "carré"
+                      },
+                      "board" : [
+                        {
+                          "red" : false,
+                          "r" : "2",
+                          "s" : "♠"
+                        },
+                        {
+                          "red" : true,
+                          "r" : "9",
+                          "s" : "♥"
+                        },
+                        {
+                          "red" : false,
+                          "r" : "9",
+                          "s" : "♣"
+                        },
+                        {
+                          "red" : true,
+                          "r" : "9",
+                          "s" : "♦"
+                        },
+                        {
+                          "red" : false,
+                          "r" : "A",
+                          "s" : "♣"
+                        }
+                      ],
+                      "count" : 172,
+                      "decisive" : [
+                        1,
+                        2,
+                        4
+                      ],
+                      "share" : 0.00010044945290088676,
+                      "me" : {
+                        "five" : [
+                          {
+                            "s" : "♠",
+                            "red" : false,
+                            "r" : "A"
+                          },
+                          {
+                            "s" : "♥",
+                            "red" : true,
+                            "r" : "A"
+                          },
+                          {
+                            "s" : "♥",
+                            "red" : true,
+                            "r" : "9"
+                          },
+                          {
+                            "s" : "♣",
+                            "red" : false,
+                            "r" : "9"
+                          },
+                          {
+                            "s" : "♣",
+                            "red" : false,
+                            "r" : "A"
+                          }
+                        ],
+                        "cat" : "full"
+                      },
+                      "sentence" : "A♣ apparie ma carte → full ; l'adversaire a un carré"
+                    },
+                    {
+                      "opp" : {
+                        "five" : [
+                          {
+                            "r" : "Q",
+                            "s" : "♠",
+                            "red" : false
+                          },
+                          {
+                            "r" : "9",
+                            "s" : "♠",
+                            "red" : false
+                          },
+                          {
+                            "r" : "8",
+                            "s" : "♠",
+                            "red" : false
+                          },
+                          {
+                            "r" : "10",
+                            "s" : "♠",
+                            "red" : false
+                          },
+                          {
+                            "r" : "J",
+                            "s" : "♠",
+                            "red" : false
+                          }
+                        ],
+                        "cat" : "quinte flush"
+                      },
+                      "count" : 2,
+                      "sentence" : "A♣ A♦ apparie ma carte → carré ; l'adversaire a une quinte flush",
+                      "decisive" : [
+                        3,
+                        4
+                      ],
+                      "me" : {
+                        "five" : [
+                          {
+                            "red" : false,
+                            "r" : "A",
+                            "s" : "♠"
+                          },
+                          {
+                            "red" : true,
+                            "r" : "A",
+                            "s" : "♥"
+                          },
+                          {
+                            "red" : false,
+                            "r" : "J",
+                            "s" : "♠"
+                          },
+                          {
+                            "red" : false,
+                            "r" : "A",
+                            "s" : "♣"
+                          },
+                          {
+                            "red" : true,
+                            "r" : "A",
+                            "s" : "♦"
+                          }
+                        ],
+                        "cat" : "carré"
+                      },
+                      "board" : [
+                        {
+                          "red" : false,
+                          "r" : "8",
+                          "s" : "♠"
+                        },
+                        {
+                          "red" : false,
+                          "r" : "10",
+                          "s" : "♠"
+                        },
+                        {
+                          "red" : false,
+                          "r" : "J",
+                          "s" : "♠"
+                        },
+                        {
+                          "red" : false,
+                          "r" : "A",
+                          "s" : "♣"
+                        },
+                        {
+                          "red" : true,
+                          "r" : "A",
+                          "s" : "♦"
+                        }
+                      ],
+                      "share" : 1.1680168941963577e-06
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "label" : "quinte\/couleur",
+              "cells" : [
+                {
+                  "outcome" : "win",
+                  "examples" : [
+                    {
+                      "sentence" : "tirage ♠ complété → couleur ; j'ai une meilleure couleur",
+                      "opp" : {
+                        "five" : [
+                          {
+                            "r" : "Q",
+                            "s" : "♠",
+                            "red" : false
+                          },
+                          {
+                            "r" : "9",
+                            "s" : "♠",
+                            "red" : false
+                          },
+                          {
+                            "r" : "3",
+                            "s" : "♠",
+                            "red" : false
+                          },
+                          {
+                            "r" : "4",
+                            "s" : "♠",
+                            "red" : false
+                          },
+                          {
+                            "r" : "6",
+                            "s" : "♠",
+                            "red" : false
+                          }
+                        ],
+                        "cat" : "couleur"
+                      },
+                      "decisive" : [
+                        0,
+                        2,
+                        3,
+                        4
+                      ],
+                      "board" : [
+                        {
+                          "r" : "2",
+                          "s" : "♠",
+                          "red" : false
+                        },
+                        {
+                          "r" : "2",
+                          "s" : "♥",
+                          "red" : true
+                        },
+                        {
+                          "r" : "3",
+                          "s" : "♠",
+                          "red" : false
+                        },
+                        {
+                          "r" : "4",
+                          "s" : "♠",
+                          "red" : false
+                        },
+                        {
+                          "r" : "6",
+                          "s" : "♠",
+                          "red" : false
+                        }
+                      ],
+                      "me" : {
+                        "five" : [
+                          {
+                            "red" : false,
+                            "r" : "A",
+                            "s" : "♠"
+                          },
+                          {
+                            "red" : false,
+                            "r" : "2",
+                            "s" : "♠"
+                          },
+                          {
+                            "red" : false,
+                            "r" : "3",
+                            "s" : "♠"
+                          },
+                          {
+                            "red" : false,
+                            "r" : "4",
+                            "s" : "♠"
+                          },
+                          {
+                            "red" : false,
+                            "r" : "6",
+                            "s" : "♠"
+                          }
+                        ],
+                        "cat" : "couleur"
+                      },
+                      "count" : 8341,
+                      "share" : 0.00487121445724591
+                    },
+                    {
+                      "share" : 0.0038252553284930713,
+                      "count" : 6550,
+                      "opp" : {
+                        "cat" : "quinte",
+                        "five" : [
+                          {
+                            "r" : "Q",
+                            "red" : false,
+                            "s" : "♠"
+                          },
+                          {
+                            "r" : "9",
+                            "red" : false,
+                            "s" : "♠"
+                          },
+                          {
+                            "r" : "10",
+                            "red" : false,
+                            "s" : "♠"
+                          },
+                          {
+                            "r" : "J",
+                            "red" : true,
+                            "s" : "♥"
+                          },
+                          {
+                            "r" : "K",
+                            "red" : true,
+                            "s" : "♥"
+                          }
+                        ]
+                      },
+                      "decisive" : [
+                        1,
+                        2,
+                        3,
+                        4
+                      ],
+                      "me" : {
+                        "cat" : "quinte",
+                        "five" : [
+                          {
+                            "r" : "A",
+                            "red" : false,
+                            "s" : "♠"
+                          },
+                          {
+                            "r" : "10",
+                            "red" : false,
+                            "s" : "♠"
+                          },
+                          {
+                            "r" : "J",
+                            "red" : true,
+                            "s" : "♥"
+                          },
+                          {
+                            "r" : "Q",
+                            "red" : true,
+                            "s" : "♥"
+                          },
+                          {
+                            "r" : "K",
+                            "red" : true,
+                            "s" : "♥"
+                          }
+                        ]
+                      },
+                      "sentence" : "tirage quinte complété → quinte ; j'ai une meilleure quinte",
+                      "board" : [
+                        {
+                          "s" : "♠",
+                          "red" : false,
+                          "r" : "2"
+                        },
+                        {
+                          "s" : "♠",
+                          "red" : false,
+                          "r" : "10"
+                        },
+                        {
+                          "s" : "♥",
+                          "red" : true,
+                          "r" : "J"
+                        },
+                        {
+                          "s" : "♥",
+                          "red" : true,
+                          "r" : "Q"
+                        },
+                        {
+                          "s" : "♥",
+                          "red" : true,
+                          "r" : "K"
+                        }
+                      ]
+                    },
+                    {
+                      "count" : 16,
+                      "sentence" : "tirage ♥ complété → quinte flush ; l'adversaire en reste à une paire",
+                      "decisive" : [
+                        1,
+                        2,
+                        3,
+                        4
+                      ],
+                      "me" : {
+                        "cat" : "quinte flush",
+                        "five" : [
+                          {
+                            "s" : "♥",
+                            "red" : true,
+                            "r" : "A"
+                          },
+                          {
+                            "s" : "♥",
+                            "red" : true,
+                            "r" : "2"
+                          },
+                          {
+                            "s" : "♥",
+                            "red" : true,
+                            "r" : "3"
+                          },
+                          {
+                            "s" : "♥",
+                            "red" : true,
+                            "r" : "4"
+                          },
+                          {
+                            "s" : "♥",
+                            "red" : true,
+                            "r" : "5"
+                          }
+                        ]
+                      },
+                      "share" : 9.344135153570861e-06,
+                      "board" : [
+                        {
+                          "r" : "2",
+                          "s" : "♠",
+                          "red" : false
+                        },
+                        {
+                          "r" : "2",
+                          "s" : "♥",
+                          "red" : true
+                        },
+                        {
+                          "r" : "3",
+                          "s" : "♥",
+                          "red" : true
+                        },
+                        {
+                          "r" : "4",
+                          "s" : "♥",
+                          "red" : true
+                        },
+                        {
+                          "r" : "5",
+                          "s" : "♥",
+                          "red" : true
+                        }
+                      ],
+                      "opp" : {
+                        "cat" : "une paire",
+                        "five" : [
+                          {
+                            "red" : false,
+                            "r" : "Q",
+                            "s" : "♠"
+                          },
+                          {
+                            "red" : false,
+                            "r" : "9",
+                            "s" : "♠"
+                          },
+                          {
+                            "red" : false,
+                            "r" : "2",
+                            "s" : "♠"
+                          },
+                          {
+                            "red" : true,
+                            "r" : "2",
+                            "s" : "♥"
+                          },
+                          {
+                            "red" : true,
+                            "r" : "5",
+                            "s" : "♥"
+                          }
+                        ]
+                      }
+                    }
+                  ],
+                  "prob" : 0.023304857081452825
+                },
+                {
+                  "outcome" : "tie",
+                  "examples" : [
+
+                  ],
+                  "prob" : 0
+                },
+                {
+                  "outcome" : "lose",
+                  "examples" : [
+                    {
+                      "count" : 822,
+                      "opp" : {
+                        "cat" : "couleur",
+                        "five" : [
+                          {
+                            "s" : "♠",
+                            "r" : "Q",
+                            "red" : false
+                          },
+                          {
+                            "s" : "♠",
+                            "r" : "9",
+                            "red" : false
+                          },
+                          {
+                            "s" : "♠",
+                            "r" : "2",
+                            "red" : false
+                          },
+                          {
+                            "s" : "♠",
+                            "r" : "3",
+                            "red" : false
+                          },
+                          {
+                            "s" : "♠",
+                            "r" : "4",
+                            "red" : false
+                          }
+                        ]
+                      },
+                      "decisive" : [
+                        0,
+                        2,
+                        3,
+                        4
+                      ],
+                      "me" : {
+                        "cat" : "quinte",
+                        "five" : [
+                          {
+                            "r" : "A",
+                            "s" : "♠",
+                            "red" : false
+                          },
+                          {
+                            "r" : "2",
+                            "s" : "♠",
+                            "red" : false
+                          },
+                          {
+                            "r" : "3",
+                            "s" : "♠",
+                            "red" : false
+                          },
+                          {
+                            "r" : "4",
+                            "s" : "♠",
+                            "red" : false
+                          },
+                          {
+                            "r" : "5",
+                            "s" : "♥",
+                            "red" : true
+                          }
+                        ]
+                      },
+                      "board" : [
+                        {
+                          "r" : "2",
+                          "s" : "♠",
+                          "red" : false
+                        },
+                        {
+                          "r" : "2",
+                          "s" : "♥",
+                          "red" : true
+                        },
+                        {
+                          "r" : "3",
+                          "s" : "♠",
+                          "red" : false
+                        },
+                        {
+                          "r" : "4",
+                          "s" : "♠",
+                          "red" : false
+                        },
+                        {
+                          "r" : "5",
+                          "s" : "♥",
+                          "red" : true
+                        }
+                      ],
+                      "share" : 0.000480054943514703,
+                      "sentence" : "tirage quinte complété → quinte ; l'adversaire a une couleur"
+                    },
+                    {
+                      "sentence" : "tirage ♠ complété → couleur ; l'adversaire a une quinte flush",
+                      "opp" : {
+                        "five" : [
+                          {
+                            "r" : "Q",
+                            "s" : "♠",
+                            "red" : false
+                          },
+                          {
+                            "r" : "9",
+                            "s" : "♠",
+                            "red" : false
+                          },
+                          {
+                            "r" : "8",
+                            "s" : "♠",
+                            "red" : false
+                          },
+                          {
+                            "r" : "10",
+                            "s" : "♠",
+                            "red" : false
+                          },
+                          {
+                            "r" : "J",
+                            "s" : "♠",
+                            "red" : false
+                          }
+                        ],
+                        "cat" : "quinte flush"
+                      },
+                      "decisive" : [
+                        0,
+                        2,
+                        3,
+                        4
+                      ],
+                      "me" : {
+                        "five" : [
+                          {
+                            "s" : "♠",
+                            "red" : false,
+                            "r" : "A"
+                          },
+                          {
+                            "s" : "♠",
+                            "red" : false,
+                            "r" : "2"
+                          },
+                          {
+                            "s" : "♠",
+                            "red" : false,
+                            "r" : "8"
+                          },
+                          {
+                            "s" : "♠",
+                            "red" : false,
+                            "r" : "10"
+                          },
+                          {
+                            "s" : "♠",
+                            "red" : false,
+                            "r" : "J"
+                          }
+                        ],
+                        "cat" : "couleur"
+                      },
+                      "count" : 615,
+                      "board" : [
+                        {
+                          "r" : "2",
+                          "s" : "♠",
+                          "red" : false
+                        },
+                        {
+                          "r" : "2",
+                          "s" : "♥",
+                          "red" : true
+                        },
+                        {
+                          "r" : "8",
+                          "s" : "♠",
+                          "red" : false
+                        },
+                        {
+                          "r" : "10",
+                          "s" : "♠",
+                          "red" : false
+                        },
+                        {
+                          "r" : "J",
+                          "s" : "♠",
+                          "red" : false
+                        }
+                      ],
+                      "share" : 0.00035916519496538
+                    },
+                    {
+                      "me" : {
+                        "five" : [
+                          {
+                            "s" : "♥",
+                            "r" : "A",
+                            "red" : true
+                          },
+                          {
+                            "s" : "♥",
+                            "r" : "2",
+                            "red" : true
+                          },
+                          {
+                            "s" : "♥",
+                            "r" : "3",
+                            "red" : true
+                          },
+                          {
+                            "s" : "♥",
+                            "r" : "9",
+                            "red" : true
+                          },
+                          {
+                            "s" : "♥",
+                            "r" : "Q",
+                            "red" : true
+                          }
+                        ],
+                        "cat" : "couleur"
+                      },
+                      "sentence" : "tirage ♥ complété → couleur ; l'adversaire a un full",
+                      "count" : 180,
+                      "decisive" : [
+                        0,
+                        1,
+                        2,
+                        4
+                      ],
+                      "board" : [
+                        {
+                          "red" : true,
+                          "s" : "♥",
+                          "r" : "2"
+                        },
+                        {
+                          "red" : true,
+                          "s" : "♥",
+                          "r" : "3"
+                        },
+                        {
+                          "red" : true,
+                          "s" : "♥",
+                          "r" : "9"
+                        },
+                        {
+                          "red" : false,
+                          "s" : "♣",
+                          "r" : "9"
+                        },
+                        {
+                          "red" : true,
+                          "s" : "♥",
+                          "r" : "Q"
+                        }
+                      ],
+                      "share" : 0.00010512152047767219,
+                      "opp" : {
+                        "five" : [
+                          {
+                            "s" : "♠",
+                            "red" : false,
+                            "r" : "Q"
+                          },
+                          {
+                            "s" : "♠",
+                            "red" : false,
+                            "r" : "9"
+                          },
+                          {
+                            "s" : "♥",
+                            "red" : true,
+                            "r" : "9"
+                          },
+                          {
+                            "s" : "♣",
+                            "red" : false,
+                            "r" : "9"
+                          },
+                          {
+                            "s" : "♥",
+                            "red" : true,
+                            "r" : "Q"
+                          }
+                        ],
+                        "cat" : "full"
+                      }
+                    }
+                  ],
+                  "prob" : 0.001009166596585653
+                }
+              ]
+            }
+          ],
+          "t" : 0,
+          "source" : "ownEdge"
+        },
+        {
+          "title" : "Le kicker tranche",
+          "rows" : [
+            {
+              "label" : "le kicker décide",
+              "cells" : [
+                {
+                  "examples" : [
+                    {
+                      "share" : 0.0002452835477812351,
+                      "board" : [
+                        {
+                          "s" : "♠",
+                          "r" : "2",
+                          "red" : false
+                        },
+                        {
+                          "s" : "♥",
+                          "r" : "2",
+                          "red" : true
+                        },
+                        {
+                          "s" : "♣",
+                          "r" : "2",
+                          "red" : false
+                        },
+                        {
+                          "s" : "♦",
+                          "r" : "2",
+                          "red" : true
+                        },
+                        {
+                          "s" : "♠",
+                          "r" : "3",
+                          "red" : false
+                        }
+                      ],
+                      "opp" : {
+                        "five" : [
+                          {
+                            "s" : "♠",
+                            "red" : false,
+                            "r" : "Q"
+                          },
+                          {
+                            "s" : "♠",
+                            "red" : false,
+                            "r" : "2"
+                          },
+                          {
+                            "s" : "♥",
+                            "red" : true,
+                            "r" : "2"
+                          },
+                          {
+                            "s" : "♣",
+                            "red" : false,
+                            "r" : "2"
+                          },
+                          {
+                            "s" : "♦",
+                            "red" : true,
+                            "r" : "2"
+                          }
+                        ],
+                        "cat" : "carré"
+                      },
+                      "sentence" : "même carré, mon kicker l'emporte",
+                      "count" : 420,
+                      "me" : {
+                        "five" : [
+                          {
+                            "r" : "A",
+                            "s" : "♠",
+                            "red" : false
+                          },
+                          {
+                            "r" : "2",
+                            "s" : "♠",
+                            "red" : false
+                          },
+                          {
+                            "r" : "2",
+                            "s" : "♥",
+                            "red" : true
+                          },
+                          {
+                            "r" : "2",
+                            "s" : "♣",
+                            "red" : false
+                          },
+                          {
+                            "r" : "2",
+                            "s" : "♦",
+                            "red" : true
+                          }
+                        ],
+                        "cat" : "carré"
+                      },
+                      "decisive" : [
+
+                      ]
+                    }
+                  ],
+                  "outcome" : "win",
+                  "prob" : 0.0002452835477812351
+                },
+                {
+                  "examples" : [
+
+                  ],
+                  "outcome" : "lose",
+                  "prob" : 0
+                }
+              ]
+            }
+          ],
+          "w" : 0.0002452835477812351,
+          "subtitle" : "même main que le tableau, seul le kicker bouge",
+          "source" : "kicker",
+          "l" : 0,
+          "t" : 0
+        },
+        {
+          "title" : "Le tableau joue",
+          "rows" : [
+            {
+              "label" : "issue",
+              "cells" : [
+                {
+                  "examples" : [
+
+                  ],
+                  "outcome" : "win",
+                  "prob" : 0
+                },
+                {
+                  "examples" : [
+                    {
+                      "opp" : {
+                        "cat" : "quinte",
+                        "five" : [
+                          {
+                            "red" : false,
+                            "s" : "♠",
+                            "r" : "2"
+                          },
+                          {
+                            "red" : false,
+                            "s" : "♠",
+                            "r" : "3"
+                          },
+                          {
+                            "red" : true,
+                            "s" : "♥",
+                            "r" : "4"
+                          },
+                          {
+                            "red" : true,
+                            "s" : "♥",
+                            "r" : "5"
+                          },
+                          {
+                            "red" : true,
+                            "s" : "♥",
+                            "r" : "6"
+                          }
+                        ]
+                      },
+                      "me" : {
+                        "cat" : "quinte",
+                        "five" : [
+                          {
+                            "r" : "2",
+                            "s" : "♠",
+                            "red" : false
+                          },
+                          {
+                            "r" : "3",
+                            "s" : "♠",
+                            "red" : false
+                          },
+                          {
+                            "r" : "4",
+                            "s" : "♥",
+                            "red" : true
+                          },
+                          {
+                            "r" : "5",
+                            "s" : "♥",
+                            "red" : true
+                          },
+                          {
+                            "r" : "6",
+                            "s" : "♥",
+                            "red" : true
+                          }
+                        ]
+                      },
+                      "decisive" : [
+
+                      ],
+                      "share" : 0.002704543118511666,
+                      "count" : 4631,
+                      "board" : [
+                        {
+                          "r" : "2",
+                          "s" : "♠",
+                          "red" : false
+                        },
+                        {
+                          "r" : "3",
+                          "s" : "♠",
+                          "red" : false
+                        },
+                        {
+                          "r" : "4",
+                          "s" : "♥",
+                          "red" : true
+                        },
+                        {
+                          "r" : "5",
+                          "s" : "♥",
+                          "red" : true
+                        },
+                        {
+                          "r" : "6",
+                          "s" : "♥",
+                          "red" : true
+                        }
+                      ],
+                      "sentence" : "le tableau joue pour les deux → partage"
+                    },
+                    {
+                      "me" : {
+                        "cat" : "couleur",
+                        "five" : [
+                          {
+                            "red" : false,
+                            "r" : "2",
+                            "s" : "♣"
+                          },
+                          {
+                            "red" : false,
+                            "r" : "3",
+                            "s" : "♣"
+                          },
+                          {
+                            "red" : false,
+                            "r" : "4",
+                            "s" : "♣"
+                          },
+                          {
+                            "red" : false,
+                            "r" : "5",
+                            "s" : "♣"
+                          },
+                          {
+                            "red" : false,
+                            "r" : "7",
+                            "s" : "♣"
+                          }
+                        ]
+                      },
+                      "share" : 0.0014915575738887487,
+                      "board" : [
+                        {
+                          "s" : "♣",
+                          "r" : "2",
+                          "red" : false
+                        },
+                        {
+                          "s" : "♣",
+                          "r" : "3",
+                          "red" : false
+                        },
+                        {
+                          "s" : "♣",
+                          "r" : "4",
+                          "red" : false
+                        },
+                        {
+                          "s" : "♣",
+                          "r" : "5",
+                          "red" : false
+                        },
+                        {
+                          "s" : "♣",
+                          "r" : "7",
+                          "red" : false
+                        }
+                      ],
+                      "sentence" : "le tableau joue pour les deux → partage",
+                      "opp" : {
+                        "cat" : "couleur",
+                        "five" : [
+                          {
+                            "r" : "2",
+                            "s" : "♣",
+                            "red" : false
+                          },
+                          {
+                            "r" : "3",
+                            "s" : "♣",
+                            "red" : false
+                          },
+                          {
+                            "r" : "4",
+                            "s" : "♣",
+                            "red" : false
+                          },
+                          {
+                            "r" : "5",
+                            "s" : "♣",
+                            "red" : false
+                          },
+                          {
+                            "r" : "7",
+                            "s" : "♣",
+                            "red" : false
+                          }
+                        ]
+                      },
+                      "decisive" : [
+
+                      ],
+                      "count" : 2554
+                    },
+                    {
+                      "me" : {
+                        "cat" : "quinte flush",
+                        "five" : [
+                          {
+                            "s" : "♠",
+                            "red" : false,
+                            "r" : "2"
+                          },
+                          {
+                            "s" : "♠",
+                            "red" : false,
+                            "r" : "3"
+                          },
+                          {
+                            "s" : "♠",
+                            "red" : false,
+                            "r" : "4"
+                          },
+                          {
+                            "s" : "♠",
+                            "red" : false,
+                            "r" : "5"
+                          },
+                          {
+                            "s" : "♠",
+                            "red" : false,
+                            "r" : "6"
+                          }
+                        ]
+                      },
+                      "share" : 1.6936244965847186e-05,
+                      "board" : [
+                        {
+                          "red" : false,
+                          "s" : "♠",
+                          "r" : "2"
+                        },
+                        {
+                          "red" : false,
+                          "s" : "♠",
+                          "r" : "3"
+                        },
+                        {
+                          "red" : false,
+                          "s" : "♠",
+                          "r" : "4"
+                        },
+                        {
+                          "red" : false,
+                          "s" : "♠",
+                          "r" : "5"
+                        },
+                        {
+                          "red" : false,
+                          "s" : "♠",
+                          "r" : "6"
+                        }
+                      ],
+                      "sentence" : "le tableau joue pour les deux → partage",
+                      "opp" : {
+                        "cat" : "quinte flush",
+                        "five" : [
+                          {
+                            "r" : "2",
+                            "s" : "♠",
+                            "red" : false
+                          },
+                          {
+                            "r" : "3",
+                            "s" : "♠",
+                            "red" : false
+                          },
+                          {
+                            "r" : "4",
+                            "s" : "♠",
+                            "red" : false
+                          },
+                          {
+                            "r" : "5",
+                            "s" : "♠",
+                            "red" : false
+                          },
+                          {
+                            "r" : "6",
+                            "s" : "♠",
+                            "red" : false
+                          }
+                        ]
+                      },
+                      "decisive" : [
+
+                      ],
+                      "count" : 29
+                    }
+                  ],
+                  "outcome" : "tie",
+                  "prob" : 0.0042247171063082255
+                },
+                {
+                  "examples" : [
+                    {
+                      "sentence" : "le tableau seul pour moi ; l'adversaire a une meilleure quinte",
+                      "board" : [
+                        {
+                          "s" : "♠",
+                          "red" : false,
+                          "r" : "4"
+                        },
+                        {
+                          "s" : "♠",
+                          "red" : false,
+                          "r" : "5"
+                        },
+                        {
+                          "s" : "♥",
+                          "red" : true,
+                          "r" : "6"
+                        },
+                        {
+                          "s" : "♥",
+                          "red" : true,
+                          "r" : "7"
+                        },
+                        {
+                          "s" : "♥",
+                          "red" : true,
+                          "r" : "8"
+                        }
+                      ],
+                      "opp" : {
+                        "five" : [
+                          {
+                            "r" : "9",
+                            "red" : false,
+                            "s" : "♠"
+                          },
+                          {
+                            "r" : "5",
+                            "red" : false,
+                            "s" : "♠"
+                          },
+                          {
+                            "r" : "6",
+                            "red" : true,
+                            "s" : "♥"
+                          },
+                          {
+                            "r" : "7",
+                            "red" : true,
+                            "s" : "♥"
+                          },
+                          {
+                            "r" : "8",
+                            "red" : true,
+                            "s" : "♥"
+                          }
+                        ],
+                        "cat" : "quinte"
+                      },
+                      "decisive" : [
+
+                      ],
+                      "me" : {
+                        "five" : [
+                          {
+                            "s" : "♠",
+                            "red" : false,
+                            "r" : "4"
+                          },
+                          {
+                            "s" : "♠",
+                            "red" : false,
+                            "r" : "5"
+                          },
+                          {
+                            "s" : "♥",
+                            "red" : true,
+                            "r" : "6"
+                          },
+                          {
+                            "s" : "♥",
+                            "red" : true,
+                            "r" : "7"
+                          },
+                          {
+                            "s" : "♥",
+                            "red" : true,
+                            "r" : "8"
+                          }
+                        ],
+                        "cat" : "quinte"
+                      },
+                      "share" : 0.0009414216167222643,
+                      "count" : 1612
+                    },
+                    {
+                      "board" : [
+                        {
+                          "r" : "4",
+                          "s" : "♠",
+                          "red" : false
+                        },
+                        {
+                          "r" : "5",
+                          "s" : "♠",
+                          "red" : false
+                        },
+                        {
+                          "r" : "6",
+                          "s" : "♠",
+                          "red" : false
+                        },
+                        {
+                          "r" : "7",
+                          "s" : "♠",
+                          "red" : false
+                        },
+                        {
+                          "r" : "8",
+                          "s" : "♠",
+                          "red" : false
+                        }
+                      ],
+                      "sentence" : "le tableau seul pour moi ; l'adversaire a une meilleure quinte flush",
+                      "decisive" : [
+
+                      ],
+                      "count" : 1,
+                      "share" : 5.840084470981788e-07,
+                      "me" : {
+                        "cat" : "quinte flush",
+                        "five" : [
+                          {
+                            "s" : "♠",
+                            "r" : "4",
+                            "red" : false
+                          },
+                          {
+                            "s" : "♠",
+                            "r" : "5",
+                            "red" : false
+                          },
+                          {
+                            "s" : "♠",
+                            "r" : "6",
+                            "red" : false
+                          },
+                          {
+                            "s" : "♠",
+                            "r" : "7",
+                            "red" : false
+                          },
+                          {
+                            "s" : "♠",
+                            "r" : "8",
+                            "red" : false
+                          }
+                        ]
+                      },
+                      "opp" : {
+                        "cat" : "quinte flush",
+                        "five" : [
+                          {
+                            "r" : "9",
+                            "s" : "♠",
+                            "red" : false
+                          },
+                          {
+                            "r" : "5",
+                            "s" : "♠",
+                            "red" : false
+                          },
+                          {
+                            "r" : "6",
+                            "s" : "♠",
+                            "red" : false
+                          },
+                          {
+                            "r" : "7",
+                            "s" : "♠",
+                            "red" : false
+                          },
+                          {
+                            "r" : "8",
+                            "s" : "♠",
+                            "red" : false
+                          }
+                        ]
+                      }
+                    },
+                    {
+                      "me" : {
+                        "cat" : "quinte",
+                        "five" : [
+                          {
+                            "red" : false,
+                            "s" : "♠",
+                            "r" : "2"
+                          },
+                          {
+                            "red" : false,
+                            "s" : "♠",
+                            "r" : "3"
+                          },
+                          {
+                            "red" : false,
+                            "s" : "♠",
+                            "r" : "4"
+                          },
+                          {
+                            "red" : true,
+                            "s" : "♥",
+                            "r" : "5"
+                          },
+                          {
+                            "red" : true,
+                            "s" : "♥",
+                            "r" : "6"
+                          }
+                        ]
+                      },
+                      "decisive" : [
+
+                      ],
+                      "count" : 393,
+                      "sentence" : "le tableau seul pour moi ; l'adversaire a une couleur",
+                      "share" : 0.0002295153197095843,
+                      "opp" : {
+                        "cat" : "couleur",
+                        "five" : [
+                          {
+                            "r" : "Q",
+                            "red" : false,
+                            "s" : "♠"
+                          },
+                          {
+                            "r" : "9",
+                            "red" : false,
+                            "s" : "♠"
+                          },
+                          {
+                            "r" : "2",
+                            "red" : false,
+                            "s" : "♠"
+                          },
+                          {
+                            "r" : "3",
+                            "red" : false,
+                            "s" : "♠"
+                          },
+                          {
+                            "r" : "4",
+                            "red" : false,
+                            "s" : "♠"
+                          }
+                        ]
+                      },
+                      "board" : [
+                        {
+                          "r" : "2",
+                          "s" : "♠",
+                          "red" : false
+                        },
+                        {
+                          "r" : "3",
+                          "s" : "♠",
+                          "red" : false
+                        },
+                        {
+                          "r" : "4",
+                          "s" : "♠",
+                          "red" : false
+                        },
+                        {
+                          "r" : "5",
+                          "s" : "♥",
+                          "red" : true
+                        },
+                        {
+                          "r" : "6",
+                          "s" : "♥",
+                          "red" : true
+                        }
+                      ]
+                    }
+                  ],
+                  "outcome" : "lose",
+                  "prob" : 0.001185537147609303
+                }
+              ]
+            }
+          ],
+          "w" : 0,
+          "subtitle" : "les cartes privatives n'ajoutent rien",
+          "source" : "playsBoard",
+          "l" : 0.001185537147609303,
+          "t" : 0.0042247171063082255
+        }
+      ],
+      "hand" : [
+        {
+          "s" : "♠",
+          "r" : "A",
+          "red" : false
+        },
+        {
+          "s" : "♥",
+          "r" : "A",
+          "red" : true
+        }
+      ],
+      "lose" : 0.18092056083499192,
+      "win" : 0.8148547220586998
+    },
+    {
+      "tie" : 0.0042247171063082255,
+      "groups" : [
+        {
+          "source" : "ownEdge",
+          "title" : "Amélioration propre",
+          "w" : 0.18092056083499192,
+          "l" : 0.40034538259561386,
+          "rows" : [
+            {
+              "cells" : [
+                {
+                  "prob" : 0.08099029144357545,
+                  "examples" : [
+                    {
+                      "decisive" : [
+                        3,
+                        4
+                      ],
+                      "count" : 65018,
+                      "opp" : {
+                        "cat" : "une paire",
+                        "five" : [
+                          {
+                            "red" : false,
+                            "r" : "A",
+                            "s" : "♠"
+                          },
+                          {
+                            "red" : true,
+                            "r" : "A",
+                            "s" : "♥"
+                          },
+                          {
+                            "red" : true,
+                            "r" : "4",
+                            "s" : "♥"
+                          },
+                          {
+                            "red" : true,
+                            "r" : "9",
+                            "s" : "♥"
+                          },
+                          {
+                            "red" : true,
+                            "r" : "Q",
+                            "s" : "♥"
+                          }
+                        ]
+                      },
+                      "share" : 0.03797106121342939,
+                      "sentence" : "9♥ Q♥ apparie ma carte → deux paires ; l'adversaire en reste à une paire",
+                      "me" : {
+                        "cat" : "deux paires",
+                        "five" : [
+                          {
+                            "r" : "Q",
+                            "s" : "♠",
+                            "red" : false
+                          },
+                          {
+                            "r" : "9",
+                            "s" : "♠",
+                            "red" : false
+                          },
+                          {
+                            "r" : "4",
+                            "s" : "♥",
+                            "red" : true
+                          },
+                          {
+                            "r" : "9",
+                            "s" : "♥",
+                            "red" : true
+                          },
+                          {
+                            "r" : "Q",
+                            "s" : "♥",
+                            "red" : true
+                          }
+                        ]
+                      },
+                      "board" : [
+                        {
+                          "s" : "♠",
+                          "red" : false,
+                          "r" : "2"
+                        },
+                        {
+                          "s" : "♠",
+                          "red" : false,
+                          "r" : "3"
+                        },
+                        {
+                          "s" : "♥",
+                          "red" : true,
+                          "r" : "4"
+                        },
+                        {
+                          "s" : "♥",
+                          "red" : true,
+                          "r" : "9"
+                        },
+                        {
+                          "s" : "♥",
+                          "red" : true,
+                          "r" : "Q"
+                        }
+                      ]
+                    },
+                    {
+                      "share" : 0.012886730393668415,
+                      "sentence" : "9♥ 9♣ apparie ma carte → brelan ; l'adversaire en reste à deux paires",
+                      "opp" : {
+                        "cat" : "deux paires",
+                        "five" : [
+                          {
+                            "s" : "♠",
+                            "red" : false,
+                            "r" : "A"
+                          },
+                          {
+                            "s" : "♥",
+                            "red" : true,
+                            "r" : "A"
+                          },
+                          {
+                            "s" : "♥",
+                            "red" : true,
+                            "r" : "4"
+                          },
+                          {
+                            "s" : "♥",
+                            "red" : true,
+                            "r" : "9"
+                          },
+                          {
+                            "s" : "♣",
+                            "red" : false,
+                            "r" : "9"
+                          }
+                        ]
+                      },
+                      "me" : {
+                        "cat" : "brelan",
+                        "five" : [
+                          {
+                            "red" : false,
+                            "s" : "♠",
+                            "r" : "Q"
+                          },
+                          {
+                            "red" : false,
+                            "s" : "♠",
+                            "r" : "9"
+                          },
+                          {
+                            "red" : true,
+                            "s" : "♥",
+                            "r" : "4"
+                          },
+                          {
+                            "red" : true,
+                            "s" : "♥",
+                            "r" : "9"
+                          },
+                          {
+                            "red" : false,
+                            "s" : "♣",
+                            "r" : "9"
+                          }
+                        ]
+                      },
+                      "board" : [
+                        {
+                          "red" : false,
+                          "r" : "2",
+                          "s" : "♠"
+                        },
+                        {
+                          "red" : false,
+                          "r" : "3",
+                          "s" : "♠"
+                        },
+                        {
+                          "red" : true,
+                          "r" : "4",
+                          "s" : "♥"
+                        },
+                        {
+                          "red" : true,
+                          "r" : "9",
+                          "s" : "♥"
+                        },
+                        {
+                          "red" : false,
+                          "r" : "9",
+                          "s" : "♣"
+                        }
+                      ],
+                      "decisive" : [
+                        3,
+                        4
+                      ],
+                      "count" : 22066
+                    },
+                    {
+                      "count" : 1118,
+                      "share" : 0.000652921443855764,
+                      "me" : {
+                        "cat" : "carré",
+                        "five" : [
+                          {
+                            "s" : "♠",
+                            "r" : "Q",
+                            "red" : false
+                          },
+                          {
+                            "s" : "♠",
+                            "r" : "9",
+                            "red" : false
+                          },
+                          {
+                            "s" : "♥",
+                            "r" : "Q",
+                            "red" : true
+                          },
+                          {
+                            "s" : "♣",
+                            "r" : "Q",
+                            "red" : false
+                          },
+                          {
+                            "s" : "♦",
+                            "r" : "Q",
+                            "red" : true
+                          }
+                        ]
+                      },
+                      "board" : [
+                        {
+                          "red" : false,
+                          "r" : "2",
+                          "s" : "♠"
+                        },
+                        {
+                          "red" : true,
+                          "r" : "2",
+                          "s" : "♥"
+                        },
+                        {
+                          "red" : true,
+                          "r" : "Q",
+                          "s" : "♥"
+                        },
+                        {
+                          "red" : false,
+                          "r" : "Q",
+                          "s" : "♣"
+                        },
+                        {
+                          "red" : true,
+                          "r" : "Q",
+                          "s" : "♦"
+                        }
+                      ],
+                      "sentence" : "Q♥ Q♣ Q♦ apparie ma carte → carré ; l'adversaire en reste à un full",
+                      "opp" : {
+                        "cat" : "full",
+                        "five" : [
+                          {
+                            "r" : "A",
+                            "s" : "♠",
+                            "red" : false
+                          },
+                          {
+                            "r" : "A",
+                            "s" : "♥",
+                            "red" : true
+                          },
+                          {
+                            "r" : "Q",
+                            "s" : "♥",
+                            "red" : true
+                          },
+                          {
+                            "r" : "Q",
+                            "s" : "♣",
+                            "red" : false
+                          },
+                          {
+                            "r" : "Q",
+                            "s" : "♦",
+                            "red" : true
+                          }
+                        ]
+                      },
+                      "decisive" : [
+                        2,
+                        3,
+                        4
+                      ]
+                    }
+                  ],
+                  "outcome" : "win"
+                },
+                {
+                  "outcome" : "tie",
+                  "examples" : [
+
+                  ],
+                  "prob" : 0
+                },
+                {
+                  "outcome" : "lose",
+                  "examples" : [
+                    {
+                      "count" : 138128,
+                      "decisive" : [
+                        4
+                      ],
+                      "board" : [
+                        {
+                          "red" : false,
+                          "r" : "2",
+                          "s" : "♠"
+                        },
+                        {
+                          "red" : false,
+                          "r" : "3",
+                          "s" : "♠"
+                        },
+                        {
+                          "red" : true,
+                          "r" : "4",
+                          "s" : "♥"
+                        },
+                        {
+                          "red" : true,
+                          "r" : "6",
+                          "s" : "♥"
+                        },
+                        {
+                          "red" : true,
+                          "r" : "9",
+                          "s" : "♥"
+                        }
+                      ],
+                      "share" : 0.08066791878077724,
+                      "opp" : {
+                        "cat" : "une paire",
+                        "five" : [
+                          {
+                            "red" : false,
+                            "r" : "A",
+                            "s" : "♠"
+                          },
+                          {
+                            "red" : true,
+                            "r" : "A",
+                            "s" : "♥"
+                          },
+                          {
+                            "red" : true,
+                            "r" : "4",
+                            "s" : "♥"
+                          },
+                          {
+                            "red" : true,
+                            "r" : "6",
+                            "s" : "♥"
+                          },
+                          {
+                            "red" : true,
+                            "r" : "9",
+                            "s" : "♥"
+                          }
+                        ]
+                      },
+                      "me" : {
+                        "cat" : "une paire",
+                        "five" : [
+                          {
+                            "red" : false,
+                            "s" : "♠",
+                            "r" : "Q"
+                          },
+                          {
+                            "red" : false,
+                            "s" : "♠",
+                            "r" : "9"
+                          },
+                          {
+                            "red" : true,
+                            "s" : "♥",
+                            "r" : "4"
+                          },
+                          {
+                            "red" : true,
+                            "s" : "♥",
+                            "r" : "6"
+                          },
+                          {
+                            "red" : true,
+                            "s" : "♥",
+                            "r" : "9"
+                          }
+                        ]
+                      },
+                      "sentence" : "9♥ apparie ma carte → une paire ; l'adversaire a une meilleure paire"
+                    },
+                    {
+                      "me" : {
+                        "cat" : "deux paires",
+                        "five" : [
+                          {
+                            "r" : "Q",
+                            "s" : "♠",
+                            "red" : false
+                          },
+                          {
+                            "r" : "9",
+                            "s" : "♠",
+                            "red" : false
+                          },
+                          {
+                            "r" : "3",
+                            "s" : "♠",
+                            "red" : false
+                          },
+                          {
+                            "r" : "3",
+                            "s" : "♥",
+                            "red" : true
+                          },
+                          {
+                            "r" : "Q",
+                            "s" : "♥",
+                            "red" : true
+                          }
+                        ]
+                      },
+                      "share" : 0.0710936842990497,
+                      "board" : [
+                        {
+                          "r" : "2",
+                          "s" : "♠",
+                          "red" : false
+                        },
+                        {
+                          "r" : "2",
+                          "s" : "♥",
+                          "red" : true
+                        },
+                        {
+                          "r" : "3",
+                          "s" : "♠",
+                          "red" : false
+                        },
+                        {
+                          "r" : "3",
+                          "s" : "♥",
+                          "red" : true
+                        },
+                        {
+                          "r" : "Q",
+                          "s" : "♥",
+                          "red" : true
+                        }
+                      ],
+                      "decisive" : [
+                        2,
+                        3,
+                        4
+                      ],
+                      "opp" : {
+                        "cat" : "deux paires",
+                        "five" : [
+                          {
+                            "r" : "A",
+                            "s" : "♠",
+                            "red" : false
+                          },
+                          {
+                            "r" : "A",
+                            "s" : "♥",
+                            "red" : true
+                          },
+                          {
+                            "r" : "3",
+                            "s" : "♠",
+                            "red" : false
+                          },
+                          {
+                            "r" : "3",
+                            "s" : "♥",
+                            "red" : true
+                          },
+                          {
+                            "r" : "Q",
+                            "s" : "♥",
+                            "red" : true
+                          }
+                        ]
+                      },
+                      "count" : 121734,
+                      "sentence" : "Q♥ apparie ma carte → deux paires ; l'adversaire a de meilleures deux paires"
+                    },
+                    {
+                      "opp" : {
+                        "cat" : "full",
+                        "five" : [
+                          {
+                            "r" : "A",
+                            "red" : false,
+                            "s" : "♠"
+                          },
+                          {
+                            "r" : "A",
+                            "red" : true,
+                            "s" : "♥"
+                          },
+                          {
+                            "r" : "2",
+                            "red" : false,
+                            "s" : "♠"
+                          },
+                          {
+                            "r" : "2",
+                            "red" : true,
+                            "s" : "♥"
+                          },
+                          {
+                            "r" : "2",
+                            "red" : false,
+                            "s" : "♣"
+                          }
+                        ]
+                      },
+                      "sentence" : "Q♥ apparie ma carte → full ; l'adversaire a un meilleur full",
+                      "me" : {
+                        "cat" : "full",
+                        "five" : [
+                          {
+                            "r" : "Q",
+                            "s" : "♠",
+                            "red" : false
+                          },
+                          {
+                            "r" : "2",
+                            "s" : "♠",
+                            "red" : false
+                          },
+                          {
+                            "r" : "2",
+                            "s" : "♥",
+                            "red" : true
+                          },
+                          {
+                            "r" : "2",
+                            "s" : "♣",
+                            "red" : false
+                          },
+                          {
+                            "r" : "Q",
+                            "s" : "♥",
+                            "red" : true
+                          }
+                        ]
+                      },
+                      "board" : [
+                        {
+                          "r" : "2",
+                          "s" : "♠",
+                          "red" : false
+                        },
+                        {
+                          "r" : "2",
+                          "s" : "♥",
+                          "red" : true
+                        },
+                        {
+                          "r" : "2",
+                          "s" : "♣",
+                          "red" : false
+                        },
+                        {
+                          "r" : "3",
+                          "s" : "♠",
+                          "red" : false
+                        },
+                        {
+                          "r" : "Q",
+                          "s" : "♥",
+                          "red" : true
+                        }
+                      ],
+                      "decisive" : [
+                        0,
+                        1,
+                        2,
+                        4
+                      ],
+                      "count" : 6738,
+                      "share" : 0.003935048916547529
+                    }
+                  ],
+                  "prob" : 0.3887428867771143
+                }
+              ],
+              "label" : "carte non partagée"
+            },
+            {
+              "cells" : [
+                {
+                  "prob" : 0.09993026939141647,
+                  "outcome" : "win",
+                  "examples" : [
+                    {
+                      "opp" : {
+                        "five" : [
+                          {
+                            "s" : "♠",
+                            "red" : false,
+                            "r" : "A"
+                          },
+                          {
+                            "s" : "♥",
+                            "red" : true,
+                            "r" : "A"
+                          },
+                          {
+                            "s" : "♥",
+                            "red" : true,
+                            "r" : "8"
+                          },
+                          {
+                            "s" : "♥",
+                            "red" : true,
+                            "r" : "10"
+                          },
+                          {
+                            "s" : "♥",
+                            "red" : true,
+                            "r" : "J"
+                          }
+                        ],
+                        "cat" : "une paire"
+                      },
+                      "board" : [
+                        {
+                          "s" : "♠",
+                          "r" : "2",
+                          "red" : false
+                        },
+                        {
+                          "s" : "♠",
+                          "r" : "3",
+                          "red" : false
+                        },
+                        {
+                          "s" : "♥",
+                          "r" : "8",
+                          "red" : true
+                        },
+                        {
+                          "s" : "♥",
+                          "r" : "10",
+                          "red" : true
+                        },
+                        {
+                          "s" : "♥",
+                          "r" : "J",
+                          "red" : true
+                        }
+                      ],
+                      "share" : 0.03196862239415431,
+                      "me" : {
+                        "five" : [
+                          {
+                            "s" : "♠",
+                            "red" : false,
+                            "r" : "Q"
+                          },
+                          {
+                            "s" : "♠",
+                            "red" : false,
+                            "r" : "9"
+                          },
+                          {
+                            "s" : "♥",
+                            "red" : true,
+                            "r" : "8"
+                          },
+                          {
+                            "s" : "♥",
+                            "red" : true,
+                            "r" : "10"
+                          },
+                          {
+                            "s" : "♥",
+                            "red" : true,
+                            "r" : "J"
+                          }
+                        ],
+                        "cat" : "quinte"
+                      },
+                      "decisive" : [
+                        2,
+                        3,
+                        4
+                      ],
+                      "count" : 54740,
+                      "sentence" : "tirage quinte complété → quinte ; l'adversaire en reste à une paire"
+                    },
+                    {
+                      "opp" : {
+                        "five" : [
+                          {
+                            "r" : "A",
+                            "s" : "♠",
+                            "red" : false
+                          },
+                          {
+                            "r" : "A",
+                            "s" : "♥",
+                            "red" : true
+                          },
+                          {
+                            "r" : "3",
+                            "s" : "♠",
+                            "red" : false
+                          },
+                          {
+                            "r" : "3",
+                            "s" : "♥",
+                            "red" : true
+                          },
+                          {
+                            "r" : "4",
+                            "s" : "♠",
+                            "red" : false
+                          }
+                        ],
+                        "cat" : "deux paires"
+                      },
+                      "count" : 34926,
+                      "board" : [
+                        {
+                          "s" : "♠",
+                          "r" : "2",
+                          "red" : false
+                        },
+                        {
+                          "s" : "♥",
+                          "r" : "2",
+                          "red" : true
+                        },
+                        {
+                          "s" : "♠",
+                          "r" : "3",
+                          "red" : false
+                        },
+                        {
+                          "s" : "♥",
+                          "r" : "3",
+                          "red" : true
+                        },
+                        {
+                          "s" : "♠",
+                          "r" : "4",
+                          "red" : false
+                        }
+                      ],
+                      "sentence" : "tirage ♠ complété → couleur ; l'adversaire en reste à deux paires",
+                      "share" : 0.020397079023350993,
+                      "decisive" : [
+                        0,
+                        2,
+                        4
+                      ],
+                      "me" : {
+                        "five" : [
+                          {
+                            "s" : "♠",
+                            "red" : false,
+                            "r" : "Q"
+                          },
+                          {
+                            "s" : "♠",
+                            "red" : false,
+                            "r" : "9"
+                          },
+                          {
+                            "s" : "♠",
+                            "red" : false,
+                            "r" : "2"
+                          },
+                          {
+                            "s" : "♠",
+                            "red" : false,
+                            "r" : "3"
+                          },
+                          {
+                            "s" : "♠",
+                            "red" : false,
+                            "r" : "4"
+                          }
+                        ],
+                        "cat" : "couleur"
+                      }
+                    },
+                    {
+                      "decisive" : [
+                        2,
+                        3,
+                        4
+                      ],
+                      "board" : [
+                        {
+                          "s" : "♠",
+                          "r" : "2",
+                          "red" : false
+                        },
+                        {
+                          "s" : "♥",
+                          "r" : "2",
+                          "red" : true
+                        },
+                        {
+                          "s" : "♠",
+                          "r" : "8",
+                          "red" : false
+                        },
+                        {
+                          "s" : "♠",
+                          "r" : "10",
+                          "red" : false
+                        },
+                        {
+                          "s" : "♠",
+                          "r" : "J",
+                          "red" : false
+                        }
+                      ],
+                      "count" : 615,
+                      "share" : 0.00035916519496538,
+                      "me" : {
+                        "five" : [
+                          {
+                            "r" : "Q",
+                            "red" : false,
+                            "s" : "♠"
+                          },
+                          {
+                            "r" : "9",
+                            "red" : false,
+                            "s" : "♠"
+                          },
+                          {
+                            "r" : "8",
+                            "red" : false,
+                            "s" : "♠"
+                          },
+                          {
+                            "r" : "10",
+                            "red" : false,
+                            "s" : "♠"
+                          },
+                          {
+                            "r" : "J",
+                            "red" : false,
+                            "s" : "♠"
+                          }
+                        ],
+                        "cat" : "quinte flush"
+                      },
+                      "opp" : {
+                        "five" : [
+                          {
+                            "s" : "♠",
+                            "r" : "A",
+                            "red" : false
+                          },
+                          {
+                            "s" : "♠",
+                            "r" : "2",
+                            "red" : false
+                          },
+                          {
+                            "s" : "♠",
+                            "r" : "8",
+                            "red" : false
+                          },
+                          {
+                            "s" : "♠",
+                            "r" : "10",
+                            "red" : false
+                          },
+                          {
+                            "s" : "♠",
+                            "r" : "J",
+                            "red" : false
+                          }
+                        ],
+                        "cat" : "couleur"
+                      },
+                      "sentence" : "tirage ♠ complété → quinte flush ; l'adversaire en reste à une couleur"
+                    }
+                  ]
+                },
+                {
+                  "prob" : 0,
+                  "examples" : [
+
+                  ],
+                  "outcome" : "tie"
+                },
+                {
+                  "prob" : 0.011602495818499519,
+                  "examples" : [
+                    {
+                      "opp" : {
+                        "cat" : "couleur",
+                        "five" : [
+                          {
+                            "r" : "A",
+                            "s" : "♠",
+                            "red" : false
+                          },
+                          {
+                            "r" : "2",
+                            "s" : "♠",
+                            "red" : false
+                          },
+                          {
+                            "r" : "3",
+                            "s" : "♠",
+                            "red" : false
+                          },
+                          {
+                            "r" : "4",
+                            "s" : "♠",
+                            "red" : false
+                          },
+                          {
+                            "r" : "6",
+                            "s" : "♠",
+                            "red" : false
+                          }
+                        ]
+                      },
+                      "count" : 7571,
+                      "share" : 0.004421527952980312,
+                      "decisive" : [
+                        2,
+                        3,
+                        4
+                      ],
+                      "sentence" : "tirage ♠ complété → couleur ; l'adversaire a une meilleure couleur",
+                      "me" : {
+                        "cat" : "couleur",
+                        "five" : [
+                          {
+                            "s" : "♠",
+                            "red" : false,
+                            "r" : "Q"
+                          },
+                          {
+                            "s" : "♠",
+                            "red" : false,
+                            "r" : "9"
+                          },
+                          {
+                            "s" : "♠",
+                            "red" : false,
+                            "r" : "3"
+                          },
+                          {
+                            "s" : "♠",
+                            "red" : false,
+                            "r" : "4"
+                          },
+                          {
+                            "s" : "♠",
+                            "red" : false,
+                            "r" : "6"
+                          }
+                        ]
+                      },
+                      "board" : [
+                        {
+                          "red" : false,
+                          "r" : "2",
+                          "s" : "♠"
+                        },
+                        {
+                          "red" : true,
+                          "r" : "2",
+                          "s" : "♥"
+                        },
+                        {
+                          "red" : false,
+                          "r" : "3",
+                          "s" : "♠"
+                        },
+                        {
+                          "red" : false,
+                          "r" : "4",
+                          "s" : "♠"
+                        },
+                        {
+                          "red" : false,
+                          "r" : "6",
+                          "s" : "♠"
+                        }
+                      ]
+                    },
+                    {
+                      "share" : 0.0035034666741419747,
+                      "board" : [
+                        {
+                          "s" : "♠",
+                          "r" : "2",
+                          "red" : false
+                        },
+                        {
+                          "s" : "♠",
+                          "r" : "10",
+                          "red" : false
+                        },
+                        {
+                          "s" : "♥",
+                          "r" : "J",
+                          "red" : true
+                        },
+                        {
+                          "s" : "♥",
+                          "r" : "Q",
+                          "red" : true
+                        },
+                        {
+                          "s" : "♥",
+                          "r" : "K",
+                          "red" : true
+                        }
+                      ],
+                      "decisive" : [
+                        1,
+                        2,
+                        4
+                      ],
+                      "me" : {
+                        "five" : [
+                          {
+                            "red" : false,
+                            "r" : "Q",
+                            "s" : "♠"
+                          },
+                          {
+                            "red" : false,
+                            "r" : "9",
+                            "s" : "♠"
+                          },
+                          {
+                            "red" : false,
+                            "r" : "10",
+                            "s" : "♠"
+                          },
+                          {
+                            "red" : true,
+                            "r" : "J",
+                            "s" : "♥"
+                          },
+                          {
+                            "red" : true,
+                            "r" : "K",
+                            "s" : "♥"
+                          }
+                        ],
+                        "cat" : "quinte"
+                      },
+                      "sentence" : "tirage quinte complété → quinte ; l'adversaire a une meilleure quinte",
+                      "opp" : {
+                        "five" : [
+                          {
+                            "s" : "♠",
+                            "r" : "A",
+                            "red" : false
+                          },
+                          {
+                            "s" : "♠",
+                            "r" : "10",
+                            "red" : false
+                          },
+                          {
+                            "s" : "♥",
+                            "r" : "J",
+                            "red" : true
+                          },
+                          {
+                            "s" : "♥",
+                            "r" : "Q",
+                            "red" : true
+                          },
+                          {
+                            "s" : "♥",
+                            "r" : "K",
+                            "red" : true
+                          }
+                        ],
+                        "cat" : "quinte"
+                      },
+                      "count" : 5999
+                    },
+                    {
+                      "me" : {
+                        "five" : [
+                          {
+                            "s" : "♠",
+                            "r" : "Q",
+                            "red" : false
+                          },
+                          {
+                            "s" : "♠",
+                            "r" : "9",
+                            "red" : false
+                          },
+                          {
+                            "s" : "♠",
+                            "r" : "2",
+                            "red" : false
+                          },
+                          {
+                            "s" : "♠",
+                            "r" : "3",
+                            "red" : false
+                          },
+                          {
+                            "s" : "♠",
+                            "r" : "4",
+                            "red" : false
+                          }
+                        ],
+                        "cat" : "couleur"
+                      },
+                      "count" : 3186,
+                      "opp" : {
+                        "five" : [
+                          {
+                            "red" : false,
+                            "s" : "♠",
+                            "r" : "A"
+                          },
+                          {
+                            "red" : true,
+                            "s" : "♥",
+                            "r" : "A"
+                          },
+                          {
+                            "red" : false,
+                            "s" : "♠",
+                            "r" : "2"
+                          },
+                          {
+                            "red" : true,
+                            "s" : "♥",
+                            "r" : "2"
+                          },
+                          {
+                            "red" : false,
+                            "s" : "♣",
+                            "r" : "2"
+                          }
+                        ],
+                        "cat" : "full"
+                      },
+                      "share" : 0.0018606509124547979,
+                      "sentence" : "tirage ♠ complété → couleur ; l'adversaire a un full",
+                      "board" : [
+                        {
+                          "r" : "2",
+                          "s" : "♠",
+                          "red" : false
+                        },
+                        {
+                          "r" : "2",
+                          "s" : "♥",
+                          "red" : true
+                        },
+                        {
+                          "r" : "2",
+                          "s" : "♣",
+                          "red" : false
+                        },
+                        {
+                          "r" : "3",
+                          "s" : "♠",
+                          "red" : false
+                        },
+                        {
+                          "r" : "4",
+                          "s" : "♠",
+                          "red" : false
+                        }
+                      ],
+                      "decisive" : [
+                        0,
+                        3,
+                        4
+                      ]
+                    }
+                  ],
+                  "outcome" : "lose"
+                }
+              ],
+              "label" : "quinte\/couleur"
+            }
+          ],
+          "t" : 0,
+          "subtitle" : "les cartes privatives font une meilleure combinaison que le tableau"
+        },
+        {
+          "w" : 0,
+          "t" : 0,
+          "rows" : [
+            {
+              "cells" : [
+                {
+                  "prob" : 0,
+                  "examples" : [
+
+                  ],
+                  "outcome" : "win"
+                },
+                {
+                  "prob" : 0.40736983619731076,
+                  "examples" : [
+                    {
+                      "sentence" : "l'adversaire a deux paires",
+                      "count" : 270048,
+                      "decisive" : [
+
+                      ],
+                      "me" : {
+                        "five" : [
+                          {
+                            "s" : "♠",
+                            "r" : "Q",
+                            "red" : false
+                          },
+                          {
+                            "s" : "♠",
+                            "r" : "9",
+                            "red" : false
+                          },
+                          {
+                            "s" : "♠",
+                            "r" : "2",
+                            "red" : false
+                          },
+                          {
+                            "s" : "♥",
+                            "r" : "2",
+                            "red" : true
+                          },
+                          {
+                            "s" : "♥",
+                            "r" : "6",
+                            "red" : true
+                          }
+                        ],
+                        "cat" : "une paire"
+                      },
+                      "share" : 0.157710313121969,
+                      "opp" : {
+                        "five" : [
+                          {
+                            "r" : "A",
+                            "s" : "♠",
+                            "red" : false
+                          },
+                          {
+                            "r" : "A",
+                            "s" : "♥",
+                            "red" : true
+                          },
+                          {
+                            "r" : "2",
+                            "s" : "♠",
+                            "red" : false
+                          },
+                          {
+                            "r" : "2",
+                            "s" : "♥",
+                            "red" : true
+                          },
+                          {
+                            "r" : "6",
+                            "s" : "♥",
+                            "red" : true
+                          }
+                        ],
+                        "cat" : "deux paires"
+                      },
+                      "board" : [
+                        {
+                          "red" : false,
+                          "r" : "2",
+                          "s" : "♠"
+                        },
+                        {
+                          "red" : true,
+                          "r" : "2",
+                          "s" : "♥"
+                        },
+                        {
+                          "red" : false,
+                          "r" : "3",
+                          "s" : "♠"
+                        },
+                        {
+                          "red" : true,
+                          "r" : "4",
+                          "s" : "♥"
+                        },
+                        {
+                          "red" : true,
+                          "r" : "6",
+                          "s" : "♥"
+                        }
+                      ]
+                    },
+                    {
+                      "decisive" : [
+
+                      ],
+                      "me" : {
+                        "cat" : "carte haute",
+                        "five" : [
+                          {
+                            "red" : false,
+                            "s" : "♠",
+                            "r" : "Q"
+                          },
+                          {
+                            "red" : false,
+                            "s" : "♠",
+                            "r" : "9"
+                          },
+                          {
+                            "red" : true,
+                            "s" : "♥",
+                            "r" : "4"
+                          },
+                          {
+                            "red" : true,
+                            "s" : "♥",
+                            "r" : "6"
+                          },
+                          {
+                            "red" : true,
+                            "s" : "♥",
+                            "r" : "7"
+                          }
+                        ]
+                      },
+                      "opp" : {
+                        "cat" : "une paire",
+                        "five" : [
+                          {
+                            "r" : "A",
+                            "s" : "♠",
+                            "red" : false
+                          },
+                          {
+                            "r" : "A",
+                            "s" : "♥",
+                            "red" : true
+                          },
+                          {
+                            "r" : "4",
+                            "s" : "♥",
+                            "red" : true
+                          },
+                          {
+                            "r" : "6",
+                            "s" : "♥",
+                            "red" : true
+                          },
+                          {
+                            "r" : "7",
+                            "s" : "♥",
+                            "red" : true
+                          }
+                        ]
+                      },
+                      "share" : 0.10459591287528383,
+                      "sentence" : "l'adversaire a une paire",
+                      "board" : [
+                        {
+                          "r" : "2",
+                          "s" : "♠",
+                          "red" : false
+                        },
+                        {
+                          "r" : "3",
+                          "red" : false,
+                          "s" : "♠"
+                        },
+                        {
+                          "r" : "4",
+                          "red" : true,
+                          "s" : "♥"
+                        },
+                        {
+                          "r" : "6",
+                          "red" : true,
+                          "s" : "♥"
+                        },
+                        {
+                          "r" : "7",
+                          "red" : true,
+                          "s" : "♥"
+                        }
+                      ],
+                      "count" : 179100
+                    },
+                    {
+                      "count" : 24186,
+                      "sentence" : "l'adversaire a un full",
+                      "me" : {
+                        "five" : [
+                          {
+                            "r" : "Q",
+                            "s" : "♠",
+                            "red" : false
+                          },
+                          {
+                            "r" : "9",
+                            "s" : "♠",
+                            "red" : false
+                          },
+                          {
+                            "r" : "2",
+                            "s" : "♠",
+                            "red" : false
+                          },
+                          {
+                            "r" : "2",
+                            "s" : "♥",
+                            "red" : true
+                          },
+                          {
+                            "r" : "2",
+                            "s" : "♣",
+                            "red" : false
+                          }
+                        ],
+                        "cat" : "brelan"
+                      },
+                      "decisive" : [
+
+                      ],
+                      "opp" : {
+                        "five" : [
+                          {
+                            "red" : false,
+                            "r" : "A",
+                            "s" : "♠"
+                          },
+                          {
+                            "red" : true,
+                            "r" : "A",
+                            "s" : "♥"
+                          },
+                          {
+                            "red" : false,
+                            "r" : "2",
+                            "s" : "♠"
+                          },
+                          {
+                            "red" : true,
+                            "r" : "2",
+                            "s" : "♥"
+                          },
+                          {
+                            "red" : false,
+                            "r" : "2",
+                            "s" : "♣"
+                          }
+                        ],
+                        "cat" : "full"
+                      },
+                      "board" : [
+                        {
+                          "r" : "2",
+                          "s" : "♠",
+                          "red" : false
+                        },
+                        {
+                          "r" : "2",
+                          "red" : true,
+                          "s" : "♥"
+                        },
+                        {
+                          "r" : "2",
+                          "red" : false,
+                          "s" : "♣"
+                        },
+                        {
+                          "r" : "3",
+                          "red" : false,
+                          "s" : "♠"
+                        },
+                        {
+                          "r" : "4",
+                          "red" : true,
+                          "s" : "♥"
+                        }
+                      ],
+                      "share" : 0.014124828301516554
+                    }
+                  ],
+                  "outcome" : "lose"
+                }
+              ],
+              "label" : "le kicker décide"
+            }
+          ],
+          "l" : 0.40736983619731076,
+          "subtitle" : "même main que le tableau, seul le kicker bouge",
+          "source" : "kicker",
+          "title" : "Le kicker tranche"
+        },
+        {
+          "source" : "playsBoard",
+          "w" : 0,
+          "l" : 0.007139503265775236,
+          "subtitle" : "les cartes privatives n'ajoutent rien",
+          "t" : 0.0042247171063082255,
+          "rows" : [
+            {
+              "cells" : [
+                {
+                  "prob" : 0,
+                  "examples" : [
+
+                  ],
+                  "outcome" : "win"
+                },
+                {
+                  "prob" : 0.0042247171063082255,
+                  "examples" : [
+                    {
+                      "count" : 4631,
+                      "share" : 0.002704543118511666,
+                      "decisive" : [
+
+                      ],
+                      "board" : [
+                        {
+                          "s" : "♠",
+                          "r" : "2",
+                          "red" : false
+                        },
+                        {
+                          "s" : "♠",
+                          "r" : "3",
+                          "red" : false
+                        },
+                        {
+                          "s" : "♥",
+                          "r" : "4",
+                          "red" : true
+                        },
+                        {
+                          "s" : "♥",
+                          "r" : "5",
+                          "red" : true
+                        },
+                        {
+                          "s" : "♥",
+                          "r" : "6",
+                          "red" : true
+                        }
+                      ],
+                      "me" : {
+                        "cat" : "quinte",
+                        "five" : [
+                          {
+                            "red" : false,
+                            "r" : "2",
+                            "s" : "♠"
+                          },
+                          {
+                            "red" : false,
+                            "r" : "3",
+                            "s" : "♠"
+                          },
+                          {
+                            "red" : true,
+                            "r" : "4",
+                            "s" : "♥"
+                          },
+                          {
+                            "red" : true,
+                            "r" : "5",
+                            "s" : "♥"
+                          },
+                          {
+                            "red" : true,
+                            "r" : "6",
+                            "s" : "♥"
+                          }
+                        ]
+                      },
+                      "sentence" : "le tableau joue pour les deux → partage",
+                      "opp" : {
+                        "cat" : "quinte",
+                        "five" : [
+                          {
+                            "red" : false,
+                            "r" : "2",
+                            "s" : "♠"
+                          },
+                          {
+                            "red" : false,
+                            "r" : "3",
+                            "s" : "♠"
+                          },
+                          {
+                            "red" : true,
+                            "r" : "4",
+                            "s" : "♥"
+                          },
+                          {
+                            "red" : true,
+                            "r" : "5",
+                            "s" : "♥"
+                          },
+                          {
+                            "red" : true,
+                            "r" : "6",
+                            "s" : "♥"
+                          }
+                        ]
+                      }
+                    },
+                    {
+                      "count" : 2554,
+                      "me" : {
+                        "cat" : "couleur",
+                        "five" : [
+                          {
+                            "red" : false,
+                            "s" : "♣",
+                            "r" : "2"
+                          },
+                          {
+                            "red" : false,
+                            "s" : "♣",
+                            "r" : "3"
+                          },
+                          {
+                            "red" : false,
+                            "s" : "♣",
+                            "r" : "4"
+                          },
+                          {
+                            "red" : false,
+                            "s" : "♣",
+                            "r" : "5"
+                          },
+                          {
+                            "red" : false,
+                            "s" : "♣",
+                            "r" : "7"
+                          }
+                        ]
+                      },
+                      "decisive" : [
+
+                      ],
+                      "opp" : {
+                        "cat" : "couleur",
+                        "five" : [
+                          {
+                            "r" : "2",
+                            "red" : false,
+                            "s" : "♣"
+                          },
+                          {
+                            "r" : "3",
+                            "red" : false,
+                            "s" : "♣"
+                          },
+                          {
+                            "r" : "4",
+                            "red" : false,
+                            "s" : "♣"
+                          },
+                          {
+                            "r" : "5",
+                            "red" : false,
+                            "s" : "♣"
+                          },
+                          {
+                            "r" : "7",
+                            "red" : false,
+                            "s" : "♣"
+                          }
+                        ]
+                      },
+                      "share" : 0.0014915575738887487,
+                      "board" : [
+                        {
+                          "r" : "2",
+                          "red" : false,
+                          "s" : "♣"
+                        },
+                        {
+                          "r" : "3",
+                          "red" : false,
+                          "s" : "♣"
+                        },
+                        {
+                          "r" : "4",
+                          "red" : false,
+                          "s" : "♣"
+                        },
+                        {
+                          "r" : "5",
+                          "red" : false,
+                          "s" : "♣"
+                        },
+                        {
+                          "r" : "7",
+                          "red" : false,
+                          "s" : "♣"
+                        }
+                      ],
+                      "sentence" : "le tableau joue pour les deux → partage"
+                    },
+                    {
+                      "board" : [
+                        {
+                          "r" : "2",
+                          "red" : false,
+                          "s" : "♠"
+                        },
+                        {
+                          "r" : "3",
+                          "red" : false,
+                          "s" : "♠"
+                        },
+                        {
+                          "r" : "4",
+                          "red" : false,
+                          "s" : "♠"
+                        },
+                        {
+                          "r" : "5",
+                          "red" : false,
+                          "s" : "♠"
+                        },
+                        {
+                          "r" : "6",
+                          "red" : false,
+                          "s" : "♠"
+                        }
+                      ],
+                      "me" : {
+                        "cat" : "quinte flush",
+                        "five" : [
+                          {
+                            "r" : "2",
+                            "red" : false,
+                            "s" : "♠"
+                          },
+                          {
+                            "r" : "3",
+                            "red" : false,
+                            "s" : "♠"
+                          },
+                          {
+                            "r" : "4",
+                            "red" : false,
+                            "s" : "♠"
+                          },
+                          {
+                            "r" : "5",
+                            "red" : false,
+                            "s" : "♠"
+                          },
+                          {
+                            "r" : "6",
+                            "red" : false,
+                            "s" : "♠"
+                          }
+                        ]
+                      },
+                      "sentence" : "le tableau joue pour les deux → partage",
+                      "share" : 1.6936244965847186e-05,
+                      "count" : 29,
+                      "opp" : {
+                        "cat" : "quinte flush",
+                        "five" : [
+                          {
+                            "r" : "2",
+                            "red" : false,
+                            "s" : "♠"
+                          },
+                          {
+                            "r" : "3",
+                            "red" : false,
+                            "s" : "♠"
+                          },
+                          {
+                            "r" : "4",
+                            "red" : false,
+                            "s" : "♠"
+                          },
+                          {
+                            "r" : "5",
+                            "red" : false,
+                            "s" : "♠"
+                          },
+                          {
+                            "r" : "6",
+                            "red" : false,
+                            "s" : "♠"
+                          }
+                        ]
+                      },
+                      "decisive" : [
+
+                      ]
+                    }
+                  ],
+                  "outcome" : "tie"
+                },
+                {
+                  "prob" : 0.007139503265775236,
+                  "outcome" : "lose",
+                  "examples" : [
+                    {
+                      "board" : [
+                        {
+                          "red" : false,
+                          "s" : "♠",
+                          "r" : "2"
+                        },
+                        {
+                          "red" : true,
+                          "s" : "♥",
+                          "r" : "2"
+                        },
+                        {
+                          "red" : false,
+                          "s" : "♠",
+                          "r" : "3"
+                        },
+                        {
+                          "red" : true,
+                          "s" : "♥",
+                          "r" : "3"
+                        },
+                        {
+                          "red" : true,
+                          "s" : "♥",
+                          "r" : "K"
+                        }
+                      ],
+                      "opp" : {
+                        "five" : [
+                          {
+                            "red" : false,
+                            "r" : "A",
+                            "s" : "♠"
+                          },
+                          {
+                            "red" : true,
+                            "r" : "A",
+                            "s" : "♥"
+                          },
+                          {
+                            "red" : false,
+                            "r" : "3",
+                            "s" : "♠"
+                          },
+                          {
+                            "red" : true,
+                            "r" : "3",
+                            "s" : "♥"
+                          },
+                          {
+                            "red" : true,
+                            "r" : "K",
+                            "s" : "♥"
+                          }
+                        ],
+                        "cat" : "deux paires"
+                      },
+                      "sentence" : "le tableau seul pour moi ; l'adversaire a de meilleures deux paires",
+                      "me" : {
+                        "five" : [
+                          {
+                            "r" : "2",
+                            "red" : false,
+                            "s" : "♠"
+                          },
+                          {
+                            "r" : "2",
+                            "red" : true,
+                            "s" : "♥"
+                          },
+                          {
+                            "r" : "3",
+                            "red" : false,
+                            "s" : "♠"
+                          },
+                          {
+                            "r" : "3",
+                            "red" : true,
+                            "s" : "♥"
+                          },
+                          {
+                            "r" : "K",
+                            "red" : true,
+                            "s" : "♥"
+                          }
+                        ],
+                        "cat" : "deux paires"
+                      },
+                      "count" : 4725,
+                      "decisive" : [
+
+                      ],
+                      "share" : 0.002759439912538895
+                    },
+                    {
+                      "sentence" : "le tableau seul pour moi ; l'adversaire a un meilleur full",
+                      "decisive" : [
+
+                      ],
+                      "count" : 2208,
+                      "opp" : {
+                        "cat" : "full",
+                        "five" : [
+                          {
+                            "red" : false,
+                            "s" : "♠",
+                            "r" : "A"
+                          },
+                          {
+                            "red" : true,
+                            "s" : "♥",
+                            "r" : "A"
+                          },
+                          {
+                            "red" : false,
+                            "s" : "♠",
+                            "r" : "2"
+                          },
+                          {
+                            "red" : true,
+                            "s" : "♥",
+                            "r" : "2"
+                          },
+                          {
+                            "red" : false,
+                            "s" : "♣",
+                            "r" : "2"
+                          }
+                        ]
+                      },
+                      "share" : 0.0012894906511927789,
+                      "me" : {
+                        "cat" : "full",
+                        "five" : [
+                          {
+                            "r" : "2",
+                            "s" : "♠",
+                            "red" : false
+                          },
+                          {
+                            "r" : "2",
+                            "s" : "♥",
+                            "red" : true
+                          },
+                          {
+                            "r" : "2",
+                            "s" : "♣",
+                            "red" : false
+                          },
+                          {
+                            "r" : "3",
+                            "s" : "♠",
+                            "red" : false
+                          },
+                          {
+                            "r" : "3",
+                            "s" : "♥",
+                            "red" : true
+                          }
+                        ]
+                      },
+                      "board" : [
+                        {
+                          "red" : false,
+                          "r" : "2",
+                          "s" : "♠"
+                        },
+                        {
+                          "red" : true,
+                          "r" : "2",
+                          "s" : "♥"
+                        },
+                        {
+                          "red" : false,
+                          "r" : "2",
+                          "s" : "♣"
+                        },
+                        {
+                          "red" : false,
+                          "r" : "3",
+                          "s" : "♠"
+                        },
+                        {
+                          "red" : true,
+                          "r" : "3",
+                          "s" : "♥"
+                        }
+                      ]
+                    },
+                    {
+                      "count" : 770,
+                      "me" : {
+                        "cat" : "couleur",
+                        "five" : [
+                          {
+                            "s" : "♥",
+                            "r" : "2",
+                            "red" : true
+                          },
+                          {
+                            "s" : "♥",
+                            "r" : "3",
+                            "red" : true
+                          },
+                          {
+                            "s" : "♥",
+                            "r" : "4",
+                            "red" : true
+                          },
+                          {
+                            "s" : "♥",
+                            "r" : "6",
+                            "red" : true
+                          },
+                          {
+                            "s" : "♥",
+                            "r" : "7",
+                            "red" : true
+                          }
+                        ]
+                      },
+                      "decisive" : [
+
+                      ],
+                      "sentence" : "le tableau seul pour moi ; l'adversaire a une meilleure couleur",
+                      "board" : [
+                        {
+                          "red" : true,
+                          "r" : "2",
+                          "s" : "♥"
+                        },
+                        {
+                          "red" : true,
+                          "r" : "3",
+                          "s" : "♥"
+                        },
+                        {
+                          "red" : true,
+                          "r" : "4",
+                          "s" : "♥"
+                        },
+                        {
+                          "red" : true,
+                          "r" : "6",
+                          "s" : "♥"
+                        },
+                        {
+                          "red" : true,
+                          "r" : "7",
+                          "s" : "♥"
+                        }
+                      ],
+                      "share" : 0.0004496865042655977,
+                      "opp" : {
+                        "cat" : "couleur",
+                        "five" : [
+                          {
+                            "s" : "♥",
+                            "red" : true,
+                            "r" : "A"
+                          },
+                          {
+                            "s" : "♥",
+                            "red" : true,
+                            "r" : "3"
+                          },
+                          {
+                            "s" : "♥",
+                            "red" : true,
+                            "r" : "4"
+                          },
+                          {
+                            "s" : "♥",
+                            "red" : true,
+                            "r" : "6"
+                          },
+                          {
+                            "s" : "♥",
+                            "red" : true,
+                            "r" : "7"
+                          }
+                        ]
+                      }
+                    }
+                  ]
+                }
+              ],
+              "label" : "issue"
+            }
+          ],
+          "title" : "Le tableau joue"
+        }
+      ],
+      "hand" : [
+        {
+          "r" : "Q",
+          "red" : false,
+          "s" : "♠"
+        },
+        {
+          "r" : "9",
+          "red" : false,
+          "s" : "♠"
+        }
+      ],
+      "lose" : 0.8148547220586999,
+      "win" : 0.18092056083499192
+    }
+  ]
+}
