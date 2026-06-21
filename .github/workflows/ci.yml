@@ -8,6 +8,10 @@ on:
 jobs:
   test:
     name: Build, test & coverage
+    # Évite le double run : sur une branche claude/**, le push déclenche déjà la
+    # CI. On ignore donc l'événement pull_request quand la branche source est une
+    # claude/** (les PR d'autres branches restent couvertes).
+    if: github.event_name == 'push' || !startsWith(github.head_ref, 'claude/')
     runs-on: ubuntu-latest
     container: swift:5.9
     steps:
