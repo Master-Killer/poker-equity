@@ -26,16 +26,16 @@ poker-equity/
 │   ├── Card.swift                 # carte/couleur, deck, parsing "Ks", bestFive()
 │   ├── HandEvaluator.swift        # évaluateur 5–7 cartes SANS allocation (masques de bits) ; evaluate(), evaluate5(), bestFive()
 │   ├── EquityCalculator.swift     # UNE passe d'énumération → équité + breakdown + attribution + coWinMatrix + relative
-│   ├── RelativeAnalyzer.swift     # types de la vue relative + façade analyze() (le calcul vit dans EquityCalculator)
+│   ├── RelativeAnalyzer.swift     # types de la vue relative (ShowdownVerdict, EdgeMechanism/ChopTexture, RelExample) ; le calcul vit dans EquityCalculator
 │   └── OutsAnalyzer.swift         # outs directs + runner-runner (post-flop)
-├── Tests/PokerEngineTests/        # 21 tests (swift test)
+├── Tests/PokerEngineTests/        # 61 tests (swift test)
 └── PokerEquity/                   # app Xcode (SwiftUI)
     ├── PokerEquity.xcodeproj
-    └── PokerEquity/               # groupe synchronisé : App, GameViewModel, Screens, CardViews, RelativeView
+    └── PokerEquity/               # groupe synchronisé : App, GameViewModel, Screens, CardViews, RelativeView, RelativeSentence
 ```
 
 - **Moteur (PokerEngine)** : pur, testable en CLI. `EquityCalculator.compute(hands:board:maxRunouts:)` produit `EquityResult` (par joueur : `equity`, `winProb`/`tieProb`, `breakdown` par catégorie Gagne/Perd/Partage, `winVs`/`loseVs` attribution, plus `coWinMatrix` et `relative`).
-- **App (SwiftUI)** : `GameViewModel` (état mains/tableau, focus, calcul async hors-main-thread), `Screens` (lignes joueurs, board, outs, layout adaptatif iPhone/iPad), `RelativeView` (vue « comment j'améliore » + exemples), `CardViews` (cartes + picker 52 cartes escamotable). Le projet Xcode référence le package local en `..`.
+- **App (SwiftUI)** : `GameViewModel` (état mains/tableau, focus, calcul async hors-main-thread), `Screens` (lignes joueurs, board, outs, layout adaptatif iPhone/iPad), `RelativeView` (vue « comment j'améliore » : décomposition du duel en *je gagne / partage / perds*, lignes triées par probabilité, carte décisive surlignée, part absolue/combos, phrase à droite), `RelativeSentence` (phrases de synthèse, rendu du `showdownVerdict`), `CardViews` (cartes + picker 52 cartes escamotable). Le projet Xcode référence le package local en `..`.
 
 ## Conventions
 
@@ -45,21 +45,21 @@ poker-equity/
 
 ## Modèle « relatif » (concept clé)
 
-Chaque runout est comparé au **tableau nu** (`evaluate(board)`) → 3 sources, croisées avec gagne/partage/perd (9 feuilles, partition exhaustive vérifiée par test) :
-- **Amélioration propre** : `catégorie(moi+board) > catégorie(board)` — mes cartes font une vraie main. Sous-étiquetée par mécanisme : *via une carte non partagée* (ma carte distinctive), *via un rang partagé*, *via un tirage* (quinte/couleur).
-- **Le kicker tranche** : score > board mais même catégorie — seul le kicker bouge.
-- **Le tableau joue** : score(moi+board) == score(board) — mes cartes n'ajoutent rien.
+Chaque runout est classé par le **duel moi ↔ meilleur adversaire** (`showdownVerdict`, pas par rapport au tableau nu) → décomposition « pourquoi je gagne / partage / perds ». La frontière se mesure sur la **combinaison seule** (`combinationScore`, score privé de ses bits de kicker) — un kicker n'existe que quand les deux mains ont la *même* combinaison et qu'une carte annexe départage ; un full/quinte/couleur n'a jamais de kicker. Cela garde « le kicker tranche » aux **vrais duels de kicker**, symétriquement pour les deux mains.
+- **Je gagne** : *ma combinaison l'emporte* (catégorie supérieure ou meilleure combinaison de même catégorie), sous-étiquetée par 4 mécanismes (`EdgeMechanism` : *carte non partagée*, *rang partagé*, *paire servie*, *quinte/couleur*) ; ou *mon kicker l'emporte* (même combinaison que l'adversaire).
+- **Partage** : mains identiques, sous-étiqueté par texture du tableau (`ChopTexture`).
+- **Je perds** : *l'adversaire a une meilleure combinaison* ; ou *le kicker de l'adversaire l'emporte*.
 
-Chaque case garde quelques **tableaux-exemples réels** (réservoir, même passe), affichés avec la main de 5 cartes (`bestFive`) jouée par chaque joueur → tout chiffre s'explique d'un clic. Générique : l'Omaha ne changera que l'évaluateur.
+`RelativeAnalysis` expose `winCombination[mécanisme]`, `winKicker`, `chop[texture]`, `loseCombination`, `loseKicker` (fractions de tous les runouts ; `winTotal+tieTotal+loseTotal == 1`). Chaque feuille garde quelques **exemples variés** (`RelExample` : bucketés par signature `(maCat, catAdv, rang décisif)` puis « variété max » — cas typique + contrastés, même passe). Chaque exemple porte : les **cartes décisives** (`decisive` = la combinaison entière du **vainqueur** sur le tableau — la mienne si je gagne, celle de l'adversaire si je perds — surlignée par `CardFace(highlight:)`), sa **part absolue** (`share`) + nombre de combos (`count`), et une **phrase de synthèse** : `RelativeSentence` (app) rend en français neutre le verdict de `showdownVerdict` — lequel respecte la définition stricte du kicker. Tout chiffre s'explique d'un clic. Générique : l'Omaha ne changera que l'évaluateur.
 
 ## Vérification
 
-- **Moteur** : `cd ~/IdeaProjects/poker-equity && swift test` (21 tests : évaluateur, équités de référence, exhaustivité des décompositions, cohérence inter-analyses).
+- **Moteur** : `cd ~/IdeaProjects/poker-equity && swift test` (61 tests : évaluateur, équités de référence, exhaustivité des décompositions, cohérence inter-analyses, validité/variété des exemples relatifs).
 - **App (build)** : `cd PokerEquity && xcodebuild -scheme PokerEquity -destination 'generic/platform=iOS Simulator' -configuration Debug build CODE_SIGNING_ALLOWED=NO`.
 - **App (visuel)** : booter un simulateur (`xcrun simctl boot`), `xcodebuild` pour ce device, `xcrun simctl install/launch`, puis `xcrun simctl io <device> screenshot`. Pour vérifier une donne précise, seed temporaire dans `GameViewModel` (à retirer ensuite).
 - ⚠️ Si Xcode compile contre une version périmée du module `PokerEngine` après modif du moteur : `xcodebuild clean` puis rebuild.
 
 ## État actuel & suite
 
-- **Fait** : moteur exact + évaluateur rapide ; équité, décompositions Gagne/Perd/Partage, attribution, matrice de co-partage, outs, vue relative « comment j'améliore » + exemples cliquables ; UI iPhone/iPad française avec bascule `Par catégorie | Comment j'améliore` ; 21 tests verts.
-- **Pistes** : attribution au niveau kicker (« paire de 10 + meilleur kicker ») ; ligne de résumé en langage naturel ; **Omaha** (toute la mécanique est générique, seul l'évaluateur change) ; activer le repli Monte-Carlo si le préflop multi-joueurs exact gêne sur device.
+- **Fait** : moteur exact + évaluateur rapide ; équité, décompositions Gagne/Perd/Partage, attribution, matrice de co-partage, outs, vue relative « comment j'améliore » avec exemples variés (carte décisive surlignée, part absolue, phrase de synthèse) et reclassement combinaison/kicker ; UI iPhone/iPad française avec bascule `Par catégorie | Comment j'améliore` ; 61 tests verts.
+- **Pistes** : **Omaha** (toute la mécanique est générique, seul l'évaluateur change) ; activer le repli Monte-Carlo si le préflop multi-joueurs exact gêne sur device ; affiner les formulations des phrases sur écran iPhone réel.

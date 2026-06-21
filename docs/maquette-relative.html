@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Maquette — Comment j'améliore (duel)</title>
+<style>
+  :root{
+    --bg:#121214; --surface:#222428; --panel:#2a2c31; --hairline:rgba(255,255,255,.12);
+    --cardface:#f5f5f5; --carddark:#1f2024; --cardred:#d15a5a;
+    --text:#e8e8ea; --muted:#9a9aa0;
+    --win:#4dbc73; --tie:#7382cc; --lose:#d15757; --accent:#738df5;
+    --exbg:rgba(0,0,0,.28);
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--text);
+       font:14px/1.4 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;padding:18px}
+  h1{font-size:15px;font-weight:600;margin:0 0 4px}
+  .note{color:var(--muted);font-size:12px;margin:0 0 16px;max-width:1000px}
+  .note b{color:var(--text)}
+  .cols{display:flex;gap:16px;align-items:flex-start;flex-wrap:wrap}
+  .player{flex:1 1 460px;min-width:440px;background:var(--surface);border-radius:12px;padding:14px}
+  .phead{display:flex;align-items:center;gap:10px;margin-bottom:10px}
+  .phand{display:flex;gap:4px}
+  .equity{margin-left:auto;text-align:right}
+  .equity .big{font-size:26px;font-weight:700;color:var(--accent)}
+  .equity .sub{font-size:11px;color:var(--muted)}
+
+  .card{width:30px;height:40px;background:var(--cardface);border-radius:5px;border:.5px solid rgba(0,0,0,.25);
+        display:flex;flex-direction:column;align-items:center;justify-content:center;color:var(--carddark);
+        line-height:1;position:relative}
+  .card .r{font-weight:700;font-size:13px}
+  .card .s{font-size:11px}
+  .card.red{color:var(--cardred)}
+  .card.big{width:38px;height:50px}.card.big .r{font-size:17px}.card.big .s{font-size:14px}
+  .card.ring-win{outline:2.5px solid var(--win);box-shadow:0 0 6px var(--win)}
+  .card.ring-tie{outline:2.5px solid var(--tie);box-shadow:0 0 6px var(--tie)}
+  .card.ring-lose{outline:2.5px solid var(--lose);box-shadow:0 0 6px var(--lose)}
+
+  .bar{height:12px;border-radius:6px;overflow:hidden;display:flex;margin:2px 0 5px}
+  .bar i{display:block;height:100%}
+  .legend{display:flex;gap:14px;font-size:11px;color:var(--muted);margin-bottom:8px}
+  .legend i{display:inline-block;width:9px;height:9px;border-radius:2px;margin-right:4px;vertical-align:middle}
+
+  .group{margin-top:16px}
+  .grouphead{display:flex;align-items:baseline}
+  .grouptitle{font-size:14px;font-weight:600}
+  .grouptotal{margin-left:auto;font-variant-numeric:tabular-nums;font-size:13px;font-weight:600}
+  .hr{height:1px;background:var(--hairline);margin:6px 0}
+  .subtitle{font-size:11px;color:var(--muted);margin-bottom:6px}
+
+  .rowbox{margin:7px 0}
+  .rowhead{display:flex;align-items:baseline;gap:8px}
+  .rowlabel{font-size:11.5px;color:var(--muted)}
+  .rowval{margin-left:auto;font-variant-numeric:tabular-nums;font-size:13px;font-weight:600}
+
+  .example{display:flex;gap:12px;background:var(--exbg);border-radius:8px;padding:8px;margin:5px 0}
+  .exleft{flex:0 0 auto}
+  .board{display:flex;gap:3px;margin-bottom:5px}
+  .handline{display:flex;align-items:center;gap:5px;font-size:11px;margin-top:2px}
+  .handline .who{color:var(--muted);width:26px}
+  .handline .tok{color:#cfd0d4}.handline .tok.red{color:var(--cardred)}
+  .handline .cat{color:var(--muted)}
+  .exright{flex:1 1 auto;display:flex;flex-direction:column;gap:4px;justify-content:center;
+           border-left:1px solid var(--hairline);padding-left:12px}
+  .share{font-size:12px;font-weight:700;font-variant-numeric:tabular-nums}
+  .sentence{font-size:12.5px;color:var(--text)}
+</style>
+</head>
+<body>
+<h1>Maquette — « Comment j'améliore » · le duel moi ↔ adversaire</h1>
+<p class="note">Donne <b>A♠A♥ vs Q♠9♠</b> (préflop, énumération exacte). Le runout est classé par le
+<b>duel moi ↔ adversaire</b> (et non par rapport au tableau) → <b>je gagne / partage / je perds</b>.
+« Le kicker tranche » ne garde que les <b>vrais duels de kicker</b> (même combinaison des deux côtés).
+La carte décisive surlignée est la <b>combinaison du vainqueur</b> (la mienne si je gagne, celle de
+l'adversaire si je perds).</p>
+<div class="cols" id="cols"></div>
+
+<script>
+const NEG = 0.00005;
+const pct = (x,d=2)=> (x*100).toFixed(d).replace('.', ',') + '%';
+
+function cardEl(c, ring, big){
+  const d=document.createElement('div');
+  d.className='card'+(c.red?' red':'')+(big?' big':'')+(ring?(' ring-'+ring):'');
+  d.innerHTML=`<span class="r">${c.r}</span><span class="s">${c.s}</span>`;
+  return d;
+}
+function handLine(label, side){
+  const row=document.createElement('div'); row.className='handline';
+  row.innerHTML=`<span class="who">${label}</span>`+
+    side.five.map(c=>`<span class="tok${c.red?' red':''}">${c.r}${c.s}</span>`).join('')+
+    `<span class="cat">${side.cat}</span>`;
+  return row;
+}
+function exampleEl(ex, color){
+  const row=document.createElement('div'); row.className='example';
+  const left=document.createElement('div'); left.className='exleft';
+  const board=document.createElement('div'); board.className='board';
+  ex.board.forEach((c,i)=> board.appendChild(cardEl(c, ex.decisive.includes(i)?color:null,false)));
+  left.appendChild(board);
+  left.appendChild(handLine('moi', ex.me));
+  left.appendChild(handLine('adv', ex.opp));
+  const right=document.createElement('div'); right.className='exright';
+  const shareTxt = ex.share < NEG ? `${ex.count} combo${ex.count>1?'s':''}` : pct(ex.share);
+  right.innerHTML=`<div class="share" style="color:var(--${color})">${shareTxt}</div>`+
+                  `<div class="sentence">${ex.sentence}</div>`;
+  row.append(left,right);
+  return row;
+}
+function leafEl(leaf){
+  const box=document.createElement('div'); box.className='rowbox';
+  const head=document.createElement('div'); head.className='rowhead';
+  head.innerHTML=`<span class="rowlabel">${leaf.label}</span>`+
+                 `<span class="rowval" style="color:var(--${leaf.color})">${pct(leaf.value)}</span>`;
+  box.appendChild(head);
+  leaf.examples.forEach(ex=> box.appendChild(exampleEl(ex, leaf.color)));
+  return box;
+}
+function groupEl(g){
+  if(g.total < NEG) return document.createComment('empty');
+  const box=document.createElement('div'); box.className='group';
+  const head=document.createElement('div'); head.className='grouphead';
+  head.innerHTML=`<span class="grouptitle">${g.title}</span>`+
+                 `<span class="grouptotal" style="color:var(--${g.color})">${pct(g.total)}</span>`;
+  box.appendChild(head);
+  const hr=document.createElement('div'); hr.className='hr'; box.appendChild(hr);
+  box.insertAdjacentHTML('beforeend', `<div class="subtitle">${g.subtitle}</div>`);
+  g.leaves.forEach(l=> box.appendChild(leafEl(l)));
+  return box;
+}
+function playerEl(p){
+  const col=document.createElement('div'); col.className='player';
+  const head=document.createElement('div'); head.className='phead';
+  const hand=document.createElement('div'); hand.className='phand';
+  p.hand.forEach(c=> hand.appendChild(cardEl(c,null,true)));
+  head.appendChild(hand);
+  head.insertAdjacentHTML('beforeend',
+    `<div class="equity"><div class="big">${pct(p.win+p.tie)}</div><div class="sub">Partage ${pct(p.tie)}</div></div>`);
+  col.appendChild(head);
+  const bar=document.createElement('div'); bar.className='bar';
+  const tot=Math.max(p.win+p.tie+p.lose,1e-9);
+  bar.innerHTML=`<i style="width:${p.win/tot*100}%;background:var(--win)"></i>`+
+                `<i style="width:${p.tie/tot*100}%;background:var(--tie)"></i>`+
+                `<i style="width:${p.lose/tot*100}%;background:var(--lose)"></i>`;
+  col.appendChild(bar);
+  col.insertAdjacentHTML('beforeend',
+    `<div class="legend"><span><i style="background:var(--win)"></i>gagne ${pct(p.win)}</span>`+
+    `<span><i style="background:var(--tie)"></i>partage ${pct(p.tie)}</span>`+
+    `<span><i style="background:var(--lose)"></i>perd ${pct(p.lose)}</span></div>`);
+  p.groups.forEach(g=> col.appendChild(groupEl(g)));
+  return col;
+}
+fetch('maquette-data.json').then(r=>r.json()).then(DATA=>{
+  const cols=document.getElementById('cols');
+  DATA.players.forEach(p=> cols.appendChild(playerEl(p)));
+}).catch(e=>{ document.getElementById('cols').textContent='Erreur de chargement: '+e; });
+</script>
+</body>
+</html>

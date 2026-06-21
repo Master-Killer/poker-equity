@@ -1,46 +1,96 @@
 import SwiftUI
 import PokerEngine
 
-/// "Comment j'améliore ma main" — relative decomposition with a shared win/tie/lose
-/// colour code, a composition bar, and every number tappable to reveal an example board.
+/// "Comment j'améliore ma main" — the showdown against the best opponent, decomposed
+/// into why I win / chop / lose, with a shared colour code, a composition bar, and
+/// every number tappable to reveal varied example boards.
 struct RelativeView: View {
     let analysis: RelativeAnalysis
     let playerIndex: Int
     @ObservedObject var vm: GameViewModel
     @State private var open: Set<String> = []
 
-    private var winTotal: Double { RelSource.allCases.reduce(0) { $0 + analysis.prob[$1.rawValue][0] } }
-    private var tieTotal: Double { RelSource.allCases.reduce(0) { $0 + analysis.prob[$1.rawValue][1] } }
-    private var loseTotal: Double { RelSource.allCases.reduce(0) { $0 + analysis.prob[$1.rawValue][2] } }
+    /// One tappable reason line: a label, its probability, the examples key, the
+    /// outcome colour, and (for a win-by-combination) the mechanism that built it.
+    private struct Leaf: Identifiable {
+        let label: String
+        let value: Double
+        let key: String
+        let color: Color
+        let mechanism: EdgeMechanism?
+        var id: String { key }
+    }
 
     var body: some View {
         VStack(alignment: .leading, spacing: 14) {
             compositionBar
-            group(.ownEdge, "Amélioration propre", "les cartes privatives font une vraie main au-dessus du tableau")
-            group(.kicker, "Le kicker tranche", "même main que le tableau, seul le kicker bouge")
-            group(.playsBoard, "Le tableau joue", "les cartes privatives n'ajoutent rien")
+            group("Je gagne", analysis.winTotal, Theme.win,
+                  "ma combinaison — ou mon kicker — l'emporte", winLeaves)
+            group("Partage", analysis.tieTotal, Theme.tie,
+                  "mains identiques, le tableau se partage", chopLeaves)
+            group("Je perds", analysis.loseTotal, Theme.lose,
+                  "l'adversaire a la meilleure main", loseLeaves)
         }
         .padding(.top, 6)
+    }
+
+    // MARK: - Leaves
+
+    private var winLeaves: [Leaf] {
+        var leaves = EdgeMechanism.allCases
+            .filter { analysis.winCombination[$0.rawValue] > negligibleProbability }
+            .sorted { analysis.winCombination[$0.rawValue] > analysis.winCombination[$1.rawValue] }
+            .map { Leaf(label: shortLabel($0), value: analysis.winCombination[$0.rawValue],
+                        key: RelativeAnalysis.winComboKey($0), color: Theme.win, mechanism: $0) }
+        if analysis.winKicker > negligibleProbability {
+            leaves.append(Leaf(label: "mon kicker l'emporte", value: analysis.winKicker,
+                               key: RelativeAnalysis.winKickerKey, color: Theme.win, mechanism: nil))
+        }
+        return leaves
+    }
+
+    private var chopLeaves: [Leaf] {
+        ChopTexture.allCases
+            .filter { analysis.chop[$0.rawValue] > negligibleProbability }
+            .sorted { analysis.chop[$0.rawValue] > analysis.chop[$1.rawValue] }
+            .map { Leaf(label: $0.label, value: analysis.chop[$0.rawValue],
+                        key: RelativeAnalysis.chopKey($0), color: Theme.tie, mechanism: nil) }
+    }
+
+    private var loseLeaves: [Leaf] {
+        var leaves: [Leaf] = []
+        if analysis.loseCombination > negligibleProbability {
+            leaves.append(Leaf(label: "l'adversaire a une meilleure combinaison",
+                               value: analysis.loseCombination,
+                               key: RelativeAnalysis.loseComboKey, color: Theme.lose, mechanism: nil))
+        }
+        if analysis.loseKicker > negligibleProbability {
+            leaves.append(Leaf(label: "le kicker de l'adversaire l'emporte",
+                               value: analysis.loseKicker,
+                               key: RelativeAnalysis.loseKickerKey, color: Theme.lose, mechanism: nil))
+        }
+        return leaves
     }
 
     // MARK: - Composition bar
 
     private var compositionBar: some View {
-        let total = max(winTotal + tieTotal + loseTotal, 1e-9)
+        let win = analysis.winTotal, tie = analysis.tieTotal, lose = analysis.loseTotal
+        let total = max(win + tie + lose, 1e-9)
         return VStack(alignment: .leading, spacing: 5) {
             GeometryReader { geo in
                 HStack(spacing: 0) {
-                    Rectangle().fill(Theme.win).frame(width: geo.size.width * winTotal / total)
-                    Rectangle().fill(Theme.tie).frame(width: geo.size.width * tieTotal / total)
-                    Rectangle().fill(Theme.lose).frame(width: geo.size.width * loseTotal / total)
+                    Rectangle().fill(Theme.win).frame(width: geo.size.width * win / total)
+                    Rectangle().fill(Theme.tie).frame(width: geo.size.width * tie / total)
+                    Rectangle().fill(Theme.lose).frame(width: geo.size.width * lose / total)
                 }
             }
             .frame(height: 12)
             .clipShape(RoundedRectangle(cornerRadius: 6))
             HStack(spacing: 14) {
-                legend(Theme.win, "gagne", winTotal)
-                legend(Theme.tie, "partage", tieTotal)
-                legend(Theme.lose, "perd", loseTotal)
+                legend(Theme.win, "gagne", win)
+                legend(Theme.tie, "partage", tie)
+                legend(Theme.lose, "perd", lose)
             }
             .font(.caption2)
         }
@@ -53,90 +103,48 @@ struct RelativeView: View {
         }
     }
 
-    // MARK: - Group
+    // MARK: - Group / rows
 
-    @ViewBuilder private func group(_ source: RelSource, _ title: String, _ subtitle: String) -> some View {
-        let w = analysis.prob[source.rawValue][0]
-        let t = analysis.prob[source.rawValue][1]
-        let l = analysis.prob[source.rawValue][2]
-        VStack(alignment: .leading, spacing: 6) {
-            HStack(alignment: .firstTextBaseline) {
-                Text(title).font(.subheadline.weight(.medium))
-                Spacer()
-                triplet(w, t, l, clickable: false, source: source)
+    @ViewBuilder private func group(_ title: String, _ total: Double, _ color: Color,
+                                    _ subtitle: String, _ leaves: [Leaf]) -> some View {
+        if total > negligibleProbability {
+            VStack(alignment: .leading, spacing: 6) {
+                HStack(alignment: .firstTextBaseline) {
+                    Text(title).font(.subheadline.weight(.medium))
+                    Spacer()
+                    Text(percentString(total))
+                        .font(.caption.monospacedDigit().weight(.medium))
+                        .foregroundStyle(color)
+                }
+                Rectangle().fill(Theme.hairline).frame(height: 1)
+                Text(subtitle).font(.caption2).foregroundStyle(.secondary)
+                ForEach(leaves) { row($0) }
             }
-            Rectangle().fill(Theme.hairline).frame(height: 1)
-            Text(subtitle).font(.caption2).foregroundStyle(.secondary)
-            rows(for: source)
         }
     }
 
-    // MARK: - Rows
-
-    @ViewBuilder private func rows(for source: RelSource) -> some View {
-        switch source {
-        case .ownEdge:
-            ForEach(EdgeMechanism.allCases, id: \.self) { m in
-                let v = analysis.edgeMechanism[m.rawValue]
-                if v[0] + v[1] + v[2] > negligibleProbability {
-                    row(.ownEdge, shortLabel(m),
-                        [(v[0], Theme.win, .win, m, nil),
-                         (v[1], Theme.tie, .tie, m, nil),
-                         (v[2], Theme.lose, .lose, m, nil)])
-                }
-            }
-        case .kicker:
-            row(.kicker, "le kicker décide",
-                [(analysis.prob[1][0], Theme.win, .win, nil, nil),
-                 (analysis.prob[1][2], Theme.lose, .lose, nil, nil)])
-            ForEach(ChopTexture.allCases, id: \.self) { tex in
-                let v = analysis.kickerChopTexture[tex.rawValue]
-                if v > negligibleProbability {
-                    row(.kicker, "partage · \(tex.label)", [(v, Theme.tie, .tie, nil, tex)])
-                }
-            }
-        case .playsBoard:
-            row(.playsBoard, "issue",
-                [(analysis.prob[2][0], Theme.win, .win, nil, nil),
-                 (analysis.prob[2][1], Theme.tie, .tie, nil, nil),
-                 (analysis.prob[2][2], Theme.lose, .lose, nil, nil)])
-        }
-    }
-
-    private typealias Entry = (value: Double, color: Color, outcome: RelOutcome, mech: EdgeMechanism?, tex: ChopTexture?)
-
-    @ViewBuilder private func row(_ source: RelSource, _ label: String, _ entries: [Entry]) -> some View {
+    @ViewBuilder private func row(_ leaf: Leaf) -> some View {
         VStack(alignment: .leading, spacing: 3) {
             HStack(spacing: 8) {
-                Text(label).font(.caption2).foregroundStyle(.secondary)
-                    .lineLimit(1).minimumScaleFactor(0.8)
+                Text(leaf.label).font(.caption2).foregroundStyle(.secondary)
+                    .lineLimit(1).minimumScaleFactor(0.75)
                 Spacer(minLength: 4)
-                ForEach(entries.indices, id: \.self) { i in
-                    value(entries[i], source: source)
-                }
+                value(leaf)
             }
-            ForEach(entries.indices, id: \.self) { i in
-                let k = keyFor(entries[i], source: source)
-                if open.contains(k) { examples(k) }
-            }
+            if open.contains(leaf.key) { examples(leaf) }
         }
     }
 
-    private func keyFor(_ e: Entry, source: RelSource) -> String {
-        RelativeAnalysis.leafKey(source: source, outcome: e.outcome, mechanism: e.mech, texture: e.tex)
-    }
-
-    private func value(_ e: Entry, source: RelSource) -> some View {
-        let k = keyFor(e, source: source)
-        let hasEx = (analysis.examples[k]?.isEmpty == false) && e.value >= negligibleProbability
-        return Text(e.value < negligibleProbability ? "·" : percentString(e.value))
+    private func value(_ leaf: Leaf) -> some View {
+        let hasEx = (analysis.examples[leaf.key]?.isEmpty == false) && leaf.value >= negligibleProbability
+        return Text(leaf.value < negligibleProbability ? "·" : percentString(leaf.value))
             .font(.caption.monospacedDigit())
-            .foregroundStyle(e.value < negligibleProbability ? Color.secondary : e.color)
+            .foregroundStyle(leaf.value < negligibleProbability ? Color.secondary : leaf.color)
             .overlay(alignment: .bottom) {
-                if hasEx { Rectangle().fill(e.color.opacity(0.55)).frame(height: 1) }
+                if hasEx { Rectangle().fill(leaf.color.opacity(0.55)).frame(height: 1) }
             }
             .contentShape(Rectangle())
-            .onTapGesture { if hasEx { toggle(k) } }
+            .onTapGesture { if hasEx { toggle(leaf.key) } }
     }
 
     private func toggle(_ k: String) {
@@ -145,11 +153,11 @@ struct RelativeView: View {
 
     // MARK: - Examples
 
-    @ViewBuilder private func examples(_ k: String) -> some View {
-        let boards = analysis.examples[k] ?? []
-        VStack(alignment: .leading, spacing: 7) {
-            ForEach(boards.prefix(3).indices, id: \.self) { i in
-                exampleRow(boards[i])
+    @ViewBuilder private func examples(_ leaf: Leaf) -> some View {
+        let exs = analysis.examples[leaf.key] ?? []
+        VStack(alignment: .leading, spacing: 8) {
+            ForEach(exs.prefix(3).indices, id: \.self) { i in
+                exampleRow(exs[i], color: leaf.color, mech: leaf.mechanism)
             }
         }
         .padding(8)
@@ -159,19 +167,39 @@ struct RelativeView: View {
         .padding(.vertical, 2)
     }
 
-    @ViewBuilder private func exampleRow(_ board: [Card]) -> some View {
+    @ViewBuilder private func exampleRow(_ ex: RelExample, color: Color, mech: EdgeMechanism?) -> some View {
         let myHand = vm.playerCards[safe: playerIndex]?.compactMap { $0 } ?? []
-        let oppIdx = opponentIndex(board: board)
+        let oppIdx = opponentIndex(board: ex.board)
         let oppHand = oppIdx.flatMap { vm.playerCards[safe: $0]?.compactMap { $0 } } ?? []
-        VStack(alignment: .leading, spacing: 4) {
-            HStack(spacing: 3) {
-                ForEach(board.indices, id: \.self) { i in
-                    CardFace(card: board[i], rankSize: 11, suitSize: 9).frame(width: 22, height: 30)
+        HStack(alignment: .top, spacing: 10) {
+            VStack(alignment: .leading, spacing: 4) {
+                HStack(spacing: 3) {
+                    ForEach(ex.board.indices, id: \.self) { i in
+                        CardFace(card: ex.board[i], rankSize: 11, suitSize: 9,
+                                 highlight: ex.decisive.contains(i) ? color : nil)
+                            .frame(width: 22, height: 30)
+                    }
                 }
+                if myHand.count == 2 { handLine("moi", bestFive(myHand + ex.board)) }
+                if oppHand.count == 2 { handLine("adv", bestFive(oppHand + ex.board)) }
             }
-            if myHand.count == 2 { handLine("moi", bestFive(myHand + board)) }
-            if oppHand.count == 2 { handLine("adv", bestFive(oppHand + board)) }
+            VStack(alignment: .leading, spacing: 3) {
+                Text(shareText(ex))
+                    .font(.caption2.weight(.semibold).monospacedDigit())
+                    .foregroundStyle(color)
+                Text(RelativeSentence.text(mechanism: mech, example: ex, myHand: myHand, oppHand: oppHand))
+                    .font(.caption2)
+                    .fixedSize(horizontal: false, vertical: true)
+            }
+            .frame(maxWidth: .infinity, alignment: .leading)
         }
+    }
+
+    /// Absolute share of all runouts (2 decimals), or the raw combo count when it
+    /// would round to zero — never a misleading "0,00 %".
+    private func shareText(_ ex: RelExample) -> String {
+        ex.share < negligibleProbability ? "\(ex.count) combo\(ex.count > 1 ? "s" : "")"
+                                         : percentString(ex.share)
     }
 
     private func handLine(_ who: String, _ five: [Card]) -> some View {
@@ -194,22 +222,12 @@ struct RelativeView: View {
         return best >= 0 ? best : nil
     }
 
-    private func triplet(_ w: Double, _ t: Double, _ l: Double, clickable: Bool, source: RelSource) -> some View {
-        HStack(spacing: 4) {
-            Text(w < negligibleProbability ? "·" : percentString(w)).foregroundStyle(Theme.win)
-            Text("·").foregroundStyle(.secondary)
-            Text(t < negligibleProbability ? "·" : percentString(t)).foregroundStyle(Theme.tie)
-            Text("·").foregroundStyle(.secondary)
-            Text(l < negligibleProbability ? "·" : percentString(l)).foregroundStyle(Theme.lose)
-        }
-        .font(.caption.monospacedDigit())
-    }
-
     private func shortLabel(_ m: EdgeMechanism) -> String {
         switch m {
         case .unsharedCard: return "carte non partagée"
         case .sharedRank: return "rang partagé"
-        case .draw: return "tirage (couleur/quinte)"
+        case .draw: return "quinte/couleur"
+        case .pocketPair: return "paire servie"
         }
     }
 }

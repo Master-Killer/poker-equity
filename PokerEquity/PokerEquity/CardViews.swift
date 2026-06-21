@@ -2,10 +2,13 @@ import SwiftUI
 import PokerEngine
 
 /// A filled card face (rank above suit), as in the picker and the slots.
+/// When `highlight` is set, the card wears a thicker coloured ring — used to
+/// point out the board cards that compose a player's combination.
 struct CardFace: View {
     let card: Card
     var rankSize: CGFloat = 18
     var suitSize: CGFloat = 15
+    var highlight: Color? = nil
 
     var body: some View {
         VStack(spacing: 0) {
@@ -21,9 +24,9 @@ struct CardFace: View {
         .frame(maxWidth: .infinity, maxHeight: .infinity)
         .background(Theme.cardFace)
         .clipShape(RoundedRectangle(cornerRadius: 6))
-        .overlay(   // filet discret pour détacher la carte du fond (surtout en clair)
+        .overlay(   // filet discret, ou anneau coloré si la carte est décisive
             RoundedRectangle(cornerRadius: 6)
-                .strokeBorder(Theme.cardBorder, lineWidth: 0.5)
+                .strokeBorder(highlight ?? Theme.cardBorder, lineWidth: highlight != nil ? 2 : 0.5)
         )
     }
 }
