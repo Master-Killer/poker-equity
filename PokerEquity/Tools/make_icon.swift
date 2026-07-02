@@ -36,7 +36,7 @@ func col(_ r: Int, _ g: Int, _ b: Int) -> CGColor {
 let dark  = col(18, 19, 22)
 let green = col(77, 189, 115)
 let blue  = col(115, 125, 204)
-let red   = col(209, 87, 87)
+let red   = col(190, 99, 96)   // rouge adouci (moins saturé que la version d'origine)
 let gold  = col(219, 176, 51)
 
 let W = CGFloat(N)
@@ -51,7 +51,12 @@ func poly(_ pts: [(CGFloat, CGFloat)], _ c: CGColor) {
     ctx.fillPath()
 }
 let slant: CGFloat = W * 0.21        // décalage du bas vers la gauche
-let t1: CGFloat = W / 3, t2: CGFloat = 2 * W / 3
+// Le slant transfère de la surface du vert vers le rouge (aire ∝ largeur en bas
+// de bande) : à t1 = W/3, t2 = 2W/3, on obtient vert 22,8 % / bleu 33,3 % / rouge
+// 43,8 % — d'où le déséquilibre. On recale pour vert 33 % / bleu 37 % / rouge 30 %
+// (rouge un peu réduit + adouci car plus « bruyant » à l'œil à surface égale).
+let t1: CGFloat = W * 0.33 + slant / 2
+let t2: CGFloat = t1 + W * 0.37
 poly([(0,0),(t1,0),(t1-slant,W),(0,W)], green)
 poly([(t1,0),(t2,0),(t2-slant,W),(t1-slant,W)], blue)
 poly([(t2,0),(W,0),(W,W),(t2-slant,W)], red)
